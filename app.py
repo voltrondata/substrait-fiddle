@@ -1,5 +1,9 @@
+import os.path
+from urllib import request
+
 from fastapi import FastAPI, HTTPException, status
 from fastapi.openapi.utils import get_openapi
+from fastapi_health import health
 
 from substrait_validator import check_plan_valid
 import duckdb
@@ -13,21 +17,56 @@ def ping():
     return {"api_service": "up and running"}
 
 
-@app.on_event("startup")
-def Initialize():
+def FetchTpchData():
+    if not os.path.isfile("lineitemsf1.snappy.parquet"):
+        print("File not found, downloading!")
+        url = "https://github.com/duckdb/duckdb-data/releases/download/v1.0/lineitemsf1.snappy.parquet"
+        response = request.urlretrieve(url, "lineitemsf1.snappy.parquet")
+        print("File downloaded successfully!")
+
+
+def ConnectDB():
     global con
     con = duckdb.connect()
     con.install_extension("substrait")
     con.load_extension("substrait")
+    con.install_extension("tpch")
+    con.load_extension("tpch")
+    con.execute(
+        query="CREATE TABLE IF NOT EXISTS lineitem AS SELECT * FROM 'lineitemsf1.snappy.parquet';"
+    )
     print("DuckDb initialized successfully")
+
+
+@app.on_event("startup")
+def Initialize():
+    FetchTpchData()
+    ConnectDB()
+
+
+@app.get("/health/duckcb/")
+def CheckDuckDBConnection(conn):
+    status = {"db_health": "unavailable"}
+    try:
+        conn.execute(query="SHOW TABLES;").fetchall()
+        status["db_health"] = "up and running"
+    except Exception as e:
+        print(
+            "Heatlcheck failed for DuckDB, initialize new connection object. Details: ",
+            str(e),
+        )
+    finally:
+        return status
 
 
 @app.post("/validate/")
 async def Validate(data: dict):
     try:
         result = await check_plan_valid(data)
+        print(dir(result))
         return result
     except Exception as e:
+        print(dir(result))
         raise HTTPException(
             status_code=500, detail="Substrait Validator Internal Error: " + str(e)
         )
@@ -51,6 +90,9 @@ async def InjectDuckDb(data: list[str]):
 async def ParseToSubstrait(data: str):
     try:
         global con
+        if CheckDuckDBConnection(con)["db_health"] != "up and running":
+            FetchTpchData()
+            ConnectDB()
         result = con.get_substrait_json(data).fetchone()[0]
         print(result)
         return result
