@@ -59,6 +59,9 @@ def CheckDuckDBConnection(conn):
         return status
 
 
+app.add_api_route("/health", health([CheckDuckDBConnection]))
+
+
 @app.post("/validate/")
 async def Validate(data: dict):
     try:
