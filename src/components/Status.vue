@@ -1,27 +1,26 @@
 <template>
-  <div class="col-5" id="status">
-  {{ msg }}
+  <div class="col-12" id="status">
+    {{ msg }}
   </div>
 </template>
 
 <style scoped>
-
-#status{
-  margin-left: 2vh; 
-  background-color: black; 
-  color: #2ECFFA;
-  font-family: 'Inconsolata', monospace;
-  height:150px;
+#status {
+  margin-left: 2vh;
+  background-color: black;
+  color: #2ecffa;
+  font-family: "Inconsolata", monospace;
+  height: 150px;
   overflow-y: scroll;
+  white-space: pre-line;
 }
-
 </style>
 
 <script>
 export default {
-  name: 'Status',
+  name: "Status",
   props: {
-    msg: String
-  }
-}
+    msg: String,
+  },
+};
 </script>
