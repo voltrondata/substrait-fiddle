@@ -1,7 +1,7 @@
 import os.path
 from urllib import request
 
-from fastapi import FastAPI, HTTPException, status
+from fastapi import FastAPI, HTTPException, status, File
 from fastapi.openapi.utils import get_openapi
 from fastapi_health import health
 
@@ -10,7 +10,6 @@ import duckdb
 
 app = FastAPI()
 con = None
-
 
 @app.get("/")
 def ping():
@@ -66,10 +65,18 @@ app.add_api_route("/health", health([CheckDuckDBConnection]))
 async def Validate(data: dict):
     try:
         result = await check_plan_valid(data)
-        print(dir(result))
         return result
     except Exception as e:
-        print(dir(result))
+        raise HTTPException(
+            status_code=500, detail="Substrait Validator Internal Error: " + str(e)
+        )
+
+@app.post("/validate/file/")
+async def ValidateFile(data: bytes = File()):
+    try:
+        result = await check_plan_valid(data)
+        return result
+    except Exception as e:
         raise HTTPException(
             status_code=500, detail="Substrait Validator Internal Error: " + str(e)
         )
@@ -90,13 +97,14 @@ async def InjectDuckDb(data: list[str]):
 
 
 @app.post("/parse/")
-async def ParseToSubstrait(data: str):
+async def ParseToSubstrait(data: dict):
     try:
         global con
         if CheckDuckDBConnection(con)["db_health"] != "up and running":
             FetchTpchData()
             ConnectDB()
-        result = con.get_substrait_json(data).fetchone()[0]
+        print(data)
+        result = con.get_substrait_json(data['query']).fetchone()[0]
         print(result)
         return result
     except Exception as e:
