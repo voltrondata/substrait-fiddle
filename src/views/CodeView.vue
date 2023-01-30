@@ -32,7 +32,7 @@
     ></div>
   </div>
   <br />
-  <Status :msg="status" />
+  <Status ref="status"/>
 </template>
 
 <style></style>
@@ -62,10 +62,12 @@ export default {
       code: "",
       language: "json",
       editor: null,
-      status: "// Status",
     };
   },
   methods: {
+    updateStatus(str){
+      this.$refs.status.updateStatus(str);
+    },
     changeLanguage() {
       const models = monaco.editor.getModels();
       monaco.editor.setModelLanguage(models[0], this.language);
@@ -77,30 +79,28 @@ export default {
         .post("/api/validate/", JSON.parse(plan))
         .then((response) => console.log(response))
         .catch((error) => {
-          this.status += error.response.data["detail"];
+          this.updateStatus(error.response.data["detail"]);
         });
     },
     generate() {
-      this.status = "// Status";
+      this.$refs.status.resetStatus();
       this.code = monaco.editor.getModels()[0].getValue();
       if (this.language == "json") {
-        this.status += "\n\nValidating JSON plan with Substrait Validator...\n";
+        this.updateStatus("Validating JSON plan with Substrait Validator...");
         this.validate(this.code);
       } else {
-        this.status += "\n\nConverting SQL query to Substrait Plan...\n";
-        console.log(this.code);
+        this.updateStatus("Converting SQL query to Substrait Plan...");
         axios
           .post("/api/parse/", {
             query: this.code,
           })
           .then((response) => {
-            this.status +=
-              "\nSQL query converted to Substrait Plan successfully!";
-            this.status += "\nValidating converted Substrait plan...\n";
+            this.updateStatus("SQL query converted to Substrait Plan successfully!");
+            this.updateStatus("Validating converted Substrait plan...");
             this.validate(response.data);
           })
           .catch((error) => {
-            this.status += error.response.data["detail"];
+            this.updateStatus(error.response.data["detail"]);
           });
       }
     },

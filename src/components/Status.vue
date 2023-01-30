@@ -1,6 +1,6 @@
 <template>
   <div class="col-12" id="status">
-    {{ msg }}
+    {{ message }}
   </div>
 </template>
 
@@ -19,8 +19,20 @@
 <script>
 export default {
   name: "Status",
-  props: {
-    msg: String,
+  data: function(){
+    return {
+      message: "// Status\n",
+      counter: 0,
+    };
   },
+  methods:{
+    resetStatus(){
+      this.message = "// Status\n";
+      this.counter = 0;
+    },
+    updateStatus(str){
+      this.message+="\n["+(++this.counter)+"] "+str;
+    }
+  }
 };
 </script>
