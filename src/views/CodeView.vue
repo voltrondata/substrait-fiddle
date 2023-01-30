@@ -43,7 +43,6 @@ import jsonWorker from "monaco-editor/esm/vs/language/json/json.worker?worker";
 
 import Status from "@/components/Status.vue";
 import axios from "axios";
-import { generate } from "@vue/compiler-core";
 
 self.MonacoEnvironment = {
   getWorker(_, label) {
