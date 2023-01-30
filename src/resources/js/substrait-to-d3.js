@@ -1,7 +1,7 @@
 "use strict";
 
-const { SubstraitParser } = require("./substrait-parser");
-const d3 = require("d3");
+import { SubstraitParser } from "./substrait-parser";
+import * as d3 from "d3";
 
 // Populating map with nodes information
 function createNodeIdToNodeMap(plan, nodes) {
@@ -327,7 +327,4 @@ function drawGraph(pre_nodes, pre_links, use_drag = true) {
     });
 }
 
-module.exports = {
-  buildGraph,
-  drawGraph,
-};
+export {buildGraph, drawGraph};

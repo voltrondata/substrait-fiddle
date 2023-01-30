@@ -11,6 +11,10 @@ import Status from "@/components/Status.vue";
 import axios from "axios";
 import {validate} from "../resources/js/shared";
 
+import * as substrait from "substrait";
+import {SubstraitParser} from "../resources/js/substrait-parser";
+import {buildGraph, drawGraph} from "../resources/js/substrait-to-d3";
+
 export default {
   data: function(){
     return {
@@ -35,6 +39,7 @@ export default {
             this.content = JSON.parse(res.target.result);
             this.updateStatus("JSON Parsing successful!");
             this.updateStatus("Validating JSON plan with Substrait Validator...");
+            validate(this.content, this.updateStatus);
             validate(this.content, this.updateStatus);
           };
           reader.onerror = (err) => console.log(err);
@@ -76,6 +81,18 @@ export default {
             .catch((error) => {
               this.updateStatus(error.response.data["detail"]);
             });
+            this.updateStatus("Generating plot for Substrait plan...");
+            reader.onload = (res) => {
+              try {
+                const plan = substrait.Plan.decode(new Uint8Array(res));
+                const subplan = new SubstraitParser(plan).planToNode(plan);
+                const graph = buildGraph(subplan);
+                drawGraph(graph["nodes"], graph["edges"]);
+              } catch (e) {
+                this.updateStatus("Error parsing the plan: "+ e)
+              }
+            };
+            reader.readAsArrayBuffer(this.file);
       }
     },  
   },

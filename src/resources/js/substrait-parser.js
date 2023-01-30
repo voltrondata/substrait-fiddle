@@ -759,6 +759,4 @@ class SubstraitParser {
   }
 }
 
-module.exports = {
-  SubstraitParser,
-};
+export {SubstraitParser};
