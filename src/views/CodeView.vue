@@ -44,6 +44,8 @@ import jsonWorker from "monaco-editor/esm/vs/language/json/json.worker?worker";
 import Status from "@/components/Status.vue";
 import axios from "axios";
 
+import {validate} from "../resources/js/shared";
+
 self.MonacoEnvironment = {
   getWorker(_, label) {
     if (label === "json") {
@@ -74,20 +76,12 @@ export default {
       models[0].setValue(this.default_code[this.language]);
       this.status = "// Status";
     },
-    validate(plan) {
-      axios
-        .post("/api/validate/", JSON.parse(plan))
-        .then((response) => console.log(response))
-        .catch((error) => {
-          this.updateStatus(error.response.data["detail"]);
-        });
-    },
     generate() {
       this.$refs.status.resetStatus();
       this.code = monaco.editor.getModels()[0].getValue();
       if (this.language == "json") {
         this.updateStatus("Validating JSON plan with Substrait Validator...");
-        this.validate(this.code);
+        validate(JSON.parse(this.code), this.updateStatus);
       } else {
         this.updateStatus("Converting SQL query to Substrait Plan...");
         axios
@@ -97,7 +91,7 @@ export default {
           .then((response) => {
             this.updateStatus("SQL query converted to Substrait Plan successfully!");
             this.updateStatus("Validating converted Substrait plan...");
-            this.validate(response.data);
+            validate(JSON.parse(response.data), this.updateStatus);
           })
           .catch((error) => {
             this.updateStatus(error.response.data["detail"]);

@@ -9,6 +9,7 @@
 <script scoped>
 import Status from "@/components/Status.vue";
 import axios from "axios";
+import {validate} from "../resources/js/shared";
 
 export default {
   data: function(){
@@ -24,15 +25,6 @@ export default {
     },
     generate(){
     },
-    validate(plan) {
-      axios
-        .post("/api/validate/", plan)
-        .then((response) => console.log(response))
-        .catch((error) => {
-          console.log(error)
-          this.updateStatus(error.response.data["detail"]);
-        });
-    },
     onFileUpload(){
       this.$refs.status.resetStatus();
       this.file = this.$refs.fileInput.files[0];
@@ -43,7 +35,7 @@ export default {
             this.content = JSON.parse(res.target.result);
             this.updateStatus("JSON Parsing successful!");
             this.updateStatus("Validating JSON plan with Substrait Validator...");
-            this.validate(this.content);
+            validate(this.content, this.updateStatus);
           };
           reader.onerror = (err) => console.log(err);
           reader.readAsText(this.file);
@@ -60,10 +52,10 @@ export default {
             .then((response) => {
               this.updateStatus("SQL query converted to Substrait Plan successfully!");
               this.updateStatus("Validating converted Substrait plan...");
-              this.validate(JSON.parse(response.data));
+              validate(JSON.parse(response.data), this.updateStatus);
             })
             .catch((error) => {
-              this.status += error.response.data["detail"];
+              this.updateStatus(error.response.data["detail"]);
             });
           };
           reader.onerror = (err) => console.log(err);
@@ -82,8 +74,7 @@ export default {
             )
             .then((response) => console.log(response))
             .catch((error) => {
-              console.log(error)
-              this.status += error.response.data["detail"];
+              this.updateStatus(error.response.data["detail"]);
             });
       }
     },  
