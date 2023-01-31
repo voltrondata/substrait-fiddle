@@ -82,9 +82,9 @@ export default {
               this.updateStatus(error.response.data["detail"]);
             });
             this.updateStatus("Generating plot for Substrait plan...");
-            reader.onload = (res) => {
+            reader.onload = () => {
               try {
-                const plan = substrait.Plan.decode(new Uint8Array(res));
+                const plan = substrait.substrait.Plan.decode(new Uint8Array(reader.result));
                 const subplan = new SubstraitParser(plan).planToNode(plan);
                 const graph = buildGraph(subplan);
                 drawGraph(graph["nodes"], graph["edges"]);
