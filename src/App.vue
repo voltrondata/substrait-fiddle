@@ -27,10 +27,11 @@ import Graph from "@/components/Graph.vue";
   <div class="col-5" style="margin-left: 3vh">
     <ul class="nav nav-tabs" id="myTab" role="tablist">
       <li class="nav-item" role="presentation">
-        <router-link to="/" style="text-decoration: none; color: inherit">
           <button
-            class="nav-link active"
+            class="nav-link"
+            :class = "{ active: $route.path === '/' }"
             id="code-tab"
+            @click="goToCode"
             data-bs-toggle="tab"
             data-bs-target="#code"
             type="button"
@@ -40,13 +41,13 @@ import Graph from "@/components/Graph.vue";
           >
             Code
           </button>
-        </router-link>
       </li>
       <li class="nav-item" role="presentation">
-        <router-link to="/upload" style="text-decoration: none; color: inherit">
           <button
             class="nav-link"
+            :class = "{ active: $route.path === '/upload' }"
             id="upload-tab"
+            @click="goToUpload"
             data-bs-toggle="tab"
             data-bs-target="#upload"
             type="button"
@@ -56,7 +57,6 @@ import Graph from "@/components/Graph.vue";
           >
             Upload
           </button>
-        </router-link>
       </li>
     </ul>
     <div class="tab-content" id="myTabContent">
@@ -100,4 +100,16 @@ $('a[data-toggle="tab"]').on("shown.bs.tab", function (e) {
   e.target;
   e.relatedTarget;
 });
+
+export default {
+  methods: {
+    goToCode() {
+      this.$router.push("/");
+    },
+    goToUpload() {
+      this.$router.push("/upload");
+    }
+  }
+};
+
 </script>

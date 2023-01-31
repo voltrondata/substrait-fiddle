@@ -437,6 +437,9 @@ class SubstraitParser {
     } else if (type.string) {
       typeStr = "string";
       nullability = type.string.nullability;
+    } else if (type.fp64) {
+      typeStr = "fp64";
+      nullability = type.fp64.nullability;
     } else {
       throw new Error(`Unrecognized type: ${JSON.stringify(type)}`);
     }
