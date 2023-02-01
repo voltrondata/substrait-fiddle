@@ -96,10 +96,6 @@ import Graph from "@/components/Graph.vue";
 </style>
 
 <script>
-$('a[data-toggle="tab"]').on("shown.bs.tab", function (e) {
-  e.target;
-  e.relatedTarget;
-});
 
 export default {
   methods: {
