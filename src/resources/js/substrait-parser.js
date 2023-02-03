@@ -398,7 +398,7 @@ class SubstraitParser {
       inputs,
       props,
       schema,
-      project.common.emit
+      project.common?project.common.emit:null
     );
   }
 
@@ -503,7 +503,7 @@ class SubstraitParser {
   readToNode(read) {
     const schema = this.namedStructToSchema(read.baseSchema);
     const props = this.readTypeToProps(read);
-    return this.makePrintNode("read", [], props, schema, read.common.emit);
+    return this.makePrintNode("read", [], props, schema, read.common ? read.common.emit:null);
   }
 
   /**
