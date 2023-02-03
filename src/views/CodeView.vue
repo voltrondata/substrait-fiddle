@@ -77,7 +77,7 @@ export default {
       models[0].setValue(this.default_code[this.language]);
       this.status = "// Status";
     },
-    generate() {
+    async generate() {
       this.$refs.status.resetStatus();
       this.code = monaco.editor.getModels()[0].getValue();
       if (this.language == "json") {
@@ -87,22 +87,22 @@ export default {
         const plan = substrait.substrait.Plan.fromObject(this.content);
         plot(plan, this.updateStatus);
       } else {
-        this.updateStatus("Converting SQL query to Substrait Plan...");
-        axios
-          .post("/api/parse/", {
-            query: this.code,
-          })
-          .then((response) => {
-            this.updateStatus("SQL query converted to Substrait Plan successfully!");
-            this.updateStatus("Validating converted Substrait plan...");
-            validate(JSON.parse(response.data), this.updateStatus);
-            this.updateStatus("Generating plot for converted substrait plan...");
-            const plan = substrait.substrait.Plan.fromObject(JSON.parse(response.data));
-            plot(plan, this.updateStatus);
-          })
-          .catch((error) => {
-            this.updateStatus(error.response.data["detail"]);
-          });
+        try{
+          this.updateStatus("Converting SQL query to Substrait Plan...");
+          const duckDbRsp = await axios
+            .post("/api/parse/", {
+              query: this.code,
+             });
+          this.updateStatus("SQL query converted to Substrait Plan successfully!");
+          this.updateStatus("Validating converted Substrait plan...");
+          validate(JSON.parse(duckDbRsp.data), this.updateStatus);
+          this.updateStatus("Generating plot for converted substrait plan...");
+          const plan = substrait.substrait.Plan.fromObject(JSON.parse(duckDbRsp.data));
+          plot(plan, this.updateStatus);
+        } catch (error){
+          this.updateStatus(error.response.data["detail"]);
+
+        }
       }
     },
   },
