@@ -25,6 +25,12 @@ export default {
       counter: 0,
     };
   },
+  
+  mounted: function(){
+      this.message = "// Status\n";
+      this.counter =  0
+  },
+
   methods:{
     resetStatus(){
       this.message = "// Status\n";

@@ -26,7 +26,6 @@
     </div>
     <div
       id="editor"
-      ref="myid"
       style="margin-top: 10px; height: 500px"
       class="border"
     ></div>

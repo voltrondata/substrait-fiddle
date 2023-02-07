@@ -24,55 +24,31 @@ import Graph from "@/components/Graph.vue";
       >
     </nav>
   </header>
-  <div class="col-5" style="margin-left: 3vh">
-    <ul class="nav nav-tabs" id="myTab" role="tablist">
-      <li class="nav-item" role="presentation">
+  <div class="col-5 tabs" style="margin-left: 3vh">
+    <ul class="nav nav-tabs">
+      <li class="nav-item">
           <button
             class="nav-link"
             :class = "{ active: $route.path === '/' }"
             id="code-tab"
             @click="goToCode"
-            data-bs-toggle="tab"
-            data-bs-target="#code"
             type="button"
-            role="tab"
-            aria-controls="code"
-            aria-selected="true"
           >
             Code
           </button>
       </li>
-      <li class="nav-item" role="presentation">
+      <li class="nav-item">
           <button
             class="nav-link"
             :class = "{ active: $route.path === '/upload' }"
             id="upload-tab"
             @click="goToUpload"
-            data-bs-toggle="tab"
-            data-bs-target="#upload"
             type="button"
-            role="tab"
-            aria-controls="upload"
-            aria-selected="false"
           >
             Upload
           </button>
       </li>
     </ul>
-    <div class="tab-content" id="myTabContent">
-      <div
-        class="tab-pane fade show active"
-        id="code"
-        role="tabpanel"
-        aria-labelledby="code-tab"
-      ></div>
-      <div
-        class="tab-pane fade"
-        id="upload"
-        role="tabpanel"
-        aria-labelledby="upload-tab"
-      ></div>
-    </div>
   </div>
   <div class="row">
     <div class="col-5">
