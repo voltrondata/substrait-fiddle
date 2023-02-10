@@ -1,7 +1,7 @@
 "use strict";
 
-import { SubstraitParser } from "./substrait-parser";
 import * as d3 from "d3";
+import icons from "./icons.json";
 
 // Populating map with nodes information
 function createNodeIdToNodeMap(plan, nodes) {
@@ -71,13 +71,13 @@ function nodeColor(nodeType) {
 function nodeIcon(nodeType) {
   switch (nodeType) {
     case "sink":
-      return "bi-download";
+      return icons["download"];
     case "project":
-      return "bi-kanban";
+      return icons["kanban"];
     case "read":
-      return "bi-eye";
+      return icons["eye"];
     case "join":
-      return "bi-sign-intersection-y";
+      return icons["sign-intersection-y"];
   }
 }
 
@@ -155,7 +155,10 @@ function drawGraph(pre_nodes, pre_links, use_drag = true) {
     .attr("y", -15)
     .style("color", "white")
     .html(function (d) {
-      return '<i class="bi ' + nodeIcon(d.type) + '"></i>';
+    let str = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">'+
+              nodeIcon(d.type) +
+              '</svg>';
+      return str;
     });
 
   // displaying node data on click
@@ -323,8 +326,16 @@ function drawGraph(pre_nodes, pre_links, use_drag = true) {
     .attr("y", -4)
     .style("color", "black")
     .html(function (d) {
-      return '<i class="bi ' + nodeIcon(d) + '"></i>' + " " + d;
+      let str = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">'+
+      nodeIcon(d) +
+      '</svg> ' + d;
+      return str;
     });
 }
 
-export {buildGraph, drawGraph};
+function clearGraph(){
+  var svg = d3.select("svg");
+  svg.html("");
+}
+
+export {buildGraph, clearGraph, drawGraph};

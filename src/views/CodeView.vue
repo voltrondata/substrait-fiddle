@@ -44,7 +44,7 @@ import Status from "@/components/Status.vue";
 import axios from "axios";
 
 import * as substrait from "substrait";
-import {validate, plot} from "../resources/js/shared";
+import {validate, plot} from "../assets/js/shared";
 
 self.MonacoEnvironment = {
   getWorker(_, label) {

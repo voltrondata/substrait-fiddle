@@ -1,6 +1,6 @@
 import axios from "axios";
 import {SubstraitParser} from "./substrait-parser";
-import {buildGraph, drawGraph} from "./substrait-to-d3";
+import {buildGraph, clearGraph, drawGraph} from "./substrait-d3";
 
 function readText(file) {
   return new Promise((resolve, reject) => {
@@ -35,6 +35,7 @@ async function validate(plan, status_func) {
 
 function plot(plan, status_func){
   try {
+    clearGraph();
     const subplan = new SubstraitParser(plan).planToNode(plan);
     const graph = buildGraph(subplan);
     drawGraph(graph["nodes"], graph["edges"]);
@@ -45,4 +46,4 @@ function plot(plan, status_func){
   }
 }
 
-export {readFile, readText, validate, plot};
+export {readFile, readText, validate, plot, clearGraph};

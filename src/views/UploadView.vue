@@ -10,7 +10,7 @@
 <script scoped>
 import Status from "@/components/Status.vue";
 import axios from "axios";
-import {readFile, readText, validate, plot} from "../resources/js/shared";
+import {readFile, readText, validate, plot} from "../assets/js/shared";
 
 import * as substrait from "substrait";
 

@@ -1,6 +1,5 @@
 <script setup>
-import { RouterLink, RouterView } from "vue-router";
-import * as bootstrap from "bootstrap";
+import {RouterView } from "vue-router";
 
 import Graph from "@/components/Graph.vue";
 </script>
@@ -73,12 +72,16 @@ import Graph from "@/components/Graph.vue";
 
 <script>
 
+import {clearGraph} from "./assets/js/substrait-d3.js";
+
 export default {
   methods: {
     goToCode() {
+      clearGraph();
       this.$router.push("/");
     },
     goToUpload() {
+      clearGraph();
       this.$router.push("/upload");
     }
   }
