@@ -76,32 +76,37 @@ export default {
       models[0].setValue(this.default_code[this.language]);
       this.status = "// Status";
     },
+    async generateFromJson(){
+      this.updateStatus("Validating JSON plan with Substrait Validator...");
+      validate(JSON.parse(this.code), this.updateStatus);
+      this.updateStatus("Generating plot for substrait JSON plan...");
+      const plan = substrait.substrait.Plan.fromObject(this.content);
+      plot(plan, this.updateStatus);
+    },
+    async generateFromSql(){
+      this.updateStatus("Converting SQL query to Substrait Plan...");
+      const duckDbRsp = await axios
+        .post("/api/parse/", {
+          query: this.code,
+          });
+      this.updateStatus("SQL query converted to Substrait Plan successfully!");
+      this.updateStatus("Validating converted Substrait plan...");
+      validate(JSON.parse(duckDbRsp.data), this.updateStatus);
+      this.updateStatus("Generating plot for converted substrait plan...");
+      const plan = substrait.substrait.Plan.fromObject(JSON.parse(duckDbRsp.data));
+      plot(plan, this.updateStatus);
+    },
     async generate() {
       this.$refs.status.resetStatus();
       this.code = monaco.editor.getModels()[0].getValue();
-      if (this.language == "json") {
-        this.updateStatus("Validating JSON plan with Substrait Validator...");
-        validate(JSON.parse(this.code), this.updateStatus);
-        this.updateStatus("Generating plot for substrait JSON plan...");
-        const plan = substrait.substrait.Plan.fromObject(this.content);
-        plot(plan, this.updateStatus);
-      } else {
-        try{
-          this.updateStatus("Converting SQL query to Substrait Plan...");
-          const duckDbRsp = await axios
-            .post("/api/parse/", {
-              query: this.code,
-             });
-          this.updateStatus("SQL query converted to Substrait Plan successfully!");
-          this.updateStatus("Validating converted Substrait plan...");
-          validate(JSON.parse(duckDbRsp.data), this.updateStatus);
-          this.updateStatus("Generating plot for converted substrait plan...");
-          const plan = substrait.substrait.Plan.fromObject(JSON.parse(duckDbRsp.data));
-          plot(plan, this.updateStatus);
-        } catch (error){
-          this.updateStatus(error.response.data["detail"]);
-
+      try {
+        if (this.language == "json") {
+        this.generateFromJson();
+        } else {  
+        this.generateFromSql();
         }
+      } catch(error){
+          this.updateStatus("Error parsing substrait plan: ", error)
       }
     },
   },

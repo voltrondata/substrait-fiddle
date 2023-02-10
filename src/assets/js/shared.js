@@ -41,7 +41,6 @@ function plot(plan, status_func){
     drawGraph(graph["nodes"], graph["edges"]);
     status_func("Plan generation successful!");
   } catch (error) {
-    console.log(error)
     status_func("Error generating plot: " + error)
   }
 }
