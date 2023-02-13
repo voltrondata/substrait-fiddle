@@ -1,7 +1,7 @@
 <template>
   <div class="col-12" style="margin-left: 3vh; margin-top: 30px">
     <label class="form-label" for="file">Upload your substrait plan</label>
-    <input type="file" class="form-control" id="file" style="width: 40%" accept=".json,.sql,.bin" ref="fileInput" @change="generate"/>
+    <input type="file" class="form-control" id="file-upload" style="width: 40%" accept=".json,.sql,.bin" ref="fileInput" @change="generate"/>
     <span style="color:gray; font-size:small;">*only .json, .sql and .bin are accepted</span>
   </div>
   <Status ref="status" style="margin-top: 435px"/>

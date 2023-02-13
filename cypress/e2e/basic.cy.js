@@ -1,6 +1,6 @@
 /// <reference types="cypress" />
 
-describe('Substrait Fiddle', ()=>{
+describe('Substrait Fiddle Basic Test', ()=>{
     beforeEach(()=>{
         cy.visit('/')
     })
