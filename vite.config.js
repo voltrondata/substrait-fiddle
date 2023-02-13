@@ -3,7 +3,6 @@ import { fileURLToPath, URL } from "node:url";
 import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
 import inject from "@rollup/plugin-inject";
-import svgLoader from "vite-svg-loader";
 
 const path = require("path");
 const prefix = `monaco-editor/esm/vs`;
@@ -15,7 +14,6 @@ export default defineConfig({
       $: "jquery",
       jQuery: "jquery",
     }),
-    svgLoader(),
   ],
   resolve: {
     alias: {

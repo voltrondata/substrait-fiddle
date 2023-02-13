@@ -14,8 +14,6 @@
 
 <script>
 
-import { saveAs } from 'file-saver';
-
 export default {
   name: "Graph",
   data: function(){
