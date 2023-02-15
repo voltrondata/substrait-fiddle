@@ -119,3 +119,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# substrait-js
+substrait-js
