@@ -4,6 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "vite",
+    "preinstall": "npm run download-substraitJS && npm run pack-substraitJS",
+    "download-substraitJS": "test -d substrait-js || git clone https://github.com/westonpace/substrait-js.git",
+    "pack-substraitJS": "cd substrait-js && npm install && npm pack",
     "build": "vite build",
     "preview": "vite preview",
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs --fix --ignore-path .gitignore",
@@ -23,7 +26,7 @@
     "monaco-editor-webpack-plugin": "^7.0.1",
     "monaco-languageclient": "^4.0.3",
     "protobufjs": "^7.2.0",
-    "substrait": "file:../substrait-js/substrait-0.20.0.tgz",
+    "substrait": "file:./substrait-js/substrait-0.20.0.tgz",
     "vue": "^3.2.45",
     "vue-router": "^4.1.6"
   },
