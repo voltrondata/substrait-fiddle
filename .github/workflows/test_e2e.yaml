@@ -12,6 +12,7 @@ jobs:
       with:
         repository: sanjibansg/substrait-fiddle-backend
         ref: dev
+        token: ${{ secrets.SUBSTRAIT_FIDDLE_BACKEND }}
 
     - name: Build and deploy backend
       run: |
