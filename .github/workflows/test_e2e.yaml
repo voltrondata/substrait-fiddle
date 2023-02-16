@@ -5,13 +5,29 @@ on: [push]
 jobs:
   cypress-run:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-      - name: Cypress run
-        uses: cypress-io/github-action@v5
-        with:
-          preinstall: npm run preinstall
-          install: npm install
-          build: npm run build
-          start: npm run preview
+    - name: Checkout
+      uses: actions/checkout@v3
+      with:
+        repository: sanjibansg/substrait-fiddle-backend
+        ref: dev
+
+    - name: Build and deploy backend
+      run: |
+        cd substrait-fiddle-backend
+        docker build -t substrait-fiddle-backend .
+        docker run -d -p 9090:9090 substrait-fiddle-backend
+
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout client code
+      uses: actions/checkout@v2
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: Run tests
+      run: npx cypress run
