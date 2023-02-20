@@ -1,13 +1,15 @@
-import os.path
-from urllib import request
-
 from fastapi import FastAPI, HTTPException, status, File, UploadFile, Form
 from fastapi.openapi.utils import get_openapi
 from fastapi_health import health
-from pydantic import BaseModel
 
 import substrait_validator as sv
-import duckdb
+
+from backend.duckdb import (
+    InitializeDB,
+    CheckDuckDBConnection,
+    ExecuteDuckDb,
+    ParseFromDuckDB,
+)
 
 from loguru import logger
 
@@ -15,73 +17,34 @@ app = FastAPI()
 con = None
 
 
-class ValidatePlanModel(BaseModel):
-    plan: dict
-    override_levels: list[int]
-
-
 @app.get("/")
 def ping():
     return {"api_service": "up and running"}
 
 
-def FetchTpchData():
-    if not os.path.isfile("lineitemsf1.snappy.parquet"):
-        logger.info("File not found, downloading!")
-        url = (
-            "https://github.com/duckdb/duckdb-data/releases/download"
-            "/v1.0/lineitemsf1.snappy.parquet"
-        )
-        request.urlretrieve(url, "lineitemsf1.snappy.parquet")
-        logger.success("File downloaded successfully!")
-
-
-def ConnectDB():
-    global con
-    con = duckdb.connect()
-    con.install_extension("substrait")
-    con.load_extension("substrait")
-    con.install_extension("tpch")
-    con.load_extension("tpch")
-    con.execute(
-        query="CREATE TABLE IF NOT EXISTS lineitem"
-        " AS SELECT * FROM 'lineitemsf1.snappy.parquet';"
-    )
-    logger.success("DuckDb initialized successfully")
-
-
 @app.on_event("startup")
 def Initialize():
-    FetchTpchData()
-    ConnectDB()
+    global con
+    con = InitializeDB()
 
 
 @app.get("/health/duckcb/")
-def CheckDuckDBConnection(conn):
-    status = {"db_health": "unavailable"}
-    try:
-        conn.execute(query="SHOW TABLES;").fetchall()
-        status["db_health"] = "up and running"
-    except Exception as e:
-        logger.info(
-            "Healthcheck failed for DuckDB"
-            "Initializing new connection object. Details: ",
-            str(e),
-        )
-    finally:
-        return status
+def CheckBackendConn(conn):
+    CheckDuckDBConnection(conn)
 
 
-app.add_api_route("/health", health([CheckDuckDBConnection]))
+app.add_api_route("/health", health([CheckBackendConn]))
 
 
 @app.post("/validate/", status_code=status.HTTP_200_OK)
-async def Validate(data: ValidatePlanModel):
+async def Validate(plan: dict, override_levels: list[int]):
     try:
+        logger.info("Validating plan using substrait-validator!")
         config = sv.Config()
-        for level in data.override_levels:
+        for level in override_levels:
             config.override_diagnostic_level(level, "warning", "info")
-        sv.check_plan_valid(data.plan, config)
+        sv.check_plan_valid(plan, config)
+        logger.info("Plan validated successfully!")
     except Exception as e:
         raise HTTPException(
             status_code=500, detail="Substrait Validator Internal Error: " + str(e)
@@ -93,48 +56,29 @@ async def ValidateFile(
     file: UploadFile = File(...), override_levels: list[int] = Form(...)
 ):
     try:
+        logger.info("Validating file using substrait-validator!")
         config = sv.Config()
         for level in override_levels:
             config.override_diagnostic_level(level, "warning", "info")
         data = await file.read()
         sv.check_plan_valid(data, config)
+        logger.info("File validated successfully!")
     except Exception as e:
         raise HTTPException(
             status_code=500, detail="Substrait Validator Internal Error: " + str(e)
         )
 
 
-@app.post("/init/duckdb/", status_code=status.HTTP_200_OK)
-async def ExecuteDuckDb(data: list[str]):
-    try:
-        global con
-        if CheckDuckDBConnection(con)["db_health"] != "up and running":
-            FetchTpchData()
-            ConnectDB()
-        for i in data:
-            con.execute(query=i)
-        return {"message": "DuckDB Operation successful"}
-    except Exception as e:
-        raise HTTPException(
-            status_code=500,
-            detail="Substrait DuckDB Internal Error while parsing SQL Query: " + str(e),
-        )
+@app.post("/execute/duckdb/", status_code=status.HTTP_200_OK)
+async def ExecuteBackend(data: list[str]):
+    global con
+    return ExecuteDuckDb(data, con)
 
 
 @app.post("/parse/", status_code=status.HTTP_200_OK)
 async def ParseToSubstrait(data: dict):
-    try:
-        global con
-        if CheckDuckDBConnection(con)["db_health"] != "up and running":
-            FetchTpchData()
-            ConnectDB()
-        result = con.get_substrait_json(data["query"]).fetchone()[0]
-        return result
-    except Exception as e:
-        raise HTTPException(
-            status_code=500,
-            detail="Substrait DuckDB Internal Error while parsing SQL Query: " + str(e),
-        )
+    global con 
+    return ParseFromDuckDB(data, con)
 
 
 # For defining custom documentation for the server

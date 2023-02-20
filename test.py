@@ -45,7 +45,8 @@ def test_validate_binary():
 
 def test_duckdb_execute():
     res = client.post(
-        "/init/duckdb/", json=["CREATE TABLE weather (city VARCHAR, temp_lo INTEGER);"]
+        "/execute/duckdb/",
+        json=["CREATE TABLE weather (city VARCHAR, temp_lo INTEGER);"],
     )
     assert res.status_code == 200
     assert res.json() == {"message": "DuckDB Operation successful"}
