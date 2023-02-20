@@ -1,17 +1,24 @@
 import os.path
 from urllib import request
 
-from fastapi import FastAPI, HTTPException, status, File
+from fastapi import FastAPI, HTTPException, status, File, UploadFile, Form
 from fastapi.openapi.utils import get_openapi
 from fastapi_health import health
+from pydantic import BaseModel
 
-from substrait_validator import check_plan_valid
+import substrait_validator as sv
 import duckdb
 
 from loguru import logger
 
 app = FastAPI()
 con = None
+
+
+class ValidatePlanModel(BaseModel):
+    plan: dict
+    override_levels: list[int]
+
 
 @app.get("/")
 def ping():
@@ -21,8 +28,10 @@ def ping():
 def FetchTpchData():
     if not os.path.isfile("lineitemsf1.snappy.parquet"):
         logger.info("File not found, downloading!")
-        url = "https://github.com/duckdb/duckdb-data/releases/download"\
-              "/v1.0/lineitemsf1.snappy.parquet"
+        url = (
+            "https://github.com/duckdb/duckdb-data/releases/download"
+            "/v1.0/lineitemsf1.snappy.parquet"
+        )
         request.urlretrieve(url, "lineitemsf1.snappy.parquet")
         logger.success("File downloaded successfully!")
 
@@ -35,8 +44,8 @@ def ConnectDB():
     con.install_extension("tpch")
     con.load_extension("tpch")
     con.execute(
-        query="CREATE TABLE IF NOT EXISTS lineitem"\
-              " AS SELECT * FROM 'lineitemsf1.snappy.parquet';"
+        query="CREATE TABLE IF NOT EXISTS lineitem"
+        " AS SELECT * FROM 'lineitemsf1.snappy.parquet';"
     )
     logger.success("DuckDb initialized successfully")
 
@@ -66,21 +75,29 @@ def CheckDuckDBConnection(conn):
 app.add_api_route("/health", health([CheckDuckDBConnection]))
 
 
-@app.post("/validate/")
-async def Validate(data: dict):
+@app.post("/validate/", status_code=status.HTTP_200_OK)
+async def Validate(data: ValidatePlanModel):
     try:
-        result = await check_plan_valid(data)
-        return result
+        config = sv.Config()
+        for level in data.override_levels:
+            config.override_diagnostic_level(level, "warning", "info")
+        sv.check_plan_valid(data.plan, config)
     except Exception as e:
         raise HTTPException(
             status_code=500, detail="Substrait Validator Internal Error: " + str(e)
         )
 
-@app.post("/validate/file/")
-async def ValidateFile(data: bytes = File()):
+
+@app.post("/validate/file/", status_code=status.HTTP_200_OK)
+async def ValidateFile(
+    file: UploadFile = File(...), override_levels: list[int] = Form(...)
+):
     try:
-        result = await check_plan_valid(data)
-        return result
+        config = sv.Config()
+        for level in override_levels:
+            config.override_diagnostic_level(level, "warning", "info")
+        data = await file.read()
+        sv.check_plan_valid(data, config)
     except Exception as e:
         raise HTTPException(
             status_code=500, detail="Substrait Validator Internal Error: " + str(e)
@@ -88,9 +105,12 @@ async def ValidateFile(data: bytes = File()):
 
 
 @app.post("/init/duckdb/", status_code=status.HTTP_200_OK)
-async def InjectDuckDb(data: list[str]):
+async def ExecuteDuckDb(data: list[str]):
     try:
         global con
+        if CheckDuckDBConnection(con)["db_health"] != "up and running":
+            FetchTpchData()
+            ConnectDB()
         for i in data:
             con.execute(query=i)
         return {"message": "DuckDB Operation successful"}
@@ -101,14 +121,14 @@ async def InjectDuckDb(data: list[str]):
         )
 
 
-@app.post("/parse/")
+@app.post("/parse/", status_code=status.HTTP_200_OK)
 async def ParseToSubstrait(data: dict):
     try:
         global con
         if CheckDuckDBConnection(con)["db_health"] != "up and running":
             FetchTpchData()
             ConnectDB()
-        result = con.get_substrait_json(data['query']).fetchone()[0]
+        result = con.get_substrait_json(data["query"]).fetchone()[0]
         return result
     except Exception as e:
         raise HTTPException(
