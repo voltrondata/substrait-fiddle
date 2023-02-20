@@ -1,11 +1,11 @@
-name: Test
+name: Lint
 
 on: [push]
 
 jobs:
-  Pytest:
+  Ruff:
     runs-on: ubuntu-latest
-
+    
     steps:
     - uses: actions/checkout@v3
 
@@ -19,5 +19,6 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
 
-    - name: Run tests
-      run: pytest test.py
+    - name: Run Ruff
+      run: ruff .
+
