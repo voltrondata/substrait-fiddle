@@ -53,7 +53,7 @@ async def Validate(plan: dict, override_levels: list[int]):
 
 @app.post("/validate/file/", status_code=status.HTTP_200_OK)
 async def ValidateFile(
-    file: UploadFile = File(...), override_levels: list[int] = Form(...)
+    file: UploadFile = File(), override_levels: list[int] = Form()
 ):
     try:
         logger.info("Validating file using substrait-validator!")

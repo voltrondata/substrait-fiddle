@@ -31,7 +31,7 @@ def ConnectDB():
     return con
 
 
-def InitializeDB(con):
+def InitializeDB():
     FetchTpchData()
     return ConnectDB()
 
