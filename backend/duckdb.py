@@ -62,7 +62,8 @@ def ExecuteDuckDb(data, con):
     except Exception as e:
         raise HTTPException(
             status_code=500,
-            detail="Substrait DuckDB Internal Error while parsing SQL Query: " + str(e),
+            detail="Substrait DuckDB Internal Error while executing"
+            "SQL Query: " + str(e),
         )
 
 
