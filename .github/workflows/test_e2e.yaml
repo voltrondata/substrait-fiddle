@@ -22,7 +22,10 @@ jobs:
     - name: Checkout client code
       uses: actions/checkout@v3
 
+    - name: Install Dependencies
+      run: npm install
+
     - name: Cypress run
-      uses: cypress-io/github-action@v5.x.x
+      uses: cypress-io/github-action@v5
       with:
           start: npm run preview
