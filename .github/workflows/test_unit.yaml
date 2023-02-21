@@ -31,38 +31,68 @@
 #     - run: npm run build --if-present
 #     - run: npm run test
 
-name: VueJS Vitest CI
+# name: VueJS Vitest CI
+
+# on: [push]
+
+# jobs:
+#   build-and-test:
+#     runs-on: ubuntu-latest
+
+#     services:
+#       backend:
+#         image: tiangolo/fastapi:latest
+#         env:
+#           MODULE_NAME: substrait-fiddle-backend/app.app
+#           VARIABLE_NAME: app
+#         ports:
+#           - 9090:9090
+
+#     steps:
+#     - name: Checkout
+#       uses: actions/checkout@v2
+
+#     - name: Setup Node.js
+#       uses: actions/setup-node@v2
+#       with:
+#         node-version: '14.x'
+
+#     - name: Install Dependencies
+#       run: npm install
+
+#     - name: Test
+#       run: npm run test
+
+#     env:
+#       BACKEND_URL: http://localhost:9090
+
+name: VueJS Vitest
 
 on: [push]
 
 jobs:
-  build-and-test:
+  cypress-run:
     runs-on: ubuntu-latest
 
-    services:
-      backend:
-        image: tiangolo/fastapi:latest
-        env:
-          MODULE_NAME: substrait-fiddle-backend/app.app
-          VARIABLE_NAME: app
-        ports:
-          - 9090:9090
-
     steps:
-    - name: Checkout
-      uses: actions/checkout@v2
-
-    - name: Setup Node.js
-      uses: actions/setup-node@v2
+    - name: Checkout backend
+      uses: actions/checkout@v3
       with:
-        node-version: '14.x'
+        repository: sanjibansg/substrait-fiddle-backend
+        ref: dev
+        token: ${{ secrets.SUBSTRAIT_FIDDLE_BACKEND }}
+
+    - name: Build and deploy backend
+      run: |
+        docker build -t substrait-fiddle-backend .
+        docker run -d -p 9090:9090 substrait-fiddle-backend
+
+    - name: Checkout frontend
+      uses: actions/checkout@v3
 
     - name: Install Dependencies
       run: npm install
 
-    - name: Test
+    - name: Vitest run
       run: npm run test
-
-    env:
-      BACKEND_URL: http://localhost:9090
 

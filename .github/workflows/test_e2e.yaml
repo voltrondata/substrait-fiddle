@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout
+    - name: Checkout backend
       uses: actions/checkout@v3
       with:
         repository: sanjibansg/substrait-fiddle-backend
@@ -19,7 +19,7 @@ jobs:
         docker build -t substrait-fiddle-backend .
         docker run -d -p 9090:9090 substrait-fiddle-backend
 
-    - name: Checkout client code
+    - name: Checkout frontend
       uses: actions/checkout@v3
 
     - name: Install Dependencies
