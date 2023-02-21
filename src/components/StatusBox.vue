@@ -18,27 +18,27 @@
 
 <script>
 export default {
-  name: "Status",
-  data: function(){
+  name: "StatusBox",
+  data: function () {
     return {
       message: "// Status\n",
       counter: 0,
     };
   },
-  
-  mounted: function(){
-      this.message = "// Status\n";
-      this.counter =  0
+
+  mounted: function () {
+    this.message = "// Status\n";
+    this.counter = 0;
   },
 
-  methods:{
-    resetStatus(){
+  methods: {
+    resetStatus() {
       this.message = "// Status\n";
       this.counter = 0;
     },
-    updateStatus(str){
-      this.message+="\n["+(++this.counter)+"] "+str;
-    }
-  }
+    updateStatus(str) {
+      this.message += "\n[" + ++this.counter + "] " + str;
+    },
+  },
 };
 </script>

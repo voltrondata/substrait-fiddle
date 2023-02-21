@@ -754,7 +754,9 @@ class SubstraitParser {
       if (relation.root) {
         nodes.push(this.rootRelToNode(relation.root));
       } else {
-        throw new Error(`Unrecognized plan relation ${JSON.stringify(rel)}`);
+        throw new Error(
+          `Unrecognized plan relation ${JSON.stringify(relation)}`
+        );
       }
     }
     const schema = this.makeSchemaField([]);
@@ -762,4 +764,4 @@ class SubstraitParser {
   }
 }
 
-export {SubstraitParser};
+export { SubstraitParser };

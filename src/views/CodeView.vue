@@ -1,41 +1,48 @@
 <template>
-  <div class="col-12" style="margin-left: 3vh">
-    <div class="container">
-      <div class="row" style="margin-top: 30px">
-        <div class="col-5" style="padding: 0px">
-          <button
-            type="button"
-            class="btn btn-primary btn-sm"
-            @click="generate"
+  <div>
+    <div class="col-12" style="margin-left: 3vh">
+      <div class="container">
+        <div class="row" style="margin-top: 30px">
+          <div class="col-5" style="padding: 0px; display: flex;">
+            <button
+              type="button"
+              class="btn btn-primary btn-sm"
+              @click="generate"
+            >
+              Generate
+            </button>
+            <SqlSchema :showSchemaOption="language == 'sql'" ref="schema" style="margin-left: 1.5vh;"/>
+          </div>
+          <div class="col-5" align="right" style="padding: 0px">
+            <ValidationLevel ref="override_level" />
+          </div>
+          <div
+            class="col-2"
+            id="select-lang"
+            align="right"
+            style="padding: 0px"
           >
-            Generate
-          </button>
-          <Schema :showSchemaOption="language == 'sql'" ref="schema"/>
-        </div>
-        <div class="col-5" align="right" style="padding: 0px">
-          <ValidationLevel ref="override_level" />
-        </div>
-        <div class="col-2" id="select-lang" align="right" style="padding: 0px">
-          <select
-            class="form-select form-select-sm w-auto"
-            id="language"
-            v-model="language"
-            @change="changeLanguage"
-          >
-            <option value="json">JSON</option>
-            <option value="sql">SQL</option>
-          </select>
+            <select
+              class="form-select form-select-sm w-auto"
+              id="language"
+              v-model="language"
+              @change="changeLanguage"
+            >
+              <option value="json">JSON</option>
+              <option value="sql">SQL</option>
+            </select>
+          </div>
         </div>
       </div>
+      <div
+        id="editor"
+        style="margin-top: 10px; height: 500px"
+        class="border"
+      ></div>
     </div>
-    <div
-      id="editor"
-      style="margin-top: 10px; height: 500px"
-      class="border"
-    ></div>
+    <br />
+    <StatusBox ref="status" />
   </div>
-  <br />
-  <Status ref="status"/>
 </template>
 
 <style></style>
@@ -43,15 +50,14 @@
 import * as monaco from "monaco-editor";
 import jsonWorker from "monaco-editor/esm/vs/language/json/json.worker?worker";
 
-import Status from "@/components/Status.vue";
-import ValidationLevel from "@/components/ValidationLevel.vue"
-import Schema from "@/components/Schema.vue"
+import StatusBox from "@/components/StatusBox.vue";
+import ValidationLevel from "@/components/ValidationLevel.vue";
+import SqlSchema from "@/components/SqlSchema.vue";
 
 import axios from "axios";
 
 import * as substrait from "substrait";
-import {validate, plot} from "../assets/js/shared";
-
+import { validate, plot } from "../assets/js/shared";
 
 self.MonacoEnvironment = {
   getWorker(_, label) {
@@ -72,14 +78,13 @@ export default {
       language: "json",
       editor: null,
       schema: "",
-      showModal: false,
     };
   },
   methods: {
-    updateStatus(str){
+    updateStatus(str) {
       this.$refs.status.updateStatus(str);
     },
-    getValidationOverrideLevel(){
+    getValidationOverrideLevel() {
       return this.$refs.override_level.getValidationOverrideLevel();
     },
     changeLanguage() {
@@ -88,24 +93,33 @@ export default {
       models[0].setValue(this.default_code[this.language]);
       this.status = "// Status";
     },
-    async generateFromJson(){
+    async generateFromJson() {
       this.updateStatus("Validating JSON plan with Substrait Validator...");
-      validate(JSON.parse(this.code), this.getValidationOverrideLevel(), this.updateStatus);
+      validate(
+        JSON.parse(this.code),
+        this.getValidationOverrideLevel(),
+        this.updateStatus
+      );
       this.updateStatus("Generating plot for substrait JSON plan...");
       const plan = substrait.substrait.Plan.fromObject(this.content);
       plot(plan, this.updateStatus);
     },
-    async generateFromSql(){
+    async generateFromSql() {
       this.updateStatus("Converting SQL query to Substrait Plan...");
-      const duckDbRsp = await axios
-        .post("/api/parse/", {
-          query: this.code,
-          });
+      const duckDbRsp = await axios.post("/api/parse/", {
+        query: this.code,
+      });
       this.updateStatus("SQL query converted to Substrait Plan successfully!");
       this.updateStatus("Validating converted Substrait plan...");
-      validate(JSON.parse(duckDbRsp.data), this.getValidationOverrideLevel(), this.updateStatus);
+      validate(
+        JSON.parse(duckDbRsp.data),
+        this.getValidationOverrideLevel(),
+        this.updateStatus
+      );
       this.updateStatus("Generating plot for converted substrait plan...");
-      const plan = substrait.substrait.Plan.fromObject(JSON.parse(duckDbRsp.data));
+      const plan = substrait.substrait.Plan.fromObject(
+        JSON.parse(duckDbRsp.data)
+      );
       plot(plan, this.updateStatus);
     },
     async generate() {
@@ -113,17 +127,13 @@ export default {
       this.code = monaco.editor.getModels()[0].getValue();
       try {
         if (this.language == "json") {
-        this.generateFromJson();
-        } else {  
-        this.generateFromSql();
+          this.generateFromJson();
+        } else {
+          this.generateFromSql();
         }
-      } catch(error){
-          this.updateStatus("Error parsing substrait plan: ", error)
+      } catch (error) {
+        this.updateStatus("Error parsing substrait plan: ", error);
       }
-    },
-    confirmModal() {
-      console.log('Modal confirmed')
-      this.showModal = false
     },
   },
   mounted: function () {
@@ -140,7 +150,9 @@ export default {
   },
 
   components: {
-    Status, ValidationLevel, Schema,
+    StatusBox,
+    ValidationLevel,
+    SqlSchema,
   },
 };
 </script>

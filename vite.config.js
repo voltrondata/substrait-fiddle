@@ -5,7 +5,6 @@ import vue from "@vitejs/plugin-vue";
 import inject from "@rollup/plugin-inject";
 
 const path = require("path");
-const prefix = `monaco-editor/esm/vs`;
 
 export default defineConfig({
   plugins: [
@@ -20,7 +19,10 @@ export default defineConfig({
       "@": fileURLToPath(new URL("./src", import.meta.url)),
       "~bootstrap": path.resolve(__dirname, "node_modules/bootstrap"),
       "~monaco": path.resolve(__dirname, "node_modules/monaco-editor"),
-      "~vue-multiselect": path.resolve(__dirname, "node_modules/vue-multiselect"),
+      "~vue-multiselect": path.resolve(
+        __dirname,
+        "node_modules/vue-multiselect"
+      ),
     },
   },
   server: {
@@ -33,7 +35,7 @@ export default defineConfig({
       },
     },
   },
-  test:{
+  test: {
     globals: true,
   },
 });

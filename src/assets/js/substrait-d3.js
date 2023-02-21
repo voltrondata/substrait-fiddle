@@ -100,7 +100,7 @@ function drawGraph(pre_nodes, pre_links, use_drag = true) {
     .force("link", d3.forceLink().links(links))
     .force(
       "collide",
-      d3.forceCollide((d) => 55)
+      d3.forceCollide(() => 55)
     );
 
   var svg = d3
@@ -155,9 +155,10 @@ function drawGraph(pre_nodes, pre_links, use_drag = true) {
     .attr("y", -15)
     .style("color", "white")
     .html(function (d) {
-    let str = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">'+
-              nodeIcon(d.type) +
-              '</svg>';
+      let str =
+        '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">' +
+        nodeIcon(d.type) +
+        "</svg>";
       return str;
     });
 
@@ -326,16 +327,18 @@ function drawGraph(pre_nodes, pre_links, use_drag = true) {
     .attr("y", -4)
     .style("color", "black")
     .html(function (d) {
-      let str = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">'+
-      nodeIcon(d) +
-      '</svg> ' + d;
+      let str =
+        '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">' +
+        nodeIcon(d) +
+        "</svg> " +
+        d;
       return str;
     });
 }
 
-function clearGraph(){
+function clearGraph() {
   var svg = d3.select("svg");
   svg.html("");
 }
 
-export {buildGraph, clearGraph, drawGraph};
+export { buildGraph, clearGraph, drawGraph };
