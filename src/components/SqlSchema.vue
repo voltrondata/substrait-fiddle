@@ -117,8 +117,20 @@ export default {
     },
     async saveSchema() {
       if (this.tempSchema != this.schema) {
-        this.schema = this.tempSchema;
-        await axios.post("/api/execute/duckdb/", [this.schema]);
+        try {
+          this.schema = this.tempSchema;
+          await axios.post("/api/execute/duckdb/", [this.schema]);
+          this.$emit(
+            "updateSchemaStatus",
+            "Modified schema executed successfully!"
+          );
+        } catch (error) {
+          console.log(error);
+          this.$emit(
+            "updateSchemaStatus",
+            "Error while executing schema: " + error.response.data["detail"]
+          );
+        }
       }
     },
   },

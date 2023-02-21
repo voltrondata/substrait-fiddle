@@ -15,6 +15,7 @@
               :showSchemaOption="language == 'sql'"
               ref="schema"
               style="margin-left: 1.5vh"
+              @updateSchemaStatus="updateStatus"
             />
           </div>
           <div class="col-5" align="right" style="padding: 0px">
