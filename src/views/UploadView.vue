@@ -1,14 +1,23 @@
 <template>
-  <div class="col-12" style="margin-left: 3vh; margin-top: 30px">
-    <label class="form-label" for="file">Upload your substrait plan</label>
-    <input type="file" class="form-control" id="file-upload" style="width: 40%" accept=".json,.sql,.bin" ref="fileInput" @change="generate"/>
+  <div class="container" style="margin-left: 2vh; margin-top: 30px; display: flex;">
+    <div class="col-8">
+      <label class="form-label" for="file">Upload your substrait plan</label>
+    </div>
+    <div class="col-4" style="margin-left: 1vh;">
+      <ValidationLevel ref="override_level" />
+    </div>
+  </div>
+  <div class="col-12" style="margin-left: 3vh; margin-top: 0%">
+    <input type="file" class="form-control" id="file-upload" style="width: 40%" accept=".json,.sql,.bin" ref="fileInput" @change="generate" @click="$event.target.value=''"/>
     <span style="color:gray; font-size:small;">*only .json, .sql and .bin are accepted</span>
   </div>
+
   <Status ref="status" style="margin-top: 435px"/>
 </template>
 
 <script scoped>
 import Status from "@/components/Status.vue";
+import ValidationLevel from "@/components/ValidationLevel.vue";
 import axios from "axios";
 import {readFile, readText, validate, plot} from "../assets/js/shared";
 
@@ -26,13 +35,16 @@ export default {
     updateStatus(str){
       this.$refs.status.updateStatus(str);
     },
+    getValidationOverrideLevel(){
+      return this.$refs.override_level.getValidationOverrideLevel();
+    },
     async generateFromJson(){
       this.updateStatus("JSON file detected, parsing...");
       const jsonFileRes = await readText(this.file);
       this.content = JSON.parse(jsonFileRes);
       this.updateStatus("JSON Parsing successful!");
       this.updateStatus("Validating JSON plan with Substrait Validator...");
-      validate(this.content, this.updateStatus);
+      validate(this.content, this.getValidationOverrideLevel(), this.updateStatus);
       this.updateStatus("Generating plot for substrait JSON plan...");
       const plan = substrait.substrait.Plan.fromObject(this.content);
       plot(plan, this.updateStatus);
@@ -49,7 +61,7 @@ export default {
         });
       this.updateStatus("SQL query converted to Substrait Plan successfully!");
       this.updateStatus("Validating converted Substrait plan...");
-      validate(JSON.parse(duckDbRsp.data), this.updateStatus);
+      validate(JSON.parse(duckDbRsp.data), this.getValidationOverrideLevel(), this.updateStatus);
       this.updateStatus("Generating plot for converted substrait plan...");
       const plan = substrait.substrait.Plan.fromObject(JSON.parse(duckDbRsp.data));
       plot(plan, this.updateStatus);
@@ -60,7 +72,8 @@ export default {
       this.updateStatus("Validating plan with Substrait Validator...");
       try {
         var formData = new FormData();
-        formData.append("data", this.file);
+        formData.append("file", this.file);
+        formData.append("override_levels", this.getValidationOverrideLevel())
         const fileValidRsp = await axios
           .post("/api/validate/file/", formData, {
             headers: {
@@ -70,6 +83,7 @@ export default {
         );
         this.updateStatus("Plan validation successful!");
       } catch (error){
+        console.log(error)
         this.updateStatus(error.response.data["detail"]);
       }
         this.updateStatus("Generating plot for Substrait plan...");
@@ -97,7 +111,7 @@ export default {
     this.$refs.status.resetStatus();
   },
   components: {
-    Status,
+    Status, ValidationLevel,
   },
 };
 </script>

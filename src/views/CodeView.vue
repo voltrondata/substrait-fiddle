@@ -2,7 +2,7 @@
   <div class="col-12" style="margin-left: 3vh">
     <div class="container">
       <div class="row" style="margin-top: 30px">
-        <div class="col-6" style="padding: 0px">
+        <div class="col-5" style="padding: 0px">
           <button
             type="button"
             class="btn btn-primary btn-sm"
@@ -10,8 +10,12 @@
           >
             Generate
           </button>
+          <Schema :showSchemaOption="language == 'sql'" ref="schema"/>
         </div>
-        <div class="col-6" id="select-lang" align="right" style="padding: 0px">
+        <div class="col-5" align="right" style="padding: 0px">
+          <ValidationLevel ref="override_level" />
+        </div>
+        <div class="col-2" id="select-lang" align="right" style="padding: 0px">
           <select
             class="form-select form-select-sm w-auto"
             id="language"
@@ -35,16 +39,19 @@
 </template>
 
 <style></style>
-
 <script>
 import * as monaco from "monaco-editor";
 import jsonWorker from "monaco-editor/esm/vs/language/json/json.worker?worker";
 
 import Status from "@/components/Status.vue";
+import ValidationLevel from "@/components/ValidationLevel.vue"
+import Schema from "@/components/Schema.vue"
+
 import axios from "axios";
 
 import * as substrait from "substrait";
 import {validate, plot} from "../assets/js/shared";
+
 
 self.MonacoEnvironment = {
   getWorker(_, label) {
@@ -64,11 +71,16 @@ export default {
       code: "",
       language: "json",
       editor: null,
+      schema: "",
+      showModal: false,
     };
   },
   methods: {
     updateStatus(str){
       this.$refs.status.updateStatus(str);
+    },
+    getValidationOverrideLevel(){
+      return this.$refs.override_level.getValidationOverrideLevel();
     },
     changeLanguage() {
       const models = monaco.editor.getModels();
@@ -78,7 +90,7 @@ export default {
     },
     async generateFromJson(){
       this.updateStatus("Validating JSON plan with Substrait Validator...");
-      validate(JSON.parse(this.code), this.updateStatus);
+      validate(JSON.parse(this.code), this.getValidationOverrideLevel(), this.updateStatus);
       this.updateStatus("Generating plot for substrait JSON plan...");
       const plan = substrait.substrait.Plan.fromObject(this.content);
       plot(plan, this.updateStatus);
@@ -91,7 +103,7 @@ export default {
           });
       this.updateStatus("SQL query converted to Substrait Plan successfully!");
       this.updateStatus("Validating converted Substrait plan...");
-      validate(JSON.parse(duckDbRsp.data), this.updateStatus);
+      validate(JSON.parse(duckDbRsp.data), this.getValidationOverrideLevel(), this.updateStatus);
       this.updateStatus("Generating plot for converted substrait plan...");
       const plan = substrait.substrait.Plan.fromObject(JSON.parse(duckDbRsp.data));
       plot(plan, this.updateStatus);
@@ -109,6 +121,10 @@ export default {
           this.updateStatus("Error parsing substrait plan: ", error)
       }
     },
+    confirmModal() {
+      console.log('Modal confirmed')
+      this.showModal = false
+    },
   },
   mounted: function () {
     monaco.editor.create(document.getElementById("editor"), {
@@ -124,7 +140,7 @@ export default {
   },
 
   components: {
-    Status,
+    Status, ValidationLevel, Schema,
   },
 };
 </script>

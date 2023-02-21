@@ -20,7 +20,7 @@ export default defineConfig({
       "@": fileURLToPath(new URL("./src", import.meta.url)),
       "~bootstrap": path.resolve(__dirname, "node_modules/bootstrap"),
       "~monaco": path.resolve(__dirname, "node_modules/monaco-editor"),
-      "~bootstrap-icons": path.resolve(__dirname, "node_modules/bootstrap-icons"),
+      "~vue-multiselect": path.resolve(__dirname, "node_modules/vue-multiselect"),
     },
   },
   server: {

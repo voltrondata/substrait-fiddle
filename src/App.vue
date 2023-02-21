@@ -23,7 +23,7 @@ import Graph from "@/components/Graph.vue";
       >
     </nav>
   </header>
-  <div class="col-5 tabs" style="margin-left: 3vh">
+  <div class="col-5 tabs" style="margin-left: 3vh;">
     <ul class="nav nav-tabs">
       <li class="nav-item">
           <button

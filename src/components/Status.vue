@@ -1,5 +1,5 @@
 <template>
-  <div class="col-12" id="status">
+  <div class="col-12" id="status" style="margin-left: 3vh">
     {{ message }}
   </div>
 </template>

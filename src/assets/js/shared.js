@@ -24,11 +24,15 @@ function readFile(file) {
   })
 }
 
-async function validate(plan, status_func) {
+async function validate(plan, override_levels, status_func) {
   try { 
-    validateRsp = await axios.post("/api/validate/", plan);
+    const validateRsp = await axios.post("/api/validate/", {
+      "plan": plan,
+      "override_levels": override_levels,
+    });
     status_func("Plan validation successful!");
   } catch (error){
+    console.log(error);
     status_func(error.response.data["detail"]);
   }
 }
