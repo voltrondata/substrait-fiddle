@@ -37,7 +37,7 @@
 }
 .multiselect__select {
   padding-top: 0%;
-  z-index: 9999;
+  z-index: 1;
 }
 </style>
 

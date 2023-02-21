@@ -6,6 +6,7 @@
       class="btn btn-outline-info btn-sm"
       data-bs-toggle="modal"
       data-bs-target="#schemaModal"
+      @click="updateSchema"
     >
       Show/Modify Schema
     </button>
@@ -31,7 +32,7 @@
           </div>
           <div class="modal-body">
             <textarea
-              v-model="schema"
+              v-model="tempSchema"
               class="form-control"
               id="schemaTextArea"
               rows="20"
@@ -44,6 +45,7 @@
               type="button"
               class="btn btn-secondary"
               data-bs-dismiss="modal"
+              :on-click="saveSchema"
             >
               Close
             </button>
@@ -51,6 +53,7 @@
               type="button"
               class="btn btn-primary"
               data-bs-dismiss="modal"
+              @click="saveSchema"
             >
               Save changes
             </button>
@@ -69,6 +72,7 @@
 </style>
 
 <script>
+import axios from "axios";
 import "bootstrap/dist/js/bootstrap.js";
 
 export default {
@@ -78,6 +82,7 @@ export default {
   },
   data: function () {
     return {
+      tempSchema: "",
       schema: "",
     };
   },
@@ -100,14 +105,21 @@ export default {
             l_shipinstruct VARCHAR NOT NULL, 
             l_shipmode VARCHAR NOT NULL, 
             l_comment VARCHAR NOT NULL);";`;
+    this.tempSchema = this.schema;
   },
 
   methods: {
     getSchema() {
       return this.schema;
     },
-    saveSchema(str) {
-      this.schema = str;
+    updateSchema() {
+      this.tempSchema = this.schema;
+    },
+    async saveSchema() {
+      if (this.tempSchema != this.schema) {
+        this.schema = this.tempSchema;
+        await axios.post("/api/execute/duckdb/", [this.schema]);
+      }
     },
   },
 };

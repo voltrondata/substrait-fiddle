@@ -3,7 +3,7 @@
     <div class="col-12" style="margin-left: 3vh">
       <div class="container">
         <div class="row" style="margin-top: 30px">
-          <div class="col-5" style="padding: 0px; display: flex;">
+          <div class="col-5" style="padding: 0px; display: flex">
             <button
               type="button"
               class="btn btn-primary btn-sm"
@@ -11,7 +11,11 @@
             >
               Generate
             </button>
-            <SqlSchema :showSchemaOption="language == 'sql'" ref="schema" style="margin-left: 1.5vh;"/>
+            <SqlSchema
+              :showSchemaOption="language == 'sql'"
+              ref="schema"
+              style="margin-left: 1.5vh"
+            />
           </div>
           <div class="col-5" align="right" style="padding: 0px">
             <ValidationLevel ref="override_level" />
