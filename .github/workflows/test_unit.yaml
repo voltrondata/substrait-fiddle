@@ -3,7 +3,7 @@ name: Vitest
 on: [push]
 
 jobs:
-  unit-test-run:
+  unit-test:
     runs-on: ubuntu-latest
 
     steps:
