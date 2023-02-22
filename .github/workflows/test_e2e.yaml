@@ -14,6 +14,11 @@ jobs:
         ref: dev
         token: ${{ secrets.SUBSTRAIT_FIDDLE_BACKEND }}
 
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.9
+        
     - name: Build and deploy backend
       run: |
         python -m ensurepip --default-pip
