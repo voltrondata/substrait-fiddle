@@ -45,7 +45,6 @@
               type="button"
               class="btn btn-secondary"
               data-bs-dismiss="modal"
-              :on-click="saveSchema"
             >
               Close
             </button>
@@ -54,6 +53,7 @@
               class="btn btn-primary"
               data-bs-dismiss="modal"
               @click="saveSchema"
+              disabled
             >
               Save changes
             </button>
