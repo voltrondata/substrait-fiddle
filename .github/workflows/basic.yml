@@ -1,0 +1,20 @@
+name: Deploy
+
+on: [push, pull_request]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v3
+      - run: rm -rf .git
+      - uses: easingthemes/ssh-deploy@main
+        env:
+          ARGS: -rlgoDzvc -i --delete
+          SSH_PRIVATE_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          REMOTE_HOST: ${{ secrets.DEPLOY_HOST_DNS }}
+          REMOTE_USER: ${{ secrets.DEPLOY_USERNAME }}
+          SCRIPT_BEFORE: sudo supervisorctl stop substrait-fiddle:*
+          SCRIPT_AFTER: sudo chown -R www-data:www-data ${{ secrets.DEPLOY_TARGET_DIR }} && sudo supervisorctl start substrait-fiddle:*
+          TARGET: ${{ secrets.DEPLOY_TARGET_DIR }}
