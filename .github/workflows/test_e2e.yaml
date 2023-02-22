@@ -18,7 +18,7 @@ jobs:
       uses: actions/setup-python@v2
       with:
         python-version: 3.9
-        
+
     - name: Build and deploy backend
       run: |
         python -m ensurepip --default-pip
@@ -31,4 +31,5 @@ jobs:
     - name: Cypress run
       uses: cypress-io/github-action@v5
       with:
+        build: npm run build
         start: npm run preview
