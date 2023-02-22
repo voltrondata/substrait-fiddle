@@ -66,12 +66,12 @@
 #     env:
 #       BACKEND_URL: http://localhost:9090
 
-name: VueJS Vitest
+name: Vitest
 
 on: [push]
 
 jobs:
-  cypress-run:
+  unit-test-run:
     runs-on: ubuntu-latest
 
     steps:
@@ -81,18 +81,25 @@ jobs:
         repository: sanjibansg/substrait-fiddle-backend
         ref: dev
         token: ${{ secrets.SUBSTRAIT_FIDDLE_BACKEND }}
+    
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.9
 
     - name: Build and deploy backend
       run: |
-        docker build -t substrait-fiddle-backend .
-        docker run -d -p 9090:9090 substrait-fiddle-backend
+        python -m ensurepip --default-pip
+        pip install -r requirements.txt
+        uvicorn app:app --port 9090 & bash -c 'while ! curl -s http://localhost:9090 > /dev/null; do sleep 1; done'
 
-    - name: Checkout frontend
-      uses: actions/checkout@v3
-
-    - name: Install Dependencies
-      run: npm install
-
-    - name: Vitest run
-      run: npm run test
+    - uses: actions/checkout@v3
+    - name: Use Node.js 16
+      uses: actions/setup-node@v3
+      with:
+        node-version: 16
+        cache: 'npm'
+    - run: |
+        npm install
+        npm run test
 

@@ -10,10 +10,15 @@ test("validate", async () => {
   const expectedErrorMessage = new Error(
     "configured recursion limit for URI resolution has been reached"
   );
-  return axios.post(BASE_URL + "/validate/", plan).catch((error) => {
-    expect(error.response.statusText).toContain(expectedErrorStatus.message);
-    expect(error.response.data["detail"]).toContain(
-      expectedErrorMessage.message
-    );
-  });
+  return axios
+    .post(BASE_URL + "/validate/", {
+      plan: plan,
+      override_levels: [2001, 1],
+    })
+    .catch((error) => {
+      expect(error.response.statusText).toContain(expectedErrorStatus.message);
+      expect(error.response.data["detail"]).toContain(
+        expectedErrorMessage.message
+      );
+    });
 });

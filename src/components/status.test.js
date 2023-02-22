@@ -1,5 +1,5 @@
 import { mount } from "@vue/test-utils";
-import Status from "src/components/Status.vue";
+import Status from "src/components/StatusBox.vue";
 
 test("updating and resetting status", async () => {
   expect(Status).toBeTruthy();
