@@ -7,7 +7,9 @@
     "build": "vite build",
     "preview": "vite preview",
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs --fix --ignore-path .gitignore",
-    "test": "vitest --dom"
+    "test": "vitest --dom",
+    "cypress:open": "npm run preview & npx cypress open",
+    "cypress:headless": "npm run preview & npx cypress run"
   },
   "dependencies": {
     "@bundled-es-modules/axios": "^0.27.2",

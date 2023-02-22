@@ -16,16 +16,14 @@ jobs:
 
     - name: Build and deploy backend
       run: |
-        docker build -t substrait-fiddle-backend .
-        docker run -d -p 9090:9090 substrait-fiddle-backend
+        python -m ensurepip --default-pip
+        pip install -r requirements.txt
+        uvicorn app:app --port 9090 & bash -c 'while ! curl -s http://localhost:9090 > /dev/null; do sleep 1; done'
 
     - name: Checkout frontend
       uses: actions/checkout@v3
 
-    - name: Install Dependencies
-      run: npm install
-
     - name: Cypress run
       uses: cypress-io/github-action@v5
       with:
-        browser: chrome
+        start: npm run preview
