@@ -5,7 +5,7 @@ from fastapi_health import health
 import substrait_validator as sv
 
 from backend.duckdb import (
-    InitializeDB,
+    ConnectDuckDB,
     CheckDuckDBConnection,
     ExecuteDuckDb,
     ParseFromDuckDB,
@@ -25,7 +25,7 @@ def ping():
 @app.on_event("startup")
 def Initialize():
     global con
-    con = InitializeDB()
+    con = ConnectDuckDB()
 
 
 @app.get("/health/duckcb/")

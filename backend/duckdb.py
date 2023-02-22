@@ -1,39 +1,36 @@
 import duckdb
 from fastapi import HTTPException
-import os
-from urllib import request
 
 from loguru import logger
 
+schema_lineitem = """CREATE TABLE IF NOT EXISTS lineitem(
+            l_orderkey INTEGER NOT NULL, 
+            l_partkey INTEGER NOT NULL, 
+            l_suppkey INTEGER NOT NULL, 
+            l_linenumber INTEGER NOT NULL, 
+            l_quantity INTEGER NOT NULL, 
+            l_extendedprice DECIMAL(15,2) NOT NULL, 
+            l_discount DECIMAL(15,2) NOT NULL, 
+            l_tax DECIMAL(15,2) NOT NULL, 
+            l_returnflag VARCHAR NOT NULL, 
+            l_linestatus VARCHAR NOT NULL, 
+            l_shipdate DATE NOT NULL, 
+            l_commitdate DATE NOT NULL, 
+            l_receiptdate DATE NOT NULL, 
+            l_shipinstruct VARCHAR NOT NULL, 
+            l_shipmode VARCHAR NOT NULL, 
+            l_comment VARCHAR NOT NULL);"""
 
-def FetchTpchData():
-    if not os.path.isfile("lineitemsf1.snappy.parquet"):
-        logger.info("File not found, downloading!")
-        url = (
-            "https://github.com/duckdb/duckdb-data/releases/download"
-            "/v1.0/lineitemsf1.snappy.parquet"
-        )
-        request.urlretrieve(url, "lineitemsf1.snappy.parquet")
-        logger.success("File downloaded successfully!")
 
-
-def ConnectDB():
+def ConnectDuckDB():
     con = duckdb.connect()
     con.install_extension("substrait")
     con.load_extension("substrait")
     con.install_extension("tpch")
     con.load_extension("tpch")
-    con.execute(
-        query="CREATE TABLE IF NOT EXISTS lineitem"
-        " AS SELECT * FROM 'lineitemsf1.snappy.parquet';"
-    )
+    con.execute(query=schema_lineitem)
     logger.success("DuckDb initialized successfully")
     return con
-
-
-def InitializeDB():
-    FetchTpchData()
-    return ConnectDB()
 
 
 def CheckDuckDBConnection(con):
@@ -54,8 +51,7 @@ def CheckDuckDBConnection(con):
 def ExecuteDuckDb(data, con):
     try:
         if CheckDuckDBConnection(con)["db_health"] != "up and running":
-            FetchTpchData()
-            con = ConnectDB()
+            con = ConnectDuckDB()
         for i in data:
             con.execute(query=i)
         return {"message": "DuckDB Operation successful"}
@@ -70,8 +66,7 @@ def ExecuteDuckDb(data, con):
 def ParseFromDuckDB(data, con):
     try:
         if CheckDuckDBConnection(con)["db_health"] != "up and running":
-            FetchTpchData()
-            con = ConnectDB()
+            con = ConnectDuckDB()
         result = con.get_substrait_json(data["query"]).fetchone()[0]
         return result
     except Exception as e:
