@@ -122,3 +122,4 @@ dist-ssr
 
 # substrait-js
 substrait-js
+*~

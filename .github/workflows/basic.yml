@@ -1,0 +1,36 @@
+name: Build and Deploy
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: "npm"
+      - run: npm ci
+      - run: npm run build
+      - uses: actions/upload-artifact@v3
+        with:
+          name: built-site
+          path: dist
+  deploy:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    needs: [build]
+    steps:
+      - uses: actions/download-artifact@v3
+        with:
+          name: built-site
+      - uses: easingthemes/ssh-deploy@main
+        env:
+          ARGS: -rlgoDzvc -i --delete
+          SSH_PRIVATE_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          REMOTE_HOST: ${{ secrets.DEPLOY_HOST_DNS }}
+          REMOTE_USER: ${{ secrets.DEPLOY_USERNAME }}
+          TARGET: ${{ secrets.DEPLOY_TARGET_DIR }}
