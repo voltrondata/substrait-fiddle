@@ -1,35 +1,50 @@
-# substrait-fiddle-frontend
 
-This template should help get you started developing with Vue 3 in Vite.
+# Substrait Fiddle
+Visualize a [Substrait](https://substrait.io/) plan
 
-## Recommended IDE Setup
+## Features
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin).
+- Code a substrait plan in `JSON`/`SQL` or upload a file.
+- [Validate](https://github.com/substrait-io/substrait-validator) a substrait plan on specified override levels.
+- Visualize the generated substrait plan and save it as SVG or PNG.
+- Explore the plan's relations and their constituent properties
 
-## Customize configuration
 
-See [Vite Configuration Reference](https://vitejs.dev/config/).
+## Installation
 
-## Project Setup
+Fiddle requires the [substrait-fiddle-backend](https://github.com/sanjibansg/substrait-fiddle-backend) for APIs. Prior installation and execution of the service is required.
 
-```sh
+Clone the github repository
+
+```
+git clone https://github.com/sanjibansg/substrait-fiddle.git
+cd substrait-fiddle/
+```
+
+Install the requirements
+
+```
 npm install
 ```
 
-### Compile and Hot-Reload for Development
+Compile and hot-reload for development
 
-```sh
+```
 npm run dev
 ```
 
-### Compile and Minify for Production
+Compile and minify for production
 
-```sh
+```
 npm run build
 ```
 
-### Lint with [ESLint](https://eslint.org/)
-
-```sh
-npm run lint
+Preview the production
 ```
+npm run preview
+```
+    
+## License
+
+[Apache-2.0 license](https://github.com/sanjibansg/substrait-fiddle-backend/blob/main/LICENSE)
+

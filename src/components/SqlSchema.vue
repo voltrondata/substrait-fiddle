@@ -104,7 +104,7 @@ export default {
             l_receiptdate DATE NOT NULL, 
             l_shipinstruct VARCHAR NOT NULL, 
             l_shipmode VARCHAR NOT NULL, 
-            l_comment VARCHAR NOT NULL);";`;
+            l_comment VARCHAR NOT NULL);`;
     this.tempSchema = this.schema;
   },
 
