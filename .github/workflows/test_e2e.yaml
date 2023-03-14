@@ -1,0 +1,99 @@
+name: Cypress Test
+
+on: [push]
+
+jobs:
+  electron-run:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout backend
+      uses: actions/checkout@v3
+      with:
+        repository: sanjibansg/substrait-fiddle-backend
+        ref: dev
+        token: ${{ secrets.SUBSTRAIT_FIDDLE_BACKEND }}
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.9
+
+    - name: Build and deploy backend
+      run: |
+        python -m ensurepip --default-pip
+        pip install -r requirements.txt
+        uvicorn app:app --port 9090 & bash -c 'while ! curl -s http://localhost:9090 > /dev/null; do sleep 1; done'
+
+    - name: Checkout frontend
+      uses: actions/checkout@v3
+
+    - name: Cypress run
+      uses: cypress-io/github-action@v5
+      with:
+        build: npm run build
+        start: npm run preview
+
+  chrome-run:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout backend
+      uses: actions/checkout@v3
+      with:
+        repository: sanjibansg/substrait-fiddle-backend
+        ref: dev
+        token: ${{ secrets.SUBSTRAIT_FIDDLE_BACKEND }}
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.9
+
+    - name: Build and deploy backend
+      run: |
+        python -m ensurepip --default-pip
+        pip install -r requirements.txt
+        uvicorn app:app --port 9090 & bash -c 'while ! curl -s http://localhost:9090 > /dev/null; do sleep 1; done'
+
+    - name: Checkout frontend
+      uses: actions/checkout@v3
+
+    - name: Cypress run
+      uses: cypress-io/github-action@v5
+      with:
+        build: npm run build
+        start: npm run preview
+        browser: chrome
+
+  edge-run:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout backend
+      uses: actions/checkout@v3
+      with:
+        repository: sanjibansg/substrait-fiddle-backend
+        ref: dev
+        token: ${{ secrets.SUBSTRAIT_FIDDLE_BACKEND }}
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.9
+
+    - name: Build and deploy backend
+      run: |
+        python -m ensurepip --default-pip
+        pip install -r requirements.txt
+        uvicorn app:app --port 9090 & bash -c 'while ! curl -s http://localhost:9090 > /dev/null; do sleep 1; done'
+
+    - name: Checkout frontend
+      uses: actions/checkout@v3
+
+    - name: Cypress run
+      uses: cypress-io/github-action@v5
+      with:
+        build: npm run build
+        start: npm run preview
+        browser: edge
