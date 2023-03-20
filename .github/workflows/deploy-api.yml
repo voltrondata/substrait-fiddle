@@ -1,4 +1,4 @@
-name: Deploy
+name: Deploy API Service
 
 on: [push, pull_request]
 
@@ -7,6 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
     steps:
+      - run: cd ./api/
       - uses: actions/checkout@v3
       - run: rm -rf .git
       - uses: easingthemes/ssh-deploy@main

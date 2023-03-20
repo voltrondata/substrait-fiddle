@@ -17,8 +17,17 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install -r requirements.txt
+        pip install -r ./api/requirements.txt
 
     - name: Run Ruff
-      run: ruff .
+      run: ruff ./api/
 
+  ESLint: 
+    runs-on: ubuntu-latest
+    
+    steps:
+    - run: cd ./client/
+    - uses: actions/checkout@v2
+    - run: npm install
+    - name: Run ESLint
+      run: npm run lint
