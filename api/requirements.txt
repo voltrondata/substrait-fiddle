@@ -34,7 +34,7 @@ rfc3986==1.5.0
 ruff==0.0.246
 six==1.16.0
 sniffio==1.3.0
-starlette==0.22.0
+starlette==0.25.0
 substrait-validator==0.0.11
 tomli==2.0.1
 typing_extensions==4.4.0
