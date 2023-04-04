@@ -29,8 +29,8 @@ jobs:
       with:
         node-version: 14.x
     - name: Install dependencies
-      working-directory: ./Client
+      working-directory: client
       run: npm install
     - name: Run tests
-      working-directory: ./Client
+      working-directory: client
       run: npm test
