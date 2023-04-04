@@ -28,6 +28,7 @@ jobs:
       with:
         node-version: 16
         cache: 'npm'
+        working-directory: client
     - run: |
         cd client/
         npm install
