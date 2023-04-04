@@ -1,6 +1,12 @@
 name: Build and Deploy Client Service
 
-on: [push, pull_request]
+on: 
+  push: 
+    paths:
+      - 'client/**'
+  pull_request:
+    paths:
+      - 'client/**'
 
 jobs:
   build:
