@@ -20,12 +20,12 @@ jobs:
         run: npm ci
       - name: Build client
         working-directory: client
-        run: npm build
+        run: npm run build
       - uses: actions/upload-artifact@v3
         with:
           name: built-site
           path: dist
-          
+
   deploy:
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
