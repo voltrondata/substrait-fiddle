@@ -26,7 +26,6 @@ jobs:
 
   ESLint: 
     runs-on: ubuntu-latest
-    
     steps:
     - uses: actions/checkout@v2
     - name: Install client dependencies

@@ -23,14 +23,12 @@ jobs:
         uvicorn app:app --port 9090 & bash -c 'while ! curl -s http://localhost:9090 > /dev/null; do sleep 1; done'
     
     - name: Checkout client service
-      uses: actions/checkout@v3
-    - name: Install Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: 14.x
+      uses: actions/checkout@v2
+
     - name: Install dependencies
       working-directory: client
       run: npm install
+      
     - name: Run tests
       working-directory: client
       run: npm test
