@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout backend
+    - name: Checkout api service
       uses: actions/checkout@v3
     
     - name: Set up Python
@@ -22,14 +22,15 @@ jobs:
         pip install -r requirements.txt
         uvicorn app:app --port 9090 & bash -c 'while ! curl -s http://localhost:9090 > /dev/null; do sleep 1; done'
     
-    - uses: actions/checkout@v3
-    - run: cd client/
-    - name: Use Node.js 16
+    - name: Checkout client service
+      uses: actions/checkout@v3
+    - name: Install Node.js
       uses: actions/setup-node@v3
       with:
-        node-version: 16
-        cache: 'npm'
-    - run: |
-        npm install
-        npm run test
-
+        node-version: 14.x
+    - name: Install dependencies
+      working-directory: ./Client
+      run: npm install
+    - name: Run tests
+      working-directory: ./Client
+      run: npm test
