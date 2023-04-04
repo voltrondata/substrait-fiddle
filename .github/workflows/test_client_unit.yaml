@@ -22,8 +22,8 @@ jobs:
         pip install -r requirements.txt
         uvicorn app:app --port 9090 & bash -c 'while ! curl -s http://localhost:9090 > /dev/null; do sleep 1; done'
     
-    - run: cd client/
     - uses: actions/checkout@v3
+    - run: cd client/
     - name: Use Node.js 16
       uses: actions/setup-node@v3
       with:
