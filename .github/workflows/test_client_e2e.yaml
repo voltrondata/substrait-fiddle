@@ -16,8 +16,8 @@ jobs:
         python-version: 3.9
 
     - name: Build and deploy backend
+      working-directory: api
       run: |
-        cd ./api/
         python -m ensurepip --default-pip
         pip install -r requirements.txt
         uvicorn app:app --port 9090 & bash -c 'while ! curl -s http://localhost:9090 > /dev/null; do sleep 1; done'
@@ -25,11 +25,10 @@ jobs:
     - name: Checkout frontend
       uses: actions/checkout@v3
 
-    - run: cd ./client/
-
     - name: Cypress run
       uses: cypress-io/github-action@v5
       with:
+        working-directory: client
         build: npm run build
         start: npm run preview
 
@@ -46,8 +45,8 @@ jobs:
         python-version: 3.9
 
     - name: Build and deploy backend
+      working-directory: api
       run: |
-        cd ./api/
         python -m ensurepip --default-pip
         pip install -r requirements.txt
         uvicorn app:app --port 9090 & bash -c 'while ! curl -s http://localhost:9090 > /dev/null; do sleep 1; done'
@@ -55,11 +54,10 @@ jobs:
     - name: Checkout frontend
       uses: actions/checkout@v3
 
-    - run: cd ./client/
-
     - name: Cypress run
       uses: cypress-io/github-action@v5
       with:
+        working-directory: client
         build: npm run build
         start: npm run preview
         browser: chrome
@@ -77,8 +75,8 @@ jobs:
         python-version: 3.9
 
     - name: Build and deploy backend
+      working-directory: api
       run: |
-        cd ./api/
         python -m ensurepip --default-pip
         pip install -r requirements.txt
         uvicorn app:app --port 9090 & bash -c 'while ! curl -s http://localhost:9090 > /dev/null; do sleep 1; done'
@@ -86,11 +84,10 @@ jobs:
     - name: Checkout frontend
       uses: actions/checkout@v3
 
-    - run: cd ./client/
-
     - name: Cypress run
       uses: cypress-io/github-action@v5
       with:
+        working-directory: client
         build: npm run build
         start: npm run preview
         browser: edge

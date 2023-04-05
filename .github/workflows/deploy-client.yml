@@ -1,25 +1,31 @@
 name: Build and Deploy Client Service
 
-on: [push, pull_request]
+on: 
+  push: 
+    paths:
+      - 'client/**'
+  pull_request:
+    paths:
+      - 'client/**'
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
-      - name: Use Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 18
-          cache: "npm"
-      - run: cd ./client/
-      - run: npm ci
-      - run: npm run build
+      - name: Checkout client service
+        uses: actions/checkout@v2
+      - name: Install dependencies
+        working-directory: client
+        run: npm ci
+      - name: Build client
+        working-directory: client
+        run: npm run build
       - uses: actions/upload-artifact@v3
         with:
           name: built-site
           path: dist
+
   deploy:
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
