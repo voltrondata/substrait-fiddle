@@ -7,7 +7,7 @@ describe("Substrait Fiddle Basic Test", () => {
 
   it("header with title and logo", () => {
     cy.get(".navbar")
-      .should("have.text", "Substrait Fiddle")
+      .should("have.text", "Substrait Fiddlevoltrondata/substrait-fiddle")
       .find("img")
       .should("be.visible");
   });
