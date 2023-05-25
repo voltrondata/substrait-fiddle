@@ -8,10 +8,15 @@
         <label class="form-label" for="file">Upload your substrait plan</label>
       </div>
       <div class="col-4" style="margin-left: 1vh;">
-        <ValidationLevel ref="override_level" />
+        <div class="row" style="font-size:small; margin-left: 1%;">
+          Validation override level
+        </div>
+        <div class="row">
+          <ValidationLevel ref="override_level" />
+        </div>
       </div>
     </div>
-    <div class="col-12" style="margin-left: 3vh; margin-top: 0%">
+    <div class="col-12" style="margin-left: 3vh; margin-top: -2.5%">
       <input
         type="file"
         class="form-control"
