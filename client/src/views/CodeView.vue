@@ -63,8 +63,7 @@ import axios from "axios";
 
 import * as substrait from "substrait";
 import { validate, plot } from "../assets/js/shared";
-import { store } from '../components/store'
-
+import { store } from "../components/store";
 
 self.MonacoEnvironment = {
   getWorker(_, label) {

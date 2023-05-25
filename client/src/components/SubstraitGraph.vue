@@ -38,7 +38,7 @@
 </template>
 
 <script>
-import { store } from '../components/store'
+import { store } from "../components/store";
 
 export default {
   name: "SubstraitGraph",
@@ -99,13 +99,13 @@ export default {
       };
       image.src = svgUrl;
     },
-    generateJSON(){
+    generateJSON() {
       const jsonObject = JSON.parse(store.plan);
       const jsonString = JSON.stringify(jsonObject, null, 4);
-      const blob = new Blob([jsonString], { type: 'application/json' });
+      const blob = new Blob([jsonString], { type: "application/json" });
       const plan_link = document.createElement("a");
       plan_link.href = URL.createObjectURL(blob);
-      plan_link.download = 'plan.json';
+      plan_link.download = "plan.json";
       plan_link.click();
       URL.revokeObjectURL(plan_link.href);
     },
