@@ -4,6 +4,16 @@
     <div id="svgContainer">
       <div style="margin-right: 10vh; text-align: right">
         <button
+          ref="download_json"
+          type="button"
+          class="btn btn-outline-primary btn-sm"
+          v-show="downloadJSON"
+          style="margin-right: 1vh"
+          @click="generateJSON"
+        >
+          Download JSON
+        </button>
+        <button
           type="button"
           class="btn btn-outline-primary btn-sm"
           v-show="download"
@@ -28,17 +38,21 @@
 </template>
 
 <script>
+import { store } from '../components/store'
+
 export default {
   name: "SubstraitGraph",
   data: function () {
     return {
       download: false,
+      downloadJSON: false,
     };
   },
   mounted() {
     this.observer = new MutationObserver(() => {
       const svgElement = this.$refs.d3Plot;
       this.download = svgElement.childNodes.length > 0 ? true : false;
+      this.downloadJSON = store.plan.length > 0 ? true : false;
     });
 
     this.observer.observe(this.$refs.d3Plot, {
@@ -84,6 +98,16 @@ export default {
         pngLink.click();
       };
       image.src = svgUrl;
+    },
+    generateJSON(){
+      const jsonObject = JSON.parse(store.plan);
+      const jsonString = JSON.stringify(jsonObject, null, 4);
+      const blob = new Blob([jsonString], { type: 'application/json' });
+      const plan_link = document.createElement("a");
+      plan_link.href = URL.createObjectURL(blob);
+      plan_link.download = 'plan.json';
+      plan_link.click();
+      URL.revokeObjectURL(plan_link.href);
     },
   },
 };

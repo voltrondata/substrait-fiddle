@@ -63,6 +63,8 @@ import axios from "axios";
 
 import * as substrait from "substrait";
 import { validate, plot } from "../assets/js/shared";
+import { store } from '../components/store'
+
 
 self.MonacoEnvironment = {
   getWorker(_, label) {
@@ -124,6 +126,7 @@ export default {
       const duckDbRsp = await axios.post("/api/parse/", {
         query: this.code,
       });
+      store.set_plan(duckDbRsp.data);
       this.updateStatus("SQL query converted to Substrait Plan successfully!");
       this.updateStatus("Validating converted Substrait plan...");
       validate(
