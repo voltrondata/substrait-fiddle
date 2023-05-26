@@ -52,7 +52,7 @@ export default {
     this.observer = new MutationObserver(() => {
       const svgElement = this.$refs.d3Plot;
       this.download = svgElement.childNodes.length > 0 ? true : false;
-      this.downloadJSON = store.plan.length > 0 ? true : false;
+      this.downloadJSON = (store.plan.length > 0) && this.download ? true : false;
     });
 
     this.observer.observe(this.$refs.d3Plot, {

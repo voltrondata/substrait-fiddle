@@ -63,6 +63,7 @@ import axios from "axios";
 
 import * as substrait from "substrait";
 import { validate, plot } from "../assets/js/shared";
+import { clearGraph } from "../assets/js/substrait-d3";
 import { store } from "../components/store";
 
 self.MonacoEnvironment = {
@@ -108,6 +109,7 @@ export default {
         editors[0].updateOptions({ minimap: { enabled: true } });
         editors[0].updateOptions({ overviewRulerLanes: 2 });
       }
+      clearGraph();
     },
     async generateFromJson() {
       this.updateStatus("Validating JSON plan with Substrait Validator...");
