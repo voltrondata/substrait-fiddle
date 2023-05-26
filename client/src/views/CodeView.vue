@@ -80,7 +80,7 @@ export default {
         json: '{"_comment1": "Enter JSON to generate Substrait Plan"}',
       },
       code: "",
-      language: "json",
+      language: "sql",
       editor: null,
       schema: "",
     };
