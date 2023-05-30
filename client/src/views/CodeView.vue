@@ -97,6 +97,16 @@ export default {
       monaco.editor.setModelLanguage(models[0], this.language);
       models[0].setValue(this.default_code[this.language]);
       this.status = "// Status";
+
+      // Disable minimap and overview ruler if language is SQL
+      const editors = monaco.editor.getEditors();
+      if (this.language === "sql") {
+        editors[0].updateOptions({ minimap: { enabled: false } });
+        editors[0].updateOptions({ overviewRulerLanes: 0 });
+      } else {
+        editors[0].updateOptions({ minimap: { enabled: true } });
+        editors[0].updateOptions({ overviewRulerLanes: 2 });
+      }
     },
     async generateFromJson() {
       this.updateStatus("Validating JSON plan with Substrait Validator...");
