@@ -28,7 +28,12 @@ jobs:
 
   deploy:
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
+    if: >
+      github.ref == 'refs/heads/main' &&
+      secrets.DEPLOY_SSH_KEY &&
+      secrets.DEPLOY_HOST_DNS &&
+      secrets.DEPLOY_USERNAME &&
+      secrets.DEPLOY_TARGET_DIR
     needs: [build]
     steps:
       - uses: actions/download-artifact@v3

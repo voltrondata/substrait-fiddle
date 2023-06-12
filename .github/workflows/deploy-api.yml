@@ -11,7 +11,12 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
+    if: >
+      github.ref == 'refs/heads/main' &&
+      secrets.DEPLOY_SSH_KEY &&
+      secrets.DEPLOY_HOST_DNS &&
+      secrets.DEPLOY_USERNAME &&
+      secrets.DEPLOY_TARGET_DIR
     steps:
       - uses: actions/checkout@v3
       - run: rm -rf .git
