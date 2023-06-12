@@ -36,14 +36,14 @@ describe("Substrait Fiddle Basic Test", () => {
       .click()
       .get("#editor")
       .type("{moveToEnd}")
+      .contains("#editor", "-- Enter SQL query to generate Substrait Plan");
+
+    cy.get("#language")
+      .select("json")
+      .get("#editor")
       .contains(
         "#editor",
         '{"_comment1": "Enter JSON to generate Substrait Plan"}'
       );
-
-    cy.get("#language")
-      .select("sql")
-      .get("#editor")
-      .contains("#editor", "-- Enter SQL query to generate Substrait Plan");
   });
 });
