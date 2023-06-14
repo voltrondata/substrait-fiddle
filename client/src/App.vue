@@ -31,7 +31,6 @@ import SubstraitGraph from "@/components/SubstraitGraph.vue";
             </div>
           </div>
           <div class="col-4">
-            <br /><br />
             <div
               class="d-flex justify-content-end"
               style="text-align: right; padding-bottom: 0%; margin-right: 1.5%"
