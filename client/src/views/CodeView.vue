@@ -4,38 +4,40 @@
       <div class="container">
         <div class="row" style="margin-top: 30px">
           <div class="col-5" style="padding: 0px">
-            <div class="row" style="margin-left:1%; font-size: small">
-              Validation override level
+            <div class="row" style="margin-left: 1%; font-size: small">
+              Substrait Validator Errors to Ignore
             </div>
             <div class="row">
               <ValidationLevel ref="override_level" />
             </div>
           </div>
+          <div class="col-2" id="select-lang" style="padding: 0px">
+            <div class="row" style="font-size: small">Plan type</div>
+            <div class="row">
+              <select
+                class="form-select form-select-sm w-auto"
+                id="language"
+                v-model="language"
+                @change="changeLanguage"
+              >
+                <option value="json">JSON</option>
+                <option value="sql">SQL</option>
+              </select>
+            </div>
+          </div>
           <div
-            class="col-2"
-            id="select-lang"
-            style="padding: 0px"
+            class="col-5"
+            style="
+              padding: 0px;
+              display: flex;
+              margin-top: 3%;
+              justify-content: flex-end;
+            "
           >
-          <div class="row" style="font-size:small;">
-            Plan type
-          </div>
-          <div class="row">
-            <select
-              class="form-select form-select-sm w-auto"
-              id="language"
-              v-model="language"
-              @change="changeLanguage"
-            >
-              <option value="json">JSON</option>
-              <option value="sql">SQL</option>
-            </select>
-          </div>
-          </div>
-          <div class="col-5" style="padding: 0px; display: flex; margin-top: 3%; justify-content: flex-end;">
             <SqlSchema
               :showSchemaOption="language == 'sql'"
               ref="schema"
-              style="margin-left: 1.5vh; margin-right: 1vh;"
+              style="margin-left: 1.5vh; margin-right: 1vh"
               @updateSchemaStatus="updateStatus"
             />
             <button

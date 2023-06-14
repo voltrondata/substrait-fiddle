@@ -7,9 +7,9 @@
       <div class="col-8">
         <label class="form-label" for="file">Upload your substrait plan</label>
       </div>
-      <div class="col-4" style="margin-left: 1vh;">
-        <div class="row" style="font-size:small; margin-left: 1%;">
-          Validation override level
+      <div class="col-4" style="margin-left: 1vh">
+        <div class="row" style="font-size: small; margin-left: 1%">
+          Substrait Validator Errors to Ignore
         </div>
         <div class="row">
           <ValidationLevel ref="override_level" />
