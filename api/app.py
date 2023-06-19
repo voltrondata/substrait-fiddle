@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException, status, File, UploadFile, Form
+from fastapi import Depends, FastAPI, HTTPException, status, File, UploadFile, Form
 from fastapi.openapi.utils import get_openapi
 from fastapi_health import health
 
@@ -11,10 +11,13 @@ from backend.duckdb import (
     ParseFromDuckDB,
 )
 
+from shareable import MongoDBConnection
+
 from loguru import logger
 
 app = FastAPI()
-con = None
+duckCon = None
+mongoColl = MongoDBConnection()
 
 
 @app.get("/")
@@ -24,13 +27,19 @@ def ping():
 
 @app.on_event("startup")
 def Initialize():
-    global con
-    con = ConnectDuckDB()
+    global duckCon, mongoColl
+    duckCon = ConnectDuckDB()
+    mongoColl = ConnectMongo()
 
 
 @app.get("/health/duckcb/")
 def CheckBackendConn(conn):
     CheckDuckDBConnection(conn)
+
+
+@app.get("/health/mongodb/")
+def CheckMongoConn():
+    CheckMongoConnection()
 
 
 app.add_api_route("/health", health([CheckBackendConn]))
@@ -69,14 +78,24 @@ async def ValidateFile(file: UploadFile = File(), override_levels: list[int] = F
 
 @app.post("/execute/duckdb/", status_code=status.HTTP_200_OK)
 async def ExecuteBackend(data: list[str]):
-    global con
-    return ExecuteDuckDb(data, con)
+    global duckCon
+    return ExecuteDuckDb(data, duckCon)
 
 
 @app.post("/parse/", status_code=status.HTTP_200_OK)
 async def ParseToSubstrait(data: dict):
-    global con
-    return ParseFromDuckDB(data, con)
+    global duckCon
+    return ParseFromDuckDB(data, duckCon)
+
+
+@app.post("/save/", status_code=status.HTTP_200_OK)
+async def SavePlan(data: dict, connection: MongoDBConnection = Depends()):
+    return connection.add_record(data["json_string"], data["validation_levels"])
+
+
+@app.post("/fetchplan/", status_code=status.HTTP_200_OK)
+async def FetchPlan(uuid: str, connection: MongoDBConnection = Depends()):
+    return connection.get_record(uuid)
 
 
 # For defining custom documentation for the server
