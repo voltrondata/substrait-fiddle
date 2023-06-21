@@ -118,6 +118,7 @@ export default {
         this.getValidationOverrideLevel(),
         this.updateStatus
       );
+      store.set_plan(this.code);
       this.updateStatus("Generating plot for substrait JSON plan...");
       const plan = substrait.substrait.Plan.fromObject(this.content);
       plot(plan, this.updateStatus);

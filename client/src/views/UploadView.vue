@@ -37,6 +37,8 @@ import ValidationLevel from "@/components/ValidationLevel.vue";
 import axios from "axios";
 import { readFile, readText, validate, plot } from "../assets/js/shared";
 
+import { store } from "../components/store";
+
 import * as substrait from "substrait";
 
 export default {
@@ -65,6 +67,7 @@ export default {
         this.getValidationOverrideLevel(),
         this.updateStatus
       );
+      store.set_plan(jsonFileRes);
       this.updateStatus("Generating plot for substrait JSON plan...");
       const plan = substrait.substrait.Plan.fromObject(this.content);
       plot(plan, this.updateStatus);
@@ -85,6 +88,7 @@ export default {
         this.getValidationOverrideLevel(),
         this.updateStatus
       );
+      store.set_plan(duckDbRsp.data);
       this.updateStatus("Generating plot for converted substrait plan...");
       const plan = substrait.substrait.Plan.fromObject(
         JSON.parse(duckDbRsp.data)
@@ -110,6 +114,7 @@ export default {
       }
       this.updateStatus("Generating plot for Substrait plan...");
       const plan = substrait.substrait.Plan.decode(new Uint8Array(fileReadRsp));
+      store.set_plan(JSON.stringify(plan, null, 2));
       plot(plan, this.updateStatus);
     },
     async generate() {
