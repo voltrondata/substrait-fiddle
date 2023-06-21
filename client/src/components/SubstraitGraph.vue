@@ -101,7 +101,11 @@ export default {
     },
     generateJSON() {
       const jsonObject = JSON.parse(store.plan);
-      const jsonString = JSON.stringify(jsonObject, null, 4);
+      const jsonString = JSON.stringify(
+        jsonObject,
+        /* no replacer function required */ null,
+        /* whitespace for indentation */ 4
+      );
       const blob = new Blob([jsonString], { type: "application/json" });
       const plan_link = document.createElement("a");
       plan_link.href = URL.createObjectURL(blob);
