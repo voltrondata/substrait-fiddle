@@ -73,9 +73,15 @@ import SqlSchema from "@/components/SqlSchema.vue";
 import axios from "axios";
 
 import * as substrait from "substrait";
+<<<<<<< HEAD
 import { validate, plot } from "../assets/js/shared";
 import { clearGraph } from "../assets/js/substrait-d3";
 import { store } from "../components/store";
+=======
+import { validate, plot, getPlan } from "../assets/js/shared";
+import { store } from "../components/store";
+
+>>>>>>> 9fc6ee1 (feat: client side features for shareable link)
 
 self.MonacoEnvironment = {
   getWorker(_, label) {
@@ -96,7 +102,14 @@ export default {
       language: "sql",
       editor: null,
       schema: "",
+      planId: null,
     };
+  },
+  created: function() {
+    this.planId = this.$route.params.id;
+    if (this.planId) {
+      this.loadPlan(this.planId);
+    }
   },
   methods: {
     updateStatus(str) {
@@ -104,6 +117,12 @@ export default {
     },
     getValidationOverrideLevel() {
       return this.$refs.override_level.getValidationOverrideLevel();
+    },
+    clearValidationOverrideLevel() {
+      return this.$refs.override_level.clearLevels();
+    },
+    addValidationOverrideLevel(level){
+      this.$refs.override_level.addLevel(level);
     },
     changeLanguage() {
       const models = monaco.editor.getModels();
@@ -147,6 +166,7 @@ export default {
         this.getValidationOverrideLevel(),
         this.updateStatus
       );
+      store.set_plan(duckDbRsp.data);
       this.updateStatus("Generating plot for converted substrait plan...");
       const plan = substrait.substrait.Plan.fromObject(
         JSON.parse(duckDbRsp.data)
@@ -166,6 +186,24 @@ export default {
         this.updateStatus("Error parsing substrait plan: ", error);
       }
     },
+    async loadPlan(id){
+      const resp = await getPlan(id);
+      const jsonObject = JSON.parse(resp.data[0]);
+
+      this.code = JSON.stringify(jsonObject, null, 2);
+      this.language = "json";
+
+      const models = monaco.editor.getModels();
+      monaco.editor.setModelLanguage(models[0], "json");
+      models[0].setValue(this.code);
+
+      this.clearValidationOverrideLevel();
+      resp.data[1].forEach((value) => {
+        console.log(value);
+        this.addValidationOverrideLevel(value);
+      });
+
+    }
   },
   mounted: function () {
     monaco.editor.create(document.getElementById("editor"), {

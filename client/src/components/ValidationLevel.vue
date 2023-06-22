@@ -107,3 +107,34 @@ export default {
   line-height: 1.4;
 }
 </style>
+
+<script>
+import Multiselect from "vue-multiselect";
+
+export default {
+  name: "ValidationLevel",
+  components: {
+    Multiselect,
+  },
+  data: function () {
+    return {
+      value: [{ code: 1002 }],
+      options: [{ code: 1002 }, { code: 2001 }, { code: 1 }],
+    };
+  },
+  methods: {
+    addLevel(level) {
+      console.log("reached here")
+      console.log(level)
+      this.options.push({ code: parseInt(level) });
+      this.value.push({ code: parseInt(level) });
+    },
+    clearLevels(){
+      this.value.length = 0;
+    },
+    getValidationOverrideLevel() {
+      return this.value.map((item) => item.code);
+    },
+  },
+};
+</script>
