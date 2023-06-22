@@ -66,7 +66,7 @@ import SubstraitGraph from "@/components/SubstraitGraph.vue";
         <li class="nav-item">
           <button
             class="nav-link"
-            :class="{ active: $route.path === '/' }"
+            :class="{ active: $route.path === '/' || $route.path.includes('/path/') }"
             id="code-tab"
             @click="goToCode"
             type="button"

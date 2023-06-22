@@ -1,4 +1,4 @@
-from fastapi import Depends, FastAPI, HTTPException, status, File, UploadFile, Form
+from fastapi import FastAPI, HTTPException, status, File, UploadFile, Form
 from fastapi.openapi.utils import get_openapi
 from fastapi_health import health
 
@@ -11,14 +11,13 @@ from backend.duckdb import (
     ParseFromDuckDB,
 )
 
-from shareable import MongoDBConnection
+from shareable import MongoDBConnection, PlanData
 
 from loguru import logger
 
 app = FastAPI()
-duckCon = None
-mongoColl = MongoDBConnection()
-
+duckConn = None
+mongoConn = MongoDBConnection()
 
 @app.get("/")
 def ping():
@@ -26,20 +25,20 @@ def ping():
 
 
 @app.on_event("startup")
-def Initialize():
-    global duckCon, mongoColl
-    duckCon = ConnectDuckDB()
-    mongoColl = ConnectMongo()
+async def Initialize():
+    global duckConn
+    duckConn = ConnectDuckDB()
+    await mongoConn.connect()
 
 
-@app.get("/health/duckcb/")
+@app.get("/health/duckdb/")
 def CheckBackendConn(conn):
     CheckDuckDBConnection(conn)
 
 
 @app.get("/health/mongodb/")
 def CheckMongoConn():
-    CheckMongoConnection()
+    mongoConn.check()
 
 
 app.add_api_route("/health", health([CheckBackendConn]))
@@ -78,24 +77,26 @@ async def ValidateFile(file: UploadFile = File(), override_levels: list[int] = F
 
 @app.post("/execute/duckdb/", status_code=status.HTTP_200_OK)
 async def ExecuteBackend(data: list[str]):
-    global duckCon
-    return ExecuteDuckDb(data, duckCon)
+    global duckConn
+    return ExecuteDuckDb(data, duckConn)
 
 
 @app.post("/parse/", status_code=status.HTTP_200_OK)
 async def ParseToSubstrait(data: dict):
-    global duckCon
-    return ParseFromDuckDB(data, duckCon)
+    global duckConn
+    return ParseFromDuckDB(data, duckConn)
 
 
 @app.post("/save/", status_code=status.HTTP_200_OK)
-async def SavePlan(data: dict, connection: MongoDBConnection = Depends()):
-    return connection.add_record(data["json_string"], data["validation_levels"])
+async def SavePlan(data: PlanData):
+    response = await mongoConn.add_record(data)
+    return response
 
 
 @app.post("/fetchplan/", status_code=status.HTTP_200_OK)
-async def FetchPlan(uuid: str, connection: MongoDBConnection = Depends()):
-    return connection.get_record(uuid)
+async def FetchPlan(id: str):
+    response =  await mongoConn.get_record(id)
+    return response["json_data"], response["validation_levels"]
 
 
 # For defining custom documentation for the server

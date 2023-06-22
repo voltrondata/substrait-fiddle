@@ -48,4 +48,14 @@ function plot(plan, status_func) {
   }
 }
 
-export { readFile, readText, validate, plot, clearGraph };
+async function getPlan(id){
+  try {
+    console.log("id: ", id)
+    const response = await axios.post("/api/fetchplan/?id="+id);
+    return response;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+export { readFile, readText, validate, plot, clearGraph, getPlan };
