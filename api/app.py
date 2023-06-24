@@ -94,7 +94,7 @@ async def SavePlan(data: PlanData):
     return response
 
 
-@app.post("/fetchplan/", status_code=status.HTTP_200_OK)
+@app.post("/fetch/", status_code=status.HTTP_200_OK)
 async def FetchPlan(id: str):
     response = await mongoConn.get_record(id)
     return response["json_data"], response["validation_levels"]

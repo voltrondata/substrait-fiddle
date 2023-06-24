@@ -73,7 +73,7 @@ export default {
         this.getValidationOverrideLevel(),
         this.updateStatus
       );
-      store.set_plan(jsonFileRes);
+      store.set_plan(jsonFileRes, this.getValidationOverrideLevel());
       this.updateStatus("Generating plot for substrait JSON plan...");
       const plan = substrait.substrait.Plan.fromObject(this.content);
       plot(plan, this.updateStatus);
@@ -94,7 +94,7 @@ export default {
         this.getValidationOverrideLevel(),
         this.updateStatus
       );
-      store.set_plan(duckDbRsp.data);
+      store.set_plan(duckDbRsp.data, this.getValidationOverrideLevel());
       this.updateStatus("Generating plot for converted substrait plan...");
       const plan = substrait.substrait.Plan.fromObject(
         JSON.parse(duckDbRsp.data)
@@ -124,8 +124,12 @@ export default {
       store.set_plan(JSON.stringify(plan, null, 2));
 =======
       const planJson = JSON.stringify(plan, null, 2);
+<<<<<<< HEAD
       store.set_plan(planJson);
 >>>>>>> 84e6f1b (feat: shareable link for UploadView)
+=======
+      store.set_plan(planJson, this.getValidationOverrideLevel());
+>>>>>>> 22ce573 (feat: Save and load validation override levels as well)
       plot(plan, this.updateStatus);
     },
     async generate() {

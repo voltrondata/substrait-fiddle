@@ -151,7 +151,7 @@ export default {
         this.getValidationOverrideLevel(),
         this.updateStatus
       );
-      store.set_plan(this.code);
+      store.set_plan(this.code, this.getValidationOverrideLevel());
       this.updateStatus("Generating plot for substrait JSON plan...");
       const plan = substrait.substrait.Plan.fromObject(this.content);
       plot(plan, this.updateStatus);
@@ -169,7 +169,7 @@ export default {
         this.getValidationOverrideLevel(),
         this.updateStatus
       );
-      store.set_plan(duckDbRsp.data);
+      store.set_plan(duckDbRsp.data, this.getValidationOverrideLevel());
       this.updateStatus("Generating plot for converted substrait plan...");
       const plan = substrait.substrait.Plan.fromObject(
         JSON.parse(duckDbRsp.data)
