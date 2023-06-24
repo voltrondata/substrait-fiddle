@@ -5,9 +5,11 @@ from pymongo import MongoClient
 
 from loguru import logger
 
+
 class PlanData(BaseModel):
     json_string: str
     validation_levels: list[int]
+
 
 class MongoDBConnection:
     def __init__(self):
@@ -34,7 +36,7 @@ class MongoDBConnection:
             "validation_levels": data.validation_levels,
         }
         result = self.collection.insert_one(data)
-        return str(result.inserted_id) 
+        return str(result.inserted_id)
 
     def check(self):
         try:

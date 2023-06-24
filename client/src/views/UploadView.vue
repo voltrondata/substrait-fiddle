@@ -45,6 +45,7 @@ import { readFile, readText, validate, plot } from "../assets/js/shared";
 import { store } from "../components/store";
 
 import * as substrait from "substrait";
+import { store } from "../components/store";
 
 export default {
   data: function () {
@@ -119,7 +120,12 @@ export default {
       }
       this.updateStatus("Generating plot for Substrait plan...");
       const plan = substrait.substrait.Plan.decode(new Uint8Array(fileReadRsp));
+<<<<<<< HEAD
       store.set_plan(JSON.stringify(plan, null, 2));
+=======
+      const planJson = JSON.stringify(plan, null, 2);
+      store.set_plan(planJson);
+>>>>>>> 84e6f1b (feat: shareable link for UploadView)
       plot(plan, this.updateStatus);
     },
     async generate() {

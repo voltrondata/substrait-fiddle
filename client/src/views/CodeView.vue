@@ -81,8 +81,11 @@ import { store } from "../components/store";
 import { validate, plot, getPlan } from "../assets/js/shared";
 import { store } from "../components/store";
 
+<<<<<<< HEAD
 >>>>>>> 9fc6ee1 (feat: client side features for shareable link)
 
+=======
+>>>>>>> 84e6f1b (feat: shareable link for UploadView)
 self.MonacoEnvironment = {
   getWorker(_, label) {
     if (label === "json") {
@@ -105,7 +108,7 @@ export default {
       planId: null,
     };
   },
-  created: function() {
+  created: function () {
     this.planId = this.$route.params.id;
     if (this.planId) {
       this.loadPlan(this.planId);
@@ -121,7 +124,7 @@ export default {
     clearValidationOverrideLevel() {
       return this.$refs.override_level.clearLevels();
     },
-    addValidationOverrideLevel(level){
+    addValidationOverrideLevel(level) {
       this.$refs.override_level.addLevel(level);
     },
     changeLanguage() {
@@ -186,7 +189,7 @@ export default {
         this.updateStatus("Error parsing substrait plan: ", error);
       }
     },
-    async loadPlan(id){
+    async loadPlan(id) {
       const resp = await getPlan(id);
       const jsonObject = JSON.parse(resp.data[0]);
 
@@ -199,11 +202,9 @@ export default {
 
       this.clearValidationOverrideLevel();
       resp.data[1].forEach((value) => {
-        console.log(value);
         this.addValidationOverrideLevel(value);
       });
-
-    }
+    },
   },
   mounted: function () {
     monaco.editor.create(document.getElementById("editor"), {

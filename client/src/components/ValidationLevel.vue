@@ -124,12 +124,10 @@ export default {
   },
   methods: {
     addLevel(level) {
-      console.log("reached here")
-      console.log(level)
       this.options.push({ code: parseInt(level) });
       this.value.push({ code: parseInt(level) });
     },
-    clearLevels(){
+    clearLevels() {
       this.value.length = 0;
     },
     getValidationOverrideLevel() {

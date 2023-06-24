@@ -7,19 +7,21 @@
           ref="download_json"
           type="button"
           class="btn btn-outline-primary btn-sm"
-<<<<<<< HEAD
           v-show="downloadJSON"
           style="margin-right: 1vh"
           @click="generateJSON"
         >
-          Download JSON
-=======
+        Download JSON
+        </button>
+        <button
+          ref="download_json"
+          type="button"
+          class="btn btn-outline-primary btn-sm"
           v-show="download"
           style="margin-right: 1vh"
           @click="generateLink"
         >
           Copy Link
->>>>>>> 9fc6ee1 (feat: client side features for shareable link)
         </button>
         <button
           type="button"
@@ -47,11 +49,7 @@
 
 <script>
 import { store } from "../components/store";
-<<<<<<< HEAD
-=======
 import axios from "axios";
-
->>>>>>> 9fc6ee1 (feat: client side features for shareable link)
 
 export default {
   name: "SubstraitGraph",
@@ -62,7 +60,7 @@ export default {
     };
   },
   mounted() {
-    this.currentUrl = window.location.href;
+    this.currentUrl = window.location.origin;
     this.observer = new MutationObserver(() => {
       const svgElement = this.$refs.d3Plot;
       this.download = svgElement.childNodes.length > 0 ? true : false;
@@ -133,19 +131,17 @@ export default {
             json_string: store.plan,
             validation_levels: [0,1],
           });
-
-          const textField = document.createElement('textarea');
-          textField.innerText = this.currentUrl + "plan/" + resp.data;
-          document.body.appendChild(textField);
-          textField.select();
-          document.execCommand('copy');
-          textField.remove();
-          alert('Link copied to clipboard!');
-
-        } catch (error) {
-          console.log(error.response.data["detail"]);
-        }
-    }
+        const textField = document.createElement("textarea");
+        textField.innerText = this.currentUrl + "/plan/" + resp.data;
+        document.body.appendChild(textField);
+        textField.select();
+        document.execCommand("copy");
+        textField.remove();
+        alert("Link copied to clipboard!");
+      } catch (error) {
+        console.log(error.response.data["detail"]);
+      }
+    },
   },
 };
 </script>
