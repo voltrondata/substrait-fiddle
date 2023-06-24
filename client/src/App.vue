@@ -67,7 +67,7 @@ import SubstraitGraph from "@/components/SubstraitGraph.vue";
           <button
             class="nav-link"
             :class="{
-              active: $route.path === '/' || $route.path.includes('/path/'),
+              active: activateCodeView(),
             }"
             id="code-tab"
             @click="goToCode"
@@ -79,7 +79,7 @@ import SubstraitGraph from "@/components/SubstraitGraph.vue";
         <li class="nav-item">
           <button
             class="nav-link"
-            :class="{ active: $route.path === '/upload' }"
+            :class="{ active: !activateCodeView() }"
             id="upload-tab"
             @click="goToUpload"
             type="button"
@@ -116,6 +116,11 @@ import { clearGraph } from "./assets/js/substrait-d3.js";
 
 export default {
   methods: {
+    activateCodeView() {
+      return this.$route.path === "/" || this.$route.path.startsWith("/plan/")
+        ? true
+        : false;
+    },
     goToCode() {
       clearGraph();
       this.$router.push("/");

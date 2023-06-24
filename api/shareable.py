@@ -44,12 +44,10 @@ class MongoDBConnection:
         except Exception as e:
             return False, str(e)
 
-        print("db names: ", client.list_database_names())
         if "plans" not in client.list_database_names():
             return (False, "Plan database does not exist.")
 
         db = client["mongo"]
-        print("db: ", db)
         if "links" not in db.list_collection_names():
             return (
                 False,
