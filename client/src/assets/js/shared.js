@@ -50,7 +50,7 @@ function plot(plan, status_func) {
 
 async function getPlan(id) {
   try {
-    const response = await axios.post("/api/fetchplan/?id=" + id);
+    const response = await axios.post("/api/fetch/?id=" + id);
     return response;
   } catch (error) {
     console.log(error);
