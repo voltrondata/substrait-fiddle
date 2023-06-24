@@ -19,7 +19,7 @@ const router = createRouter({
       path: "/plan/:id",
       name: "plan",
       component: CodeView,
-    }
+    },
   ],
 });
 

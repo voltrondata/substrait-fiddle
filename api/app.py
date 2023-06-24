@@ -19,6 +19,7 @@ app = FastAPI()
 duckConn = None
 mongoConn = MongoDBConnection()
 
+
 @app.get("/")
 def ping():
     return {"api_service": "up and running"}
@@ -95,7 +96,7 @@ async def SavePlan(data: PlanData):
 
 @app.post("/fetchplan/", status_code=status.HTTP_200_OK)
 async def FetchPlan(id: str):
-    response =  await mongoConn.get_record(id)
+    response = await mongoConn.get_record(id)
     return response["json_data"], response["validation_levels"]
 
 
