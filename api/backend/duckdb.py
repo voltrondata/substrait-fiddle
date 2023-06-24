@@ -52,7 +52,7 @@ class DuckDBConnection:
     def execute(self, data):
         try:
             if self.check()["db_health"] != "up and running":
-                self.connection = self.connect()
+                self.connect()
             for i in data:
                 self.connection.execute(query=i)
             return {"message": "DuckDB Operation successful"}
@@ -66,7 +66,7 @@ class DuckDBConnection:
     def parse(self, data):
         try:
             if self.check()["db_health"] != "up and running":
-                self.connection = self.connect()
+                self.connect()
             result = self.connection.get_substrait_json(data["query"]).fetchone()[0]
             return result
         except Exception as e:
