@@ -4,17 +4,12 @@ from fastapi_health import health
 
 import substrait_validator as sv
 
-from backend.duckdb import (
-    ConnectDuckDB,
-    CheckDuckDBConnection,
-    ExecuteDuckDb,
-    ParseFromDuckDB,
-)
+from backend.duckdb import DuckDBConnection
 
 from loguru import logger
 
 app = FastAPI()
-con = None
+duckConn = DuckDBConnection()
 
 
 @app.get("/")
@@ -24,13 +19,12 @@ def ping():
 
 @app.on_event("startup")
 def Initialize():
-    global con
-    con = ConnectDuckDB()
+    duckConn.connect()
 
 
-@app.get("/health/duckcb/")
-def CheckBackendConn(conn):
-    CheckDuckDBConnection(conn)
+@app.get("/health/duckdb/")
+def CheckBackendConn():
+    duckConn.check()
 
 
 app.add_api_route("/health", health([CheckBackendConn]))
@@ -69,14 +63,14 @@ async def ValidateFile(file: UploadFile = File(), override_levels: list[int] = F
 
 @app.post("/execute/duckdb/", status_code=status.HTTP_200_OK)
 async def ExecuteBackend(data: list[str]):
-    global con
-    return ExecuteDuckDb(data, con)
+    response = duckConn.execute(data)
+    return response
 
 
 @app.post("/parse/", status_code=status.HTTP_200_OK)
-async def ParseToSubstrait(data: dict):
-    global con
-    return ParseFromDuckDB(data, con)
+def ParseToSubstrait(data: dict):
+    response = duckConn.parse(data)
+    return response
 
 
 # For defining custom documentation for the server
