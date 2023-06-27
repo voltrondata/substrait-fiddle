@@ -63,6 +63,8 @@ import axios from "axios";
 
 import * as substrait from "substrait";
 import { validate, plot } from "../assets/js/shared";
+import { clearGraph } from "../assets/js/substrait-d3";
+import { store } from "../components/store";
 
 self.MonacoEnvironment = {
   getWorker(_, label) {
@@ -107,6 +109,7 @@ export default {
         editors[0].updateOptions({ minimap: { enabled: true } });
         editors[0].updateOptions({ overviewRulerLanes: 2 });
       }
+      clearGraph();
     },
     async generateFromJson() {
       this.updateStatus("Validating JSON plan with Substrait Validator...");
@@ -115,6 +118,7 @@ export default {
         this.getValidationOverrideLevel(),
         this.updateStatus
       );
+      store.set_plan(this.code);
       this.updateStatus("Generating plot for substrait JSON plan...");
       const plan = substrait.substrait.Plan.fromObject(this.content);
       plot(plan, this.updateStatus);
@@ -124,6 +128,7 @@ export default {
       const duckDbRsp = await axios.post("/api/parse/", {
         query: this.code,
       });
+      store.set_plan(duckDbRsp.data);
       this.updateStatus("SQL query converted to Substrait Plan successfully!");
       this.updateStatus("Validating converted Substrait plan...");
       validate(

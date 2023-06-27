@@ -337,8 +337,10 @@ function drawGraph(pre_nodes, pre_links, use_drag = true) {
 }
 
 function clearGraph() {
-  var svg = d3.select("svg");
+  const svg = d3.select("svg");
   svg.html("");
+  const nodeData = document.getElementById("nodeData");
+  nodeData.innerHTML = "";
 }
 
 export { buildGraph, clearGraph, drawGraph };
