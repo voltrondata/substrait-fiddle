@@ -8,20 +8,57 @@ import SubstraitGraph from "@/components/SubstraitGraph.vue";
   <div>
     <header>
       <nav
-        class="navbar navbar-dark navbar-expand-md py-4 shadow-lg p-3 mb-5"
+        class="navbar navbar-dark navbar-expand-md shadow-lg mb-5"
         style="background-color: #e92063"
       >
-        <img
-          class="inverted"
-          src="../public/logo.svg"
-          alt="Substrait Fiddle"
-          style="width: 4%; margin: 0%; padding: 0%; border: 0ch"
-        />
-        <span
-          class="nav-header"
-          style="color: #fff; margin-left: 1vh; font-size-adjust: 0.5"
-          >Substrait Fiddle</span
+        <div
+          class="container"
+          style="margin-left: 0%; min-width: 100%; padding-top: 1.5%"
         >
+          <div class="col-8" style="padding-bottom: 1%">
+            <div class="d-flex align-items-center">
+              <img
+                class="inverted"
+                src="../public/logo.svg"
+                alt="Substrait Fiddle"
+                style="width: 5%"
+              />
+              <span
+                class="nav-header"
+                style="color: #fff; font-size-adjust: 0.5; margin-left: 1rem"
+                >Substrait Fiddle</span
+              >
+            </div>
+          </div>
+          <div class="col-4">
+            <div
+              class="d-flex justify-content-end"
+              style="text-align: right; padding-bottom: 0%; margin-right: 1.5%"
+            >
+              <img
+                height="20"
+                width="20"
+                src="https://cdn.simpleicons.org/github/white"
+                style="margin-top: 2px; margin-right: 4px"
+              />
+              <a
+                href="https://github.com/voltrondata/substrait-fiddle/"
+                target="_blank"
+              >
+                <span
+                  class="nav-header navbar-right"
+                  style="
+                    color: #fff;
+                    font-size: 1.1rem;
+                    display: inline-block;
+                    font-family: sans-serif;
+                  "
+                  >voltrondata/substrait-fiddle</span
+                >
+              </a>
+            </div>
+          </div>
+        </div>
       </nav>
     </header>
     <div class="col-5 tabs" style="margin-left: 3vh">
