@@ -1,8 +1,6 @@
 from bson.objectid import ObjectId
-
 from pydantic import BaseModel
-from pymongo import MongoClient
-
+from motor.motor_asyncio import AsyncIOMotorClient
 from loguru import logger
 
 
@@ -13,21 +11,12 @@ class PlanData(BaseModel):
 
 class MongoDBConnection:
     def __init__(self):
-        self.connection = None
-
-    async def connect(self):
-        client = MongoClient("localhost", 27017)
-        db = client["plans"]
-
-        if "links" not in db.list_collection_names():
-            db.create_collection("links")
-            logger.info("Created 'links' collection")
-
-        self.collection = db["links"]
-        logger.success("MongoDB connection established successfully")
+        self.client = AsyncIOMotorClient("mongodb://localhost:27017")
+        self.database = self.client["plans"]
+        self.collection = self.database["links"]
 
     async def get_record(self, id):
-        record = self.collection.find_one({"_id": ObjectId(id)})
+        record = await self.collection.find_one({"_id": ObjectId(id)})
         return record
 
     async def add_record(self, data):
@@ -35,12 +24,12 @@ class MongoDBConnection:
             "json_data": data.json_string,
             "validation_levels": data.validation_levels,
         }
-        result = self.collection.insert_one(data)
+        result = await self.collection.insert_one(data)
         return str(result.inserted_id)
 
-    def check(self):
+    async def check(self):
         try:
-            client = MongoClient("localhost", 27017)
+            client = AsyncIOMotorClient("mongodb://localhost:27017")
         except Exception as e:
             return False, str(e)
 
@@ -53,3 +42,16 @@ class MongoDBConnection:
                 False,
                 "Links collection doesn't exist in Plan database.",
             )
+
+    async def close(self):
+        self.collection = None
+        self.database = None
+        self.client.close()
+
+
+async def get_mongo_conn():
+    mongo_conn = MongoDBConnection()
+    try:
+        yield mongo_conn
+    finally:
+        await mongo_conn.close()

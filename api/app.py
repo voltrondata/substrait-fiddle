@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException, status, File, UploadFile, Form
+from fastapi import FastAPI, HTTPException, status, File, UploadFile, Form, Depends
 from fastapi.openapi.utils import get_openapi
 from fastapi_health import health
 
@@ -11,13 +11,12 @@ from backend.duckdb import (
     ParseFromDuckDB,
 )
 
-from shareable import MongoDBConnection, PlanData
+from shareable import MongoDBConnection, PlanData, get_mongo_conn
 
 from loguru import logger
 
 app = FastAPI()
 duckConn = None
-mongoConn = MongoDBConnection()
 
 
 @app.get("/")
@@ -29,7 +28,6 @@ def ping():
 async def Initialize():
     global duckConn
     duckConn = ConnectDuckDB()
-    await mongoConn.connect()
 
 
 @app.get("/health/duckdb/")
@@ -38,14 +36,14 @@ def CheckBackendConn(conn):
 
 
 @app.get("/health/mongodb/")
-def CheckMongoConn():
-    mongoConn.check()
+def CheckMongoConn(db: MongoDBConnection = Depends(get_mongo_conn)):
+    db.check()
 
 
 app.add_api_route("/health", health([CheckBackendConn]))
 
 
-@app.post("/validate/", status_code=status.HTTP_200_OK)
+@app.post("/validate/")
 async def Validate(plan: dict, override_levels: list[int]):
     try:
         logger.info("Validating plan using substrait-validator!")
@@ -60,7 +58,7 @@ async def Validate(plan: dict, override_levels: list[int]):
         )
 
 
-@app.post("/validate/file/", status_code=status.HTTP_200_OK)
+@app.post("/validate/file/")
 async def ValidateFile(file: UploadFile = File(), override_levels: list[int] = Form()):
     try:
         logger.info("Validating file using substrait-validator!")
@@ -76,27 +74,27 @@ async def ValidateFile(file: UploadFile = File(), override_levels: list[int] = F
         )
 
 
-@app.post("/execute/duckdb/", status_code=status.HTTP_200_OK)
+@app.post("/execute/duckdb/")
 async def ExecuteBackend(data: list[str]):
     global duckConn
     return ExecuteDuckDb(data, duckConn)
 
 
-@app.post("/parse/", status_code=status.HTTP_200_OK)
+@app.post("/parse/")
 async def ParseToSubstrait(data: dict):
     global duckConn
     return ParseFromDuckDB(data, duckConn)
 
 
-@app.post("/save/", status_code=status.HTTP_200_OK)
-async def SavePlan(data: PlanData):
-    response = await mongoConn.add_record(data)
+@app.post("/save/")
+async def SavePlan(data: PlanData, db: MongoDBConnection = Depends(get_mongo_conn)):
+    response = await db.add_record(data)
     return response
 
 
 @app.post("/fetch/", status_code=status.HTTP_200_OK)
-async def FetchPlan(id: str):
-    response = await mongoConn.get_record(id)
+async def FetchPlan(id: str, db: MongoDBConnection = Depends(get_mongo_conn)):
+    response = await db.get_record(id)
     return response["json_data"], response["validation_levels"]
 
 
