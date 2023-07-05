@@ -4,7 +4,6 @@
     <div id="svgContainer">
       <div style="margin-right: 10vh; text-align: right">
         <button
-          ref="download_json"
           type="button"
           class="btn btn-outline-primary btn-sm"
           v-show="downloadJSON"
