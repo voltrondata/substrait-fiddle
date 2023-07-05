@@ -97,7 +97,7 @@ async def FetchPlan(id: str, db: MongoDBConnection = Depends(get_mongo_conn)):
     response = await db.get_record(id)
     if response is None:
         raise HTTPException(status_code=404, detail="Plan not found")
-    return response["json_data"], response["validation_levels"]
+    return response["json_data"], response["validator_overrides"]
 
 
 # For defining custom documentation for the server
