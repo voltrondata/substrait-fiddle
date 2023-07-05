@@ -97,12 +97,6 @@ export default {
       planId: null,
     };
   },
-  created: function () {
-    this.planId = this.$route.params.id;
-    if (this.planId) {
-      this.loadPlan(this.planId);
-    }
-  },
   methods: {
     updateStatus(str) {
       this.$refs.status.updateStatus(str);
@@ -202,6 +196,11 @@ export default {
       features: ["coreCommands", "find"],
       automaticLayout: true,
     });
+
+    this.planId = this.$route.params.id;
+    if (this.planId) {
+      this.loadPlan(this.planId);
+    }
   },
 
   unmounted: function () {
