@@ -4,6 +4,7 @@
     <div id="svgContainer">
       <div style="margin-right: 10vh; text-align: right">
         <button
+          id="copy-button"
           type="button"
           class="btn btn-outline-primary btn-sm"
           v-show="downloadJSON"
@@ -13,12 +14,13 @@
         Download JSON
         </button>
         <button
-          ref="download_json"
+          id="copy-button"
           type="button"
           class="btn btn-outline-primary btn-sm"
           v-show="download"
           style="margin-right: 1vh"
           @click="generateLink"
+          ref="copyButton"
         >
           Copy Link
         </button>
@@ -49,6 +51,7 @@
 <script>
 import { store } from "../components/store";
 import axios from "axios";
+import Clipboard from "clipboard";
 
 export default {
   name: "SubstraitGraph",
@@ -56,6 +59,7 @@ export default {
     return {
       download: false,
       downloadJSON: false,
+      shareable_link: "",
     };
   },
   mounted() {
@@ -68,6 +72,9 @@ export default {
 
     this.observer.observe(this.$refs.d3Plot, {
       childList: true,
+    });
+    this.clipboard = new Clipboard("#copy-button", {
+      text: () => this.shareable_link,
     });
   },
   beforeDestroy() {
@@ -131,12 +138,8 @@ export default {
           validator_overrides: store.validation_override_levels,
         });
 
-        const textField = document.createElement("textarea");
-        textField.innerText = this.currentUrl + "/plan/" + resp.data;
-        document.body.appendChild(textField);
-        textField.select();
-        document.execCommand("copy");
-        textField.remove();
+        this.shareable_link = this.currentUrl + "/plan/" + resp.data;
+        this.clipboard.onClick({ currentTarget: this.$refs.copyButton });
         alert("Link copied to clipboard!");
       } catch (error) {
         console.log(error.response.data["detail"]);
