@@ -185,7 +185,7 @@ export default {
     },
     async loadPlan(id) {
       const resp = await getPlan(id);
-      const jsonObject = JSON.parse(resp.data[0]);
+      const jsonObject = JSON.parse(resp.data.json_data);
 
       this.code = JSON.stringify(jsonObject, null, 2);
       this.language = "json";
@@ -195,7 +195,7 @@ export default {
       models[0].setValue(this.code);
 
       this.clearValidationOverrideLevel();
-      resp.data[1].forEach((value) => {
+      resp.data.validator_overrides.forEach((value) => {
         this.addValidationOverrideLevel(value);
       });
     },
