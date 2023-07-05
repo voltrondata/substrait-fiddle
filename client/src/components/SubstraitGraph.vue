@@ -11,7 +11,7 @@
           style="margin-right: 1vh"
           @click="generateJSON"
         >
-        Download JSON
+          Download JSON
         </button>
         <button
           id="copy-button"
