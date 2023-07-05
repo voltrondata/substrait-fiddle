@@ -95,6 +95,8 @@ async def SavePlan(data: PlanData, db: MongoDBConnection = Depends(get_mongo_con
 @app.post("/fetch/", status_code=status.HTTP_200_OK)
 async def FetchPlan(id: str, db: MongoDBConnection = Depends(get_mongo_conn)):
     response = await db.get_record(id)
+    if response is None:
+        raise HTTPException(status_code=404, detail="Plan not found")
     return response["json_data"], response["validation_levels"]
 
 
