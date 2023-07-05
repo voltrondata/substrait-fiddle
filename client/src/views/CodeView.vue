@@ -73,19 +73,11 @@ import SqlSchema from "@/components/SqlSchema.vue";
 import axios from "axios";
 
 import * as substrait from "substrait";
-<<<<<<< HEAD
-import { validate, plot } from "../assets/js/shared";
+
+import { validate, plot, getPlan } from "../assets/js/shared";
 import { clearGraph } from "../assets/js/substrait-d3";
 import { store } from "../components/store";
-=======
-import { validate, plot, getPlan } from "../assets/js/shared";
-import { store } from "../components/store";
 
-<<<<<<< HEAD
->>>>>>> 9fc6ee1 (feat: client side features for shareable link)
-
-=======
->>>>>>> 84e6f1b (feat: shareable link for UploadView)
 self.MonacoEnvironment = {
   getWorker(_, label) {
     if (label === "json") {
