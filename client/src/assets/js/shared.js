@@ -51,7 +51,7 @@ function plot(plan, status_func) {
 async function getPlan(id) {
   try {
     const hex = /^[0-9a-fA-F]+$/;
-    if (!hex.test(id)){
+    if (!hex.test(id)) {
       alert("Invalid ID: ID contains non-hexadecimal elements");
       throw console.error("Invalid ID passed");
     }
@@ -59,7 +59,7 @@ async function getPlan(id) {
     return response;
   } catch (error) {
     console.error(error);
-    if(error.response.status == 404){
+    if (error.response.status == 404) {
       alert(error.response.data["detail"]);
     }
   }

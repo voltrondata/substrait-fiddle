@@ -6,7 +6,7 @@ from loguru import logger
 
 class PlanData(BaseModel):
     json_string: str
-    validation_levels: list[int]
+    validator_overrides: list[int]
 
 
 class MongoDBConnection:
@@ -22,7 +22,7 @@ class MongoDBConnection:
     async def add_record(self, data):
         data = {
             "json_data": data.json_string,
-            "validation_levels": data.validation_levels,
+            "validator_overrides": data.validator_overrides,
         }
         result = await self.collection.insert_one(data)
         return str(result.inserted_id)

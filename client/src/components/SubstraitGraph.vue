@@ -125,12 +125,13 @@ export default {
       plan_link.click();
       URL.revokeObjectURL(plan_link.href);
     },
-    async generateLink(){
-        try {
-          const resp = await axios.post("/api/save/", {
-            json_string: store.plan,
-            validation_levels: [0,1],
-          });
+    async generateLink() {
+      try {
+        const resp = await axios.post("/api/save/", {
+          json_string: store.plan,
+          validator_overrides: store.validation_override_levels,
+        });
+
         const textField = document.createElement("textarea");
         textField.innerText = this.currentUrl + "/plan/" + resp.data;
         document.body.appendChild(textField);
