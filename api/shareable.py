@@ -1,7 +1,6 @@
 from bson.objectid import ObjectId
 from pydantic import BaseModel
 from motor.motor_asyncio import AsyncIOMotorClient
-from loguru import logger
 
 
 class PlanData(BaseModel):
