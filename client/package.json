@@ -24,7 +24,7 @@
     "monaco-editor-webpack-plugin": "^7.0.1",
     "monaco-languageclient": "^4.0.3",
     "n": "^9.1.0",
-    "protobufjs": "^7.2.0",
+    "protobufjs": "^7.2.4",
     "stable": "^0.1.8",
     "substrait": "github:westonpace/substrait-js#05c27d5e92bd69426789c192fd574f4f63168fdb",
     "vue": "^3.2.45",
