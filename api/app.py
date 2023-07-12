@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException, status, File, UploadFile, Form, Depends
+from fastapi import FastAPI, HTTPException, File, UploadFile, Form, Depends
 from fastapi.openapi.utils import get_openapi
 from fastapi_health import health
 
@@ -107,7 +107,7 @@ async def FetchPlan(id: str, db_conn: AsyncIOMotorCollection = Depends(get_mongo
     if response is None:
         raise HTTPException(status_code=404, detail="Plan not found")
     return {
-        "json_data": response["json_data"],
+        "json_string": response["json_string"],
         "validator_overrides": response["validator_overrides"],
     }
 

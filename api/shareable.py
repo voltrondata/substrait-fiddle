@@ -25,7 +25,7 @@ class MongoDBConnection:
 
     async def add_record(self, collection, data):
         data = {
-            "json_data": data.json_string,
+            "json_string": data.json_string,
             "validator_overrides": data.validator_overrides,
         }
         result = await collection.insert_one(data)
