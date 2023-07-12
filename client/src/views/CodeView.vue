@@ -177,7 +177,7 @@ export default {
     },
     async loadPlan(id) {
       const resp = await getPlan(id);
-      const jsonObject = JSON.parse(resp.data.json_data);
+      const jsonObject = JSON.parse(resp.data.json_string);
 
       this.code = JSON.stringify(jsonObject, null, 2);
       this.language = "json";
