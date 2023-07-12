@@ -60,6 +60,7 @@ export default {
       download: false,
       downloadJSON: false,
       shareable_link: "",
+      plan: "",
     };
   },
   mounted() {
@@ -133,12 +134,14 @@ export default {
     },
     async generateLink() {
       try {
-        const resp = await axios.post("/api/save/", {
-          json_string: store.plan,
-          validator_overrides: store.validation_override_levels,
-        });
-
-        this.shareable_link = this.currentUrl + "/plan/" + resp.data;
+        if (store.plan != this.plan) {
+          const resp = await axios.post("/api/save/", {
+            json_string: store.plan,
+            validator_overrides: store.validation_override_levels,
+          });
+          this.shareable_link = this.currentUrl + "/plan/" + resp.data;
+          this.plan = store.plan;
+        }
         this.clipboard.onClick({ currentTarget: this.$refs.copyButton });
         alert("Link copied to clipboard!");
       } catch (error) {
