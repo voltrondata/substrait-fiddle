@@ -1,3 +1,4 @@
+import os
 from bson.objectid import ObjectId
 from pydantic import BaseModel
 from motor.motor_asyncio import AsyncIOMotorClient
@@ -10,25 +11,30 @@ class PlanData(BaseModel):
 
 class MongoDBConnection:
     def __init__(self):
-        self.client = AsyncIOMotorClient("mongodb://localhost:27017")
-        self.database = self.client["plans"]
-        self.collection = self.database["links"]
+        url = os.environ.get("PROD_MONGO_URL", "mongodb://localhost:27017")
+        self.client = AsyncIOMotorClient(url)
 
-    async def get_record(self, id):
-        record = await self.collection.find_one({"_id": ObjectId(id)})
+    def initialize(self):
+        database = self.client["plans"]
+        collection = database["links"]
+        return collection
+
+    async def get_record(self, collection, id):
+        record = await collection.find_one({"_id": ObjectId(id)})
         return record
 
-    async def add_record(self, data):
+    async def add_record(self, collection, data):
         data = {
             "json_data": data.json_string,
             "validator_overrides": data.validator_overrides,
         }
-        result = await self.collection.insert_one(data)
+        result = await collection.insert_one(data)
         return str(result.inserted_id)
 
     async def check(self):
         try:
-            client = AsyncIOMotorClient("mongodb://localhost:27017")
+            url = os.environ.get("PROD_MONGO_URL", "mongodb://localhost:27017")
+            client = AsyncIOMotorClient(url)
         except Exception as e:
             return False, str(e)
 
@@ -41,16 +47,3 @@ class MongoDBConnection:
                 False,
                 "Links collection doesn't exist in Plan database.",
             )
-
-    async def close(self):
-        self.collection = None
-        self.database = None
-        self.client.close()
-
-
-async def get_mongo_conn():
-    mongo_conn = MongoDBConnection()
-    try:
-        yield mongo_conn
-    finally:
-        await mongo_conn.close()

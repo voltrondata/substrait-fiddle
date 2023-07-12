@@ -2,6 +2,8 @@ from fastapi import FastAPI, HTTPException, status, File, UploadFile, Form, Depe
 from fastapi.openapi.utils import get_openapi
 from fastapi_health import health
 
+from motor.motor_asyncio import AsyncIOMotorCollection
+
 import substrait_validator as sv
 
 from backend.duckdb import (
@@ -11,12 +13,16 @@ from backend.duckdb import (
     ParseFromDuckDB,
 )
 
-from shareable import MongoDBConnection, PlanData, get_mongo_conn
+from shareable import MongoDBConnection, PlanData
 
 from loguru import logger
 
 app = FastAPI()
 duckConn = None
+
+
+async def get_mongo_conn():
+    return app.state.mongo_pool.initialize()
 
 
 @app.get("/")
@@ -28,6 +34,7 @@ def ping():
 async def Initialize():
     global duckConn
     duckConn = ConnectDuckDB()
+    app.state.mongo_pool = MongoDBConnection()
 
 
 @app.get("/health/duckdb/")
@@ -36,8 +43,8 @@ def CheckBackendConn(conn):
 
 
 @app.get("/health/mongodb/")
-def CheckMongoConn(db: MongoDBConnection = Depends(get_mongo_conn)):
-    db.check()
+def CheckMongoConn():
+    app.state.mongo_pool.check()
 
 
 app.add_api_route("/health", health([CheckBackendConn]))
@@ -87,14 +94,16 @@ async def ParseToSubstrait(data: dict):
 
 
 @app.post("/save/")
-async def SavePlan(data: PlanData, db: MongoDBConnection = Depends(get_mongo_conn)):
-    response = await db.add_record(data)
+async def SavePlan(
+    data: PlanData, db_conn: AsyncIOMotorCollection = Depends(get_mongo_conn)
+):
+    response = await app.state.mongo_pool.add_record(db_conn, data)
     return response
 
 
-@app.post("/fetch/", status_code=status.HTTP_200_OK)
-async def FetchPlan(id: str, db: MongoDBConnection = Depends(get_mongo_conn)):
-    response = await db.get_record(id)
+@app.post("/fetch/")
+async def FetchPlan(id: str, db_conn: AsyncIOMotorCollection = Depends(get_mongo_conn)):
+    response = await app.state.mongo_pool.get_record(db_conn, id)
     if response is None:
         raise HTTPException(status_code=404, detail="Plan not found")
     return {
