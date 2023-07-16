@@ -6,8 +6,9 @@ describe("Substrait Fiddle Shareable Link test", () => {
     });
   
     it("shareable link", () => {
+
       cy.get("select").select("sql");
-  
+
       cy.get("#status").should("have.text", "// Status\n");
   
       cy.get("#editor")
@@ -22,14 +23,16 @@ describe("Substrait Fiddle Shareable Link test", () => {
         .click()
   
       cy.get("button").contains("Generate").click();
-  
+      
       cy.get("button").contains("Copy Link").click();
-    
+
       cy.window().then((window) => {
         const link = window.navigator.clipboard.readText();
         return link;
       }).then((link) => {
-        cy.visit(link);
+        cy.visit(link).its('navigator.permissions')
+        .then((permissions) => permissions.query({ name: 'clipboard-read' }));
+        
         cy.wait(5000).then(()=>{
           cy.get("#editor").should("not.be.empty")
           cy.contains(".multiselect__tag", "1002").should("exist");
