@@ -32,6 +32,13 @@ jobs:
         build: npm run build
         start: npm run preview
 
+    - name: Upload Cypress electron-run video artifact
+      if: always()
+      uses: actions/upload-artifact@v2
+      with:
+        name: Cypress video
+        path: /home/runner/work/substrait-fiddle/substrait-fiddle/client/cypress/videos/shareable.cy.js.mp4
+
   chrome-run:
     runs-on: ubuntu-latest
 
@@ -62,6 +69,13 @@ jobs:
         start: npm run preview
         browser: chrome
 
+    - name: Upload Cypress chrome-run video artifact
+      if: always()
+      uses: actions/upload-artifact@v2
+      with:
+        name: Cypress video
+        path: /home/runner/work/substrait-fiddle/substrait-fiddle/client/cypress/videos/shareable.cy.js.mp4
+
   edge-run:
     runs-on: ubuntu-latest
 
@@ -91,3 +105,10 @@ jobs:
         build: npm run build
         start: npm run preview
         browser: edge
+
+    - name: Upload Cypress edge-run video artifact
+      if: always()
+      uses: actions/upload-artifact@v2
+      with:
+        name: Cypress video
+        path: /home/runner/work/substrait-fiddle/substrait-fiddle/client/cypress/videos/shareable.cy.js.mp4
