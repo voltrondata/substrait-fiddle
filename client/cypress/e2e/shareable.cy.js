@@ -30,9 +30,11 @@ describe("Substrait Fiddle Shareable Link test", () => {
         return link;
       }).then((link) => {
         cy.visit(link);
-        cy.get("#editor").should("not.be.empty")
-        cy.contains(".multiselect__tag", "1002").should("exist");
-        cy.contains(".multiselect__tag", "2001").should("exist");
+        cy.wait(5000).then(()=>{
+          cy.get("#editor").should("not.be.empty")
+          cy.contains(".multiselect__tag", "1002").should("exist");
+          cy.contains(".multiselect__tag", "2001").should("exist");
+        });  
     });
     });
   });
