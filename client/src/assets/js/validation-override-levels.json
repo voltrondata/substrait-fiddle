@@ -1,0 +1,250 @@
+[
+    {
+      "level": 1,
+      "desc": "not yet implemented"
+    },
+    {
+      "level": 2,
+      "desc": "illegal value"
+    },
+    {
+      "level": 4,
+      "desc": "illegal URI"
+    },
+    {
+      "level": 5,
+      "desc": "illegal glob"
+    },
+    {
+      "level": 6,
+      "desc": "deprecation"
+    },
+    {
+      "level": 7,
+      "desc": "versioning"
+    },
+    {
+      "level": 999,
+      "desc": "experimental"
+    },
+    {
+      "level": 1000,
+      "desc": "protobuf-related diagnostic"
+    },
+    {
+      "level": 1001,
+      "desc": "protobuf parsing failed"
+    },
+    {
+      "level": 1002,
+      "desc": "missing required protobuf field"
+    },
+    {
+      "level": 1004,
+      "desc": "encountered a protobuf 'any'"
+    },
+    {
+      "level": 1006,
+      "desc": "missing protobuf 'any' declaration"
+    },
+    {
+      "level": 2000,
+      "desc": "YAML-related diagnostic"
+    },
+    {
+      "level": 2001,
+      "desc": "did not attempt to resolve YAML"
+    },
+    {
+      "level": 2002,
+      "desc": "failed to resolve YAML"
+    },
+    {
+      "level": 2003,
+      "desc": "failed to parse YAML"
+    },
+    {
+      "level": 2004,
+      "desc": "YAML does not conform to schema"
+    },
+    {
+      "level": 2005,
+      "desc": "missing required YAML key"
+    },
+    {
+      "level": 2007,
+      "desc": "missing required YAML array element"
+    },
+    {
+      "level": 2008,
+      "desc": "invalid YAML value type"
+    },
+    {
+      "level": 2009,
+      "desc": "cyclic dependency"
+    },
+    {
+      "level": 3000,
+      "desc": "link resolution diagnostic"
+    },
+    {
+      "level": 3001,
+      "desc": "failed to resolve anchor"
+    },
+    {
+      "level": 3005,
+      "desc": "use of anchor zero"
+    },
+    {
+      "level": 3006,
+      "desc": "failed to resolve type variation name & class pair"
+    },
+    {
+      "level": 3007,
+      "desc": "unresolved name lookup"
+    },
+    {
+      "level": 3008,
+      "desc": "ambiguous name lookup"
+    },
+    {
+      "level": 3009,
+      "desc": "duplicate definition"
+    },
+    {
+      "level": 3010,
+      "desc": "invalid compound vs. simple function name usage"
+    },
+    {
+      "level": 4000,
+      "desc": "type-related diagnostics"
+    },
+    {
+      "level": 4001,
+      "desc": "unknown type"
+    },
+    {
+      "level": 4002,
+      "desc": "mismatched type parameters"
+    },
+    {
+      "level": 4003,
+      "desc": "mismatched field name associations"
+    },
+    {
+      "level": 4004,
+      "desc": "invalid swizzle operation"
+    },
+    {
+      "level": 4005,
+      "desc": "mismatched types"
+    },
+    {
+      "level": 4006,
+      "desc": "struct type is required"
+    },
+    {
+      "level": 4007,
+      "desc": "mismatched type variation"
+    },
+    {
+      "level": 4008,
+      "desc": "mismatched nullability"
+    },
+    {
+      "level": 4009,
+      "desc": "invalid type pattern or derivation expression"
+    },
+    {
+      "level": 4010,
+      "desc": "type pattern or derivation expression failed to match or evaluate"
+    },
+    {
+      "level": 4011,
+      "desc": "parse error in type pattern or derivation expression"
+    },
+    {
+      "level": 4012,
+      "desc": "name resolution error in type pattern or derivation expression"
+    },
+    {
+      "level": 4013,
+      "desc": "invalid field name"
+    },
+    {
+      "level": 4014,
+      "desc": "unsupported type pattern or derivation construct"
+    },
+    {
+      "level": 5000,
+      "desc": "relation-related diagnostics"
+    },
+    {
+      "level": 5001,
+      "desc": "missing root relation"
+    },
+    {
+      "level": 5002,
+      "desc": "missing relation"
+    },
+    {
+      "level": 5003,
+      "desc": "invalid relation"
+    },
+    {
+      "level": 6000,
+      "desc": "expression-related diagnostics"
+    },
+    {
+      "level": 6001,
+      "desc": "field reference into non-existent stream"
+    },
+    {
+      "level": 6002,
+      "desc": "illegal literal value"
+    },
+    {
+      "level": 6003,
+      "desc": "function definition unavailable"
+    },
+    {
+      "level": 6004,
+      "desc": "illegal subquery"
+    },
+    {
+      "level": 7000,
+      "desc": "diagnostics for pointing out parts of the plan that can be removed without changing its semantics"
+    },
+    {
+      "level": 7001,
+      "desc": "redundant protobuf 'any' declaration"
+    },
+    {
+      "level": 7002,
+      "desc": "redundant extension URI definition"
+    },
+    {
+      "level": 7003,
+      "desc": "redundant function declaration"
+    },
+    {
+      "level": 7004,
+      "desc": "redundant type declaration"
+    },
+    {
+      "level": 7005,
+      "desc": "redundant type variation declaration"
+    },
+    {
+      "level": 7006,
+      "desc": "redundant list slice"
+    },
+    {
+      "level": 7007,
+      "desc": "redundant field"
+    },
+    {
+      "level": 7008,
+      "desc": "redundant enum variant"
+    }
+  ]

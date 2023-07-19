@@ -1,18 +1,77 @@
 <template>
   <div id="override_level">
-    <Multiselect
-      v-model="value"
+    <multiselect
+      v-model="selected"
       placeholder="Add a validation override level"
-      label="code"
-      track-by="code"
-      :options="options"
+      label="level"
+      track-by="level"
+      :options="filterOptions"
       :multiple="true"
       :taggable="true"
-      :option-height="50"
-      @tag="addLevel"
-    ></Multiselect>
+      :searchable="true"
+      @search-change="handleSearchChange"
+    >
+      <template #option="{ option }">
+        <div v-if="filterOptions.length > 0">
+          <span class="option__small"
+            >{{ option.level }} - {{ option.desc }}</span
+          >
+        </div>
+        <div class="option__unavailable" v-else>
+          <span>Level</span><br />
+          <span>not supported</span>
+        </div>
+      </template>
+    </multiselect>
   </div>
 </template>
+
+<script>
+import Multiselect from "vue-multiselect";
+import validationOverrideLevels from "../assets/js/validation-override-levels.json";
+
+export default {
+  name: "ValidationLevel",
+  components: {
+    Multiselect,
+  },
+  data() {
+    return {
+      selected: [],
+      options: [],
+      searchLevel: "",
+    };
+  },
+  computed: {
+    filterOptions() {
+      if (!this.searchLevel) {
+        return this.options;
+      }
+      const searchLevelLower = this.searchLevel.toLowerCase();
+      return this.options.filter(
+        (option) =>
+          option.level.toString().startsWith(searchLevelLower) ||
+          option.desc.toLowerCase().includes(searchLevelLower)
+      );
+    },
+    showNoOptions() {
+      return this.searchLevel !== "" && this.filterOptions.length === 0;
+    },
+  },
+  mounted() {
+    this.options = validationOverrideLevels;
+    this.selected.push(this.options.find((option) => option.level === 1002));
+  },
+  methods: {
+    handleSearchChange(searchLevel) {
+      this.searchLevel = searchLevel;
+    },
+    getValidationOverrideLevel() {
+      return this.selected.map((item) => item.level);
+    },
+  },
+};
+</script>
 
 <style src="vue-multiselect/dist/vue-multiselect.css"></style>
 
@@ -39,30 +98,12 @@
   padding-top: 0%;
   z-index: 1;
 }
+.multiselect__content-wrapper {
+  width: unset !important;
+  min-width: 100% !important;
+  max-height: 200px !important;
+}
+.option__unavailable {
+  line-height: 1.4;
+}
 </style>
-
-<script>
-import Multiselect from "vue-multiselect";
-
-export default {
-  name: "ValidationLevel",
-  components: {
-    Multiselect,
-  },
-  data: function () {
-    return {
-      value: [{ code: 1002 }],
-      options: [{ code: 1002 }, { code: 2001 }, { code: 1 }],
-    };
-  },
-  methods: {
-    addLevel(level) {
-      this.options.push({ code: parseInt(level) });
-      this.value.push({ code: parseInt(level) });
-    },
-    getValidationOverrideLevel() {
-      return this.value.map((item) => item.code);
-    },
-  },
-};
-</script>
