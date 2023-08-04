@@ -83,12 +83,8 @@ export default {
   data: function () {
     return {
       tempSchema: "",
-      schema: "",
-    };
-  },
-
-  mounted: function () {
-    this.schema = `CREATE TABLE lineitem(
+      currSchema: "",
+      defaultSchema: `CREATE TABLE lineitem(
             l_orderkey INTEGER NOT NULL, 
             l_partkey INTEGER NOT NULL, 
             l_suppkey INTEGER NOT NULL, 
@@ -104,21 +100,25 @@ export default {
             l_receiptdate DATE NOT NULL, 
             l_shipinstruct VARCHAR NOT NULL, 
             l_shipmode VARCHAR NOT NULL, 
-            l_comment VARCHAR NOT NULL);`;
-    this.tempSchema = this.schema;
+            l_comment VARCHAR NOT NULL);`,
+      otherSchema: [],
+    };
   },
-
+  mounted(){
+    this.currSchema = this.defaultSchema;
+    this.tempSchema = this.defaultSchema;
+  },
   methods: {
     getSchema() {
-      return this.schema;
+      return this.defaultSchema;
     },
     updateSchema() {
-      this.tempSchema = this.schema;
+      this.tempSchema = this.defaultSchema;
     },
     async saveSchema() {
-      if (this.tempSchema != this.schema) {
+      if (this.tempSchema != this.defaultSchema) {
         try {
-          this.schema = this.tempSchema;
+          this.defaultSchema = this.tempSchema;
           await axios.post("/api/execute/duckdb/", [this.schema]);
           this.$emit(
             "updateSchemaStatus",

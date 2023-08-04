@@ -4,11 +4,12 @@ from fastapi.routing import APIRouter
 from fastapi_health import health
 
 from motor.motor_asyncio import AsyncIOMotorCollection
+from duckdb import DuckDBPyConnection
 
 import substrait_validator as sv
 
 from backend.duckdb import (
-    ConnectDuckDB,
+    DuckDBConnection,
     CheckDuckDBConnection,
     ExecuteDuckDb,
     ParseFromDuckDB,
@@ -19,15 +20,20 @@ from shareable import MongoDBConnection, PlanData
 from loguru import logger
 
 router = APIRouter()
-duckConn = None
 
 async def get_mongo_conn():
     return app.state.mongo_pool.initialize()
 
+async def get_duck_conn():
+    conn = app.state.duck_pool.initialize()
+    try:
+        yield conn
+    finally:
+        conn.close()
+
 @router.on_event("startup")
 def Initialize():
-    global duckConn
-    duckConn = ConnectDuckDB()
+    app.state.duck_pool = DuckDBConnection()
     app.state.mongo_pool = MongoDBConnection()
 
 
@@ -69,20 +75,7 @@ async def ValidateFile(file: UploadFile = File(), override_levels: list[int] = F
             status_code=500, detail="Substrait Validator Internal Error: " + str(e)
         )
 
-
-@router.post("/execute/duckdb/")
-async def ExecuteBackend(data: list[str]):
-    global duckConn
-    return ExecuteDuckDb(data, duckConn)
-
-
-@router.post("/parse/")
-async def ParseToSubstrait(data: dict):
-    global duckConn
-    return ParseFromDuckDB(data, duckConn)
-
-
-@app.post("/save/")
+@router.post("/save/")
 async def SavePlan(
     data: PlanData, db_conn: AsyncIOMotorCollection = Depends(get_mongo_conn)
 ):
@@ -90,7 +83,7 @@ async def SavePlan(
     return response
 
 
-@app.post("/fetch/")
+@router.post("/fetch/")
 async def FetchPlan(id: str, db_conn: AsyncIOMotorCollection = Depends(get_mongo_conn)):
     response = await app.state.mongo_pool.get_record(db_conn, id)
     if response is None:
@@ -99,6 +92,17 @@ async def FetchPlan(id: str, db_conn: AsyncIOMotorCollection = Depends(get_mongo
         "json_string": response["json_string"],
         "validator_overrides": response["validator_overrides"],
     }
+
+@router.post("/execute/duckdb/")
+def ExecuteBackend(data: dict, db_conn: DuckDBPyConnection = Depends(get_duck_conn)):
+    response = ExecuteDuckDb(data, db_conn)
+    return response
+
+
+@router.post("/parse/", status_code=status.HTTP_200_OK)
+def ParseToSubstrait(data: dict, db_conn: DuckDBPyConnection = Depends(get_duck_conn)):
+    response = ParseFromDuckDB(data, db_conn)
+    return response
 
 
 # For defining custom documentation for the server

@@ -1,37 +1,32 @@
 import duckdb
+from pydantic import BaseModel
 from fastapi import HTTPException
 
 from loguru import logger
 
-schema_lineitem = """CREATE TABLE IF NOT EXISTS lineitem(
-            l_orderkey INTEGER NOT NULL, 
-            l_partkey INTEGER NOT NULL, 
-            l_suppkey INTEGER NOT NULL, 
-            l_linenumber INTEGER NOT NULL, 
-            l_quantity INTEGER NOT NULL, 
-            l_extendedprice DECIMAL(15,2) NOT NULL, 
-            l_discount DECIMAL(15,2) NOT NULL, 
-            l_tax DECIMAL(15,2) NOT NULL, 
-            l_returnflag VARCHAR NOT NULL, 
-            l_linestatus VARCHAR NOT NULL, 
-            l_shipdate DATE NOT NULL, 
-            l_commitdate DATE NOT NULL, 
-            l_receiptdate DATE NOT NULL, 
-            l_shipinstruct VARCHAR NOT NULL, 
-            l_shipmode VARCHAR NOT NULL, 
-            l_comment VARCHAR NOT NULL);"""
 
+class DuckDBConnection:
+    def __init__(self):
+        self.conn_pool=[] 
+        for i in range(5):
+            conn = duckdb.connect("duck.db")
+            conn.install_extension("substrait")
+            conn.load_extension("substrait")
+            self.conn_pool.append(conn)
 
-def ConnectDuckDB():
-    con = duckdb.connect()
-    con.install_extension("substrait")
-    con.load_extension("substrait")
-    con.install_extension("tpch")
-    con.load_extension("tpch")
-    con.execute(query=schema_lineitem)
-    logger.success("DuckDb initialized successfully")
-    return con
-
+    def check_pool(self):
+        if(len(self.conn_pool) == 0):
+            print("creating new conn objects")
+            for i in range(5):
+                conn = duckdb.connect()
+                conn.install_extension("substrait")
+                conn.load_extension("substrait")
+                self.conn_pool.append(conn)
+    
+    def initialize(self):
+        self.check_pool()
+        con = self.conn_pool.pop(0)
+        return con
 
 def CheckDuckDBConnection(con):
     status = {"db_health": "unavailable"}
@@ -50,10 +45,7 @@ def CheckDuckDBConnection(con):
 
 def ExecuteDuckDb(data, con):
     try:
-        if CheckDuckDBConnection(con)["db_health"] != "up and running":
-            con = ConnectDuckDB()
-        for i in data:
-            con.execute(query=i)
+        con.execute(query=data["query"])
         return {"message": "DuckDB Operation successful"}
     except Exception as e:
         raise HTTPException(
@@ -65,8 +57,6 @@ def ExecuteDuckDb(data, con):
 
 def ParseFromDuckDB(data, con):
     try:
-        if CheckDuckDBConnection(con)["db_health"] != "up and running":
-            con = ConnectDuckDB()
         result = con.get_substrait_json(data["query"]).fetchone()[0]
         return result
     except Exception as e:
