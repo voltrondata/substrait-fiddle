@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: substrait-fiddle
+      tier: backend
+  template:
+    metadata:
+      labels:
+        app: substrait-fiddle
+        tier: backend
+    spec:
+      nodeSelector:
+        cloud.google.com/compute-class: "Balanced"
+      containers:
+        - name: substrait-fiddle-backend
+          image: us-central1-docker.pkg.dev/substrait-fiddle/substrait-fiddle-backend/substrait-fiddle-backend:0.0.1-alpha4
+          ports:
+            - containerPort: 9090

@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: substrait-fiddle
+      tier: frontend
+  template:
+    metadata:
+      labels:
+        app: substrait-fiddle
+        tier: frontend
+    spec:
+      nodeSelector:
+        cloud.google.com/compute-class: "Balanced"
+      containers:
+        - name: substrait-fiddle-frontend
+          image: us-central1-docker.pkg.dev/substrait-fiddle/substrait-fiddle-frontend/substrait-fiddle-frontend:0.0.1-alpha1
+          ports:
+            - containerPort: 8080
