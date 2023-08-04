@@ -1,5 +1,6 @@
-from fastapi import FastAPI, HTTPException, File, UploadFile, Form, Depends
+from fastapi import FastAPI, HTTPException, status, File, UploadFile, Form, Depends, Request
 from fastapi.openapi.utils import get_openapi
+from fastapi.routing import APIRouter
 from fastapi_health import health
 
 from motor.motor_asyncio import AsyncIOMotorCollection
@@ -17,40 +18,28 @@ from shareable import MongoDBConnection, PlanData
 
 from loguru import logger
 
-app = FastAPI()
-duckConn = None
-
+router = APIRouter()
+con = None
 
 async def get_mongo_conn():
     return app.state.mongo_pool.initialize()
 
-
-@app.get("/")
-def ping():
-    return {"api_service": "up and running"}
-
-
-@app.on_event("startup")
-async def Initialize():
-    global duckConn
-    duckConn = ConnectDuckDB()
+@router.on_event("startup")
+def Initialize():
+    global con
+    con = ConnectDuckDB()
     app.state.mongo_pool = MongoDBConnection()
 
 
-@app.get("/health/duckdb/")
+@router.get("/health/")
 def CheckBackendConn(conn):
     CheckDuckDBConnection(conn)
-
-
-@app.get("/health/mongodb/")
-def CheckMongoConn():
     app.state.mongo_pool.check()
 
+router.add_api_route("/health", health([CheckBackendConn]))
 
-app.add_api_route("/health", health([CheckBackendConn]))
 
-
-@app.post("/validate/")
+@router.post("/validate/", status_code=status.HTTP_200_OK)
 async def Validate(plan: dict, override_levels: list[int]):
     try:
         logger.info("Validating plan using substrait-validator!")
@@ -65,7 +54,7 @@ async def Validate(plan: dict, override_levels: list[int]):
         )
 
 
-@app.post("/validate/file/")
+@router.post("/validate/file/")
 async def ValidateFile(file: UploadFile = File(), override_levels: list[int] = Form()):
     try:
         logger.info("Validating file using substrait-validator!")
@@ -81,13 +70,13 @@ async def ValidateFile(file: UploadFile = File(), override_levels: list[int] = F
         )
 
 
-@app.post("/execute/duckdb/")
+@router.post("/execute/duckdb/")
 async def ExecuteBackend(data: list[str]):
     global duckConn
     return ExecuteDuckDb(data, duckConn)
 
 
-@app.post("/parse/")
+@router.post("/parse/")
 async def ParseToSubstrait(data: dict):
     global duckConn
     return ParseFromDuckDB(data, duckConn)
@@ -125,5 +114,10 @@ def SubstraitFiddleOpenAPI():
     app.openapi_schema = openapi_schema
     return app.openapi_schema
 
-
+app = FastAPI()
+app.include_router(router, prefix="/api")
 app.openapi = SubstraitFiddleOpenAPI
+
+@app.get("/")
+def global_ping():
+    return {"api_service": "up and running"}
