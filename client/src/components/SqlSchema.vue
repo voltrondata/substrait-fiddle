@@ -104,7 +104,7 @@ export default {
       otherSchema: [],
     };
   },
-  mounted(){
+  mounted() {
     this.currSchema = this.defaultSchema;
     this.tempSchema = this.defaultSchema;
   },

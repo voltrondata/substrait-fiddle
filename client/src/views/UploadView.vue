@@ -22,13 +22,13 @@
         class="form-control"
         id="file-upload"
         style="width: 40%"
-        accept=".json,.sql,.bin"
+        accept=".json, .bin"
         ref="fileInput"
         @change="generate"
         @click="$event.target.value = ''"
       />
       <span style="color: gray; font-size: small"
-        >*only .json, .sql and .bin are accepted</span
+        >*only .json and .bin are accepted</span
       >
     </div>
 
@@ -77,29 +77,6 @@ export default {
       const plan = substrait.substrait.Plan.fromObject(this.content);
       plot(plan, this.updateStatus);
     },
-    async generateFromSql() {
-      this.updateStatus("SQL file detected, reading...");
-      const sqlFileRes = await readText(this.file);
-      this.updateStatus("SQL file read successfully!");
-      this.content = sqlFileRes;
-      this.updateStatus("Converting SQL Query to Substrait Plan via DuckDB...");
-      const duckDbRsp = await axios.post("/api/parse/", {
-        query: this.content,
-      });
-      this.updateStatus("SQL query converted to Substrait Plan successfully!");
-      this.updateStatus("Validating converted Substrait plan...");
-      validate(
-        JSON.parse(duckDbRsp.data),
-        this.getValidationOverrideLevel(),
-        this.updateStatus
-      );
-      store.set_plan(duckDbRsp.data, this.getValidationOverrideLevel());
-      this.updateStatus("Generating plot for converted substrait plan...");
-      const plan = substrait.substrait.Plan.fromObject(
-        JSON.parse(duckDbRsp.data)
-      );
-      plot(plan, this.updateStatus);
-    },
     async generateFromBinary() {
       this.updateStatus("Binary file detected.");
       const fileReadRsp = await readFile(this.file);
@@ -129,8 +106,6 @@ export default {
       try {
         if (this.file.name.includes(".json")) {
           this.generateFromJson();
-        } else if (this.file.name.includes(".sql")) {
-          this.generateFromSql();
         } else {
           this.generateFromBinary();
         }
