@@ -54,9 +54,9 @@ def test_duckdb_execute():
     with TestClient(app) as client:
         res = client.post(
             "/execute/duckdb/",
-            json = {
+            json={
                 "query": "CREATE TABLE IF NOT EXISTS weather(city VARCHAR, temp_lo INTEGER);",
-            }
+            },
         )
         print(res.json())
         assert res.status_code == 200
@@ -94,13 +94,16 @@ def test_save_plan_roundtrip():
     with TestClient(app) as client:
         client.post(
             "/execute/duckdb/",
-            json = {
+            json={
                 "query": "CREATE TABLE IF NOT EXISTS test_fiddle(id INTEGER NOT NULL, key INTEGER NOT NULL);",
             },
         )
-        response = client.post("/parse/", json = {
-            "query" : "SELECT * FROM test_fiddle;",
-        })
+        response = client.post(
+            "/parse/",
+            json={
+                "query": "SELECT * FROM test_fiddle;",
+            },
+        )
         print(response.json())
         assert response.status_code == 200
         assert response.json() is not None

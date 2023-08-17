@@ -7,7 +7,7 @@ from loguru import logger
 
 class DuckDBConnection:
     def __init__(self):
-        self.conn_pool=[] 
+        self.conn_pool = []
         for i in range(5):
             conn = duckdb.connect("duck.db")
             conn.install_extension("substrait")
@@ -15,18 +15,19 @@ class DuckDBConnection:
             self.conn_pool.append(conn)
 
     def check_pool(self):
-        if(len(self.conn_pool) == 0):
+        if len(self.conn_pool) == 0:
             print("creating new conn objects")
             for i in range(5):
                 conn = duckdb.connect()
                 conn.install_extension("substrait")
                 conn.load_extension("substrait")
                 self.conn_pool.append(conn)
-    
+
     def initialize(self):
         self.check_pool()
         con = self.conn_pool.pop(0)
         return con
+
 
 def CheckDuckDBConnection(con):
     status = {"db_health": "unavailable"}

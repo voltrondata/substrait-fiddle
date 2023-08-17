@@ -1,4 +1,5 @@
-from fastapi import FastAPI, HTTPException, status, File, UploadFile, Form, Depends, Request
+from fastapi import FastAPI, HTTPException, status, Depends, File, UploadFile, Form, Request
+from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from fastapi.openapi.utils import get_openapi
 from fastapi.routing import APIRouter
 from fastapi_health import health
@@ -24,6 +25,7 @@ router = APIRouter()
 async def get_mongo_conn():
     return app.state.mongo_pool.initialize()
 
+
 async def get_duck_conn():
     conn = app.state.duck_pool.initialize()
     try:
@@ -31,13 +33,14 @@ async def get_duck_conn():
     finally:
         conn.close()
 
+
 @router.on_event("startup")
-def Initialize():
+async def Initialize():
     app.state.duck_pool = DuckDBConnection()
     app.state.mongo_pool = MongoDBConnection()
 
 
-@router.get("/health/duckcb/")
+@router.get("/health/duckdb/")
 def CheckBackendConn(conn):
     CheckDuckDBConnection(conn)
     app.state.mongo_pool.check()
@@ -121,6 +124,11 @@ def SubstraitFiddleOpenAPI():
 app = FastAPI()
 app.include_router(router, prefix="/api")
 app.openapi = SubstraitFiddleOpenAPI
+
+app.add_middleware(
+    TrustedHostMiddleware,
+    allowed_hosts=["substrait-fiddle.com", "*.substrait-fiddle.com", "127.0.0.1"],
+)
 
 @app.get("/")
 def global_ping():
