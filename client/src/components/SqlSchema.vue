@@ -8,7 +8,7 @@
       data-bs-target="#schemaModal"
       @click="updateSchema"
     >
-      Show/Modify Schema
+      Show/Add Schema
     </button>
     <div
       class="modal fade"
@@ -31,14 +31,6 @@
             ></button>
           </div>
           <div class="modal-body">
-            <textarea
-              v-model="tempSchema"
-              class="form-control"
-              id="schemaTextArea"
-              rows="20"
-              cols="40"
-            >
-            </textarea>
           </div>
           <div class="modal-footer">
             <button
@@ -69,6 +61,7 @@
   font-family: Consolas, Menlo, Monaco, Lucida Console, Liberation Mono,
     DejaVu Sans Mono, Bitstream Vera Sans Mono, Courier New, monospace, serif;
 }
+
 </style>
 
 <script>
@@ -107,6 +100,9 @@ export default {
   mounted() {
     this.currSchema = this.defaultSchema;
     this.tempSchema = this.defaultSchema;
+  },
+  created() {
+    this.getData();
   },
   methods: {
     getSchema() {
