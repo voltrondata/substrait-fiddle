@@ -3,6 +3,8 @@ from bson.objectid import ObjectId
 from pydantic import BaseModel
 from motor.motor_asyncio import AsyncIOMotorClient
 
+DEFAULT_MONGO_URL = "mongodb://localhost:27017"
+
 
 class PlanData(BaseModel):
     json_string: str
@@ -11,7 +13,7 @@ class PlanData(BaseModel):
 
 class MongoDBConnection:
     def __init__(self):
-        url = os.environ.get("PROD_MONGO_URL", "mongodb://localhost:27017")
+        url = os.environ.get("PROD_MONGO_URL", DEFAULT_MONGO_URL)
         self.client = AsyncIOMotorClient(url)
 
     def initialize(self):
