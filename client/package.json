@@ -28,7 +28,7 @@
     "protobufjs": "^7.2.4",
     "stable": "^0.1.8",
     "substrait": "github:westonpace/substrait-js#05c27d5e92bd69426789c192fd574f4f63168fdb",
-    "vue": "^3.2.45",
+    "vue": "^3.3.4",
     "vue-multiselect": "^3.0.0-beta.1",
     "vue-router": "^4.1.6"
   },
