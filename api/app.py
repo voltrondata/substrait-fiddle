@@ -1,6 +1,8 @@
-from fastapi import FastAPI, HTTPException, status, File, UploadFile, Form
+from fastapi import FastAPI, HTTPException, File, UploadFile, Form, Depends
 from fastapi.openapi.utils import get_openapi
 from fastapi_health import health
+
+from motor.motor_asyncio import AsyncIOMotorCollection
 
 import substrait_validator as sv
 
@@ -11,10 +13,16 @@ from backend.duckdb import (
     ParseFromDuckDB,
 )
 
+from shareable import MongoDBConnection, PlanData
+
 from loguru import logger
 
 app = FastAPI()
-con = None
+duckConn = None
+
+
+async def get_mongo_conn():
+    return app.state.mongo_pool.initialize()
 
 
 @app.get("/")
@@ -23,20 +31,26 @@ def ping():
 
 
 @app.on_event("startup")
-def Initialize():
-    global con
-    con = ConnectDuckDB()
+async def Initialize():
+    global duckConn
+    duckConn = ConnectDuckDB()
+    app.state.mongo_pool = MongoDBConnection()
 
 
-@app.get("/health/duckcb/")
+@app.get("/health/duckdb/")
 def CheckBackendConn(conn):
     CheckDuckDBConnection(conn)
+
+
+@app.get("/health/mongodb/")
+def CheckMongoConn():
+    app.state.mongo_pool.check()
 
 
 app.add_api_route("/health", health([CheckBackendConn]))
 
 
-@app.post("/validate/", status_code=status.HTTP_200_OK)
+@app.post("/validate/")
 async def Validate(plan: dict, override_levels: list[int]):
     try:
         logger.info("Validating plan using substrait-validator!")
@@ -51,7 +65,7 @@ async def Validate(plan: dict, override_levels: list[int]):
         )
 
 
-@app.post("/validate/file/", status_code=status.HTTP_200_OK)
+@app.post("/validate/file/")
 async def ValidateFile(file: UploadFile = File(), override_levels: list[int] = Form()):
     try:
         logger.info("Validating file using substrait-validator!")
@@ -67,16 +81,35 @@ async def ValidateFile(file: UploadFile = File(), override_levels: list[int] = F
         )
 
 
-@app.post("/execute/duckdb/", status_code=status.HTTP_200_OK)
+@app.post("/execute/duckdb/")
 async def ExecuteBackend(data: list[str]):
-    global con
-    return ExecuteDuckDb(data, con)
+    global duckConn
+    return ExecuteDuckDb(data, duckConn)
 
 
-@app.post("/parse/", status_code=status.HTTP_200_OK)
+@app.post("/parse/")
 async def ParseToSubstrait(data: dict):
-    global con
-    return ParseFromDuckDB(data, con)
+    global duckConn
+    return ParseFromDuckDB(data, duckConn)
+
+
+@app.post("/save/")
+async def SavePlan(
+    data: PlanData, db_conn: AsyncIOMotorCollection = Depends(get_mongo_conn)
+):
+    response = await app.state.mongo_pool.add_record(db_conn, data)
+    return response
+
+
+@app.post("/fetch/")
+async def FetchPlan(id: str, db_conn: AsyncIOMotorCollection = Depends(get_mongo_conn)):
+    response = await app.state.mongo_pool.get_record(db_conn, id)
+    if response is None:
+        raise HTTPException(status_code=404, detail="Plan not found")
+    return {
+        "json_string": response["json_string"],
+        "validator_overrides": response["validator_overrides"],
+    }
 
 
 # For defining custom documentation for the server

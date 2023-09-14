@@ -48,4 +48,21 @@ function plot(plan, status_func) {
   }
 }
 
-export { readFile, readText, validate, plot, clearGraph };
+async function getPlan(id) {
+  try {
+    const hex = /^[0-9a-fA-F]+$/;
+    if (!hex.test(id)) {
+      alert("Invalid ID: ID contains non-hexadecimal elements");
+      throw console.error("Invalid ID passed");
+    }
+    const response = await axios.post("/api/fetch/?id=" + id);
+    return response;
+  } catch (error) {
+    console.error(error);
+    if (error.response.status == 404) {
+      alert(error.response.data["detail"]);
+    }
+  }
+}
+
+export { readFile, readText, validate, plot, clearGraph, getPlan };

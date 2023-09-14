@@ -66,8 +66,14 @@ export default {
     handleSearchChange(searchLevel) {
       this.searchLevel = searchLevel;
     },
+    clearLevels() {
+      this.selected.length = 0;
+    },
     getValidationOverrideLevel() {
       return this.selected.map((item) => item.level);
+    },
+    addValidationOverrideLevel(level) {
+      this.selected.push(this.options.find((option) => option.level === level));
     },
   },
 };
