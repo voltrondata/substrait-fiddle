@@ -111,7 +111,7 @@ export default {
       return this.$refs.override_level.clearLevels();
     },
     addValidationOverrideLevel(level) {
-      this.$refs.override_level.addLevel(level);
+      this.$refs.override_level.addValidationOverrideLevel(level);
     },
     changeLanguage() {
       const models = monaco.editor.getModels();
