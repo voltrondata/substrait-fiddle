@@ -1,5 +1,6 @@
 from fastapi.testclient import TestClient
 from io import BytesIO
+import json
 import requests
 from app import app
 
@@ -56,3 +57,24 @@ def test_parse_to_substrait():
     response = client.post("/parse/", json={"query": "SELECT * FROM lineitem;"})
     assert response.status_code == 200
     assert response.json() is not None
+
+
+def test_save_plan_roundtrip():
+    with TestClient(app) as client:
+        url = "https://substrait.io/tutorial/final_plan.json"
+        response = requests.get(url)
+        assert response.status_code == 200
+        plan = response.json()
+        json_string = json.dumps(plan)
+
+        data = {
+            "json_string": json_string,
+            "validator_overrides": [2001, 1],
+        }
+        response = client.post("/save/", json=data)
+        assert response.status_code == 200
+
+        response = client.post("/fetch/?id=" + response.json())
+        assert response.status_code == 200
+        assert response.json()["json_string"] == json_string
+        assert response.json()["validator_overrides"] == [2001, 1]

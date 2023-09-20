@@ -4,7 +4,6 @@
     <div id="svgContainer">
       <div style="margin-right: 10vh; text-align: right">
         <button
-          ref="download_json"
           type="button"
           class="btn btn-outline-primary btn-sm"
           v-show="downloadJSON"
@@ -12,6 +11,17 @@
           @click="generateJSON"
         >
           Download JSON
+        </button>
+        <button
+          id="copy-button"
+          type="button"
+          class="btn btn-outline-primary btn-sm"
+          v-show="download"
+          style="margin-right: 1vh"
+          @click="generateLink"
+          ref="copyButton"
+        >
+          Copy Link
         </button>
         <button
           type="button"
@@ -39,6 +49,8 @@
 
 <script>
 import { store } from "../components/store";
+import axios from "axios";
+import Clipboard from "clipboard";
 
 export default {
   name: "SubstraitGraph",
@@ -46,9 +58,12 @@ export default {
     return {
       download: false,
       downloadJSON: false,
+      shareable_link: "",
+      plan: "",
     };
   },
   mounted() {
+    this.currentUrl = window.location.origin;
     this.observer = new MutationObserver(() => {
       const svgElement = this.$refs.d3Plot;
       this.download = svgElement.childNodes.length > 0 ? true : false;
@@ -57,6 +72,9 @@ export default {
 
     this.observer.observe(this.$refs.d3Plot, {
       childList: true,
+    });
+    this.clipboard = new Clipboard("#copy-button", {
+      text: () => this.shareable_link,
     });
   },
   beforeDestroy() {
@@ -112,6 +130,22 @@ export default {
       plan_link.download = "plan.json";
       plan_link.click();
       URL.revokeObjectURL(plan_link.href);
+    },
+    async generateLink() {
+      try {
+        if (store.plan != this.plan) {
+          const resp = await axios.post("/api/save/", {
+            json_string: store.plan,
+            validator_overrides: store.validation_override_levels,
+          });
+          this.shareable_link = this.currentUrl + "/plan/" + resp.data;
+          this.plan = store.plan;
+        }
+        this.clipboard.onClick({ currentTarget: this.$refs.copyButton });
+        alert("Link copied to clipboard!");
+      } catch (error) {
+        console.log(error.response.data["detail"]);
+      }
     },
   },
 };

@@ -22,7 +22,13 @@ cd substrait-fiddle/
 ```
 Fiddle requires the [FastAPI back-end](https://github.com/voltrondata/substrait-fiddle/api) for APIs. Prior installation and operation of the service is required.
 ### API Service
+To run it in PROD, use the complete URL, and set the environment variable. This step can be ignored in local development, 
+where the default user and port is used.
+
 ```
+// for PROD
+export PROD_MONGO_URL=url
+
 cd api/
 pip install -r requirements.txt
 uvicorn app:app --reload --port 9090 

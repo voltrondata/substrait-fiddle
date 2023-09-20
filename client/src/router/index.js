@@ -15,6 +15,11 @@ const router = createRouter({
       name: "upload",
       component: UploadView,
     },
+    {
+      path: "/plan/:id",
+      name: "plan",
+      component: CodeView,
+    },
   ],
 });
 
