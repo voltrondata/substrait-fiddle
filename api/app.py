@@ -5,6 +5,8 @@ from fastapi.routing import APIRouter
 from fastapi_health import health
 
 from motor.motor_asyncio import AsyncIOMotorCollection
+import json
+
 from duckdb import DuckDBPyConnection
 
 import substrait_validator as sv
@@ -99,6 +101,22 @@ async def FetchPlan(id: str, db_conn: AsyncIOMotorCollection = Depends(get_mongo
 @router.post("/execute/duckdb/")
 def ExecuteBackend(data: dict, db_conn: DuckDBPyConnection = Depends(get_duck_conn)):
     response = ExecuteDuckDb(data, db_conn)
+    return response
+
+@router.post("/add_schema/")
+def AddSchema(data: dict, db_conn: DuckDBPyConnection = Depends(get_duck_conn)):
+    schema = data["schema"]
+    query = "CREATE TEMP TABLE "
+    json_data = json.loads(schema["schema"])
+    query += json_data["table"] + "("
+    for field in json_data["fields"]:
+        query += field["name"] + " "
+        query += field["type"] + " "
+        for props in field["properties"]:
+            query += props + " "
+        query += ", "
+    query += ");"
+    response = ExecuteDuckDb(query, db_conn)
     return response
 
 

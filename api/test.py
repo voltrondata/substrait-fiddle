@@ -1,10 +1,13 @@
 from fastapi.testclient import TestClient
 from io import BytesIO
 <<<<<<< HEAD
+<<<<<<< HEAD
 import json
 =======
 import pytest
 >>>>>>> 1d03b3c (feat: duckdb to use connection pool)
+=======
+>>>>>>> 3490705 (feat: schema to use a JSON format and query should be generated in backend)
 import requests
 from app import app
 
@@ -55,7 +58,8 @@ def test_duckdb_execute():
         res = client.post(
             "/execute/duckdb/",
             json={
-                "query": "CREATE TABLE IF NOT EXISTS weather(city VARCHAR, temp_lo INTEGER);",
+                "query": '''CREATE TABLE IF NOT EXISTS 
+                            weather(city VARCHAR, temp_lo INTEGER);''',
             },
         )
         print(res.json())
@@ -95,7 +99,8 @@ def test_save_plan_roundtrip():
         client.post(
             "/execute/duckdb/",
             json={
-                "query": "CREATE TABLE IF NOT EXISTS test_fiddle(id INTEGER NOT NULL, key INTEGER NOT NULL);",
+                "query": '''CREATE TABLE IF NOT EXISTS test_fiddle(
+                            id INTEGER NOT NULL, key INTEGER NOT NULL);''',
             },
         )
         response = client.post(

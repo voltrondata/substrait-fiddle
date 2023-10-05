@@ -1,5 +1,4 @@
 import duckdb
-from pydantic import BaseModel
 from fastapi import HTTPException
 
 from loguru import logger
@@ -8,11 +7,33 @@ from loguru import logger
 class DuckDBConnection:
     def __init__(self):
         self.conn_pool = []
+
+        query_lineitem = '''CREATE TABLE IF NOT EXISTS lineitem(
+                        l_orderkey INTEGER NOT NULL, 
+                        l_partkey INTEGER NOT NULL, 
+                        l_suppkey INTEGER NOT NULL, 
+                        l_linenumber INTEGER NOT NULL, 
+                        l_quantity INTEGER NOT NULL, 
+                        l_extendedprice DECIMAL(15,2) NOT NULL, 
+                        l_discount DECIMAL(15,2) NOT NULL, 
+                        l_tax DECIMAL(15,2) NOT NULL, 
+                        l_returnflag VARCHAR NOT NULL, 
+                        l_linestatus VARCHAR NOT NULL, 
+                        l_shipdate DATE NOT NULL, 
+                        l_commitdate DATE NOT NULL, 
+                        l_receiptdate DATE NOT NULL, 
+                        l_shipinstruct VARCHAR NOT NULL, 
+                        l_shipmode VARCHAR NOT NULL, 
+                        l_comment VARCHAR NOT NULL);'''
+        conn = duckdb.connect("duck.db")
+        conn.execute(query=query_lineitem)
+        
         for i in range(5):
             conn = duckdb.connect("duck.db")
             conn.install_extension("substrait")
             conn.load_extension("substrait")
             self.conn_pool.append(conn)
+
 
     def check_pool(self):
         if len(self.conn_pool) == 0:
@@ -44,9 +65,9 @@ def CheckDuckDBConnection(con):
         return status
 
 
-def ExecuteDuckDb(data, con):
+def ExecuteDuckDb(query, con):
     try:
-        con.execute(query=data["query"])
+        con.execute(query = query)
         return {"message": "DuckDB Operation successful"}
     except Exception as e:
         raise HTTPException(
