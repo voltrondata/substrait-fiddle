@@ -100,11 +100,11 @@ function drawGraph(pre_nodes, pre_links, use_drag = true) {
     .force("link", d3.forceLink().links(links))
     .force(
       "collide",
-      d3.forceCollide(() => 55)
+      d3.forceCollide(() => 55),
     );
 
   var svg = d3
-    .select("svg")
+    .select("#d3-plot")
     .attr("preserveAspectRatio", "xMinYMin meet")
     .attr("viewBox", "0 0 960 375");
 
@@ -337,7 +337,7 @@ function drawGraph(pre_nodes, pre_links, use_drag = true) {
 }
 
 function clearGraph() {
-  const svg = d3.select("svg");
+  const svg = d3.select("#d3-plot");
   svg.html("");
   const nodeData = document.getElementById("nodeData");
   nodeData.innerHTML = "";

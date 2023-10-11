@@ -135,7 +135,7 @@ export default {
       validate(
         JSON.parse(this.code),
         this.getValidationOverrideLevel(),
-        this.updateStatus
+        this.updateStatus,
       );
       store.set_plan(this.code, this.getValidationOverrideLevel());
       this.updateStatus("Generating plot for substrait JSON plan...");
@@ -144,22 +144,44 @@ export default {
     },
     async generateFromSql() {
       this.updateStatus("Converting SQL query to Substrait Plan...");
-      const duckDbRsp = await axios.post("/api/parse/", {
-        query: this.code,
-      });
+
+      if (store.schemas.length) {
+        const pattern = new RegExp(store.schemas.join("|"), "g");
+        this.code = this.code.replace(
+          pattern,
+          (match) => match + "_" + store.user_id,
+        );
+      }
+
+      const duckDbRsp = await axios.post(
+        "/api/parse/",
+        {
+          query: this.code,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${store.sessionToken}`,
+          },
+        },
+      );
+
+      if (store.schemas.length) {
+        const pattern = new RegExp("_" + store.user_id, "g");
+        duckDbRsp.data = duckDbRsp.data.replace(pattern, "");
+      }
+
       store.set_plan(duckDbRsp.data);
       this.updateStatus("SQL query converted to Substrait Plan successfully!");
       this.updateStatus("Validating converted Substrait plan...");
       validate(
-        JSON.parse(duckDbRsp.data),
+        JSON.parse(store.plan),
         this.getValidationOverrideLevel(),
-        this.updateStatus
+        this.updateStatus,
       );
       store.set_plan(duckDbRsp.data, this.getValidationOverrideLevel());
       this.updateStatus("Generating plot for converted substrait plan...");
-      const plan = substrait.substrait.Plan.fromObject(
-        JSON.parse(duckDbRsp.data)
-      );
+      const plan = substrait.substrait.Plan.fromObject(JSON.parse(store.plan));
       plot(plan, this.updateStatus);
     },
     async generate() {

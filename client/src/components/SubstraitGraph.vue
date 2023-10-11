@@ -41,7 +41,7 @@
           Save as PNG
         </button>
       </div>
-      <svg ref="d3Plot"></svg>
+      <svg id="d3-plot" ref="d3Plot"></svg>
     </div>
     <div id="nodeData" style="overflow-y: scroll; height: 300px"></div>
   </div>
@@ -122,7 +122,7 @@ export default {
       const jsonString = JSON.stringify(
         jsonObject,
         /* no replacer function required */ null,
-        /* whitespace for indentation */ 4
+        /* whitespace for indentation */ 4,
       );
       const blob = new Blob([jsonString], { type: "application/json" });
       const plan_link = document.createElement("a");

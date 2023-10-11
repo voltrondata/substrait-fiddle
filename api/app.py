@@ -2,7 +2,9 @@ from fastapi import FastAPI, HTTPException, status, Depends, File, UploadFile, F
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from fastapi.openapi.utils import get_openapi
 from fastapi.routing import APIRouter
+from fastapi.security import OAuth2PasswordBearer
 from fastapi_health import health
+import jwt
 
 from motor.motor_asyncio import AsyncIOMotorCollection
 import json
@@ -16,9 +18,11 @@ from backend.duckdb import (
     CheckDuckDBConnection,
     ExecuteDuckDb,
     ParseFromDuckDB,
+    DeleteTableFromDuckDB,
 )
 
 from shareable import MongoDBConnection, PlanData
+from backend.ttl_cache import TTL_Cache
 
 from loguru import logger
 
@@ -36,13 +40,32 @@ async def get_duck_conn():
         conn.close()
 
 
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl=allowed_urls[3])
+
+
+def verify_token(token: str = Depends(oauth2_scheme)):
+    try:
+        payload = jwt.decode(token, "key", algorithms=["HS256"])
+        return payload
+    except jwt.exceptions.DecodeError:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Credential validation unsuccessful",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+
 @router.on_event("startup")
 async def Initialize():
-    app.state.duck_pool = DuckDBConnection()
     app.state.mongo_pool = MongoDBConnection()
+    app.state.duck_pool = DuckDBConnection()
+    app.state.schema_cache = TTL_Cache(
+        maxsize=100,
+        ttl=3600,
+        on_expire=lambda key, _: DeleteTableFromDuckDB(key, get_duck_conn()),
+    )
 
 
-@router.get("/health/duckdb/")
 def CheckBackendConn(conn):
     CheckDuckDBConnection(conn)
     app.state.mongo_pool.check()
@@ -104,25 +127,39 @@ def ExecuteBackend(data: dict, db_conn: DuckDBPyConnection = Depends(get_duck_co
     return response
 
 @router.post("/add_schema/")
-def AddSchema(data: dict, db_conn: DuckDBPyConnection = Depends(get_duck_conn)):
-    schema = data["schema"]
-    query = "CREATE TEMP TABLE "
+def AddSchema(
+    data: dict,
+    headers: dict = Depends(verify_token),
+    db_conn: DuckDBPyConnection = Depends(get_duck_conn),
+):
+    user_id = headers["user_id"]
+    schema = data.get("schema")
     json_data = json.loads(schema["schema"])
-    query += json_data["table"] + "("
+    table_name = json_data["table"] + "_" + user_id
+
+    query = "CREATE TABLE IF NOT EXISTS "
+    query += table_name + "("
     for field in json_data["fields"]:
         query += field["name"] + " "
         query += field["type"] + " "
         for props in field["properties"]:
             query += props + " "
         query += ", "
+    query = query[:-2]
     query += ");"
+
     response = ExecuteDuckDb(query, db_conn)
+    app.state.schema_cache[table_name] = None
     return response
 
 
-@router.post("/parse/", status_code=status.HTTP_200_OK)
-def ParseToSubstrait(data: dict, db_conn: DuckDBPyConnection = Depends(get_duck_conn)):
-    response = ParseFromDuckDB(data, db_conn)
+@app.post("/parse/", status_code=status.HTTP_200_OK)
+def ParseToSubstrait(
+    data: dict,
+    headers: dict = Depends(verify_token),
+    db_conn: DuckDBPyConnection = Depends(get_duck_conn),
+):
+    response = ParseFromDuckDB(data.get("query"), db_conn)
     return response
 
 
@@ -140,6 +177,7 @@ def SubstraitFiddleOpenAPI():
     return app.openapi_schema
 
 app = FastAPI()
+
 app.include_router(router, prefix="/api")
 app.openapi = SubstraitFiddleOpenAPI
 

@@ -1,4 +1,5 @@
 import axios from "axios";
+import * as jose from "jose";
 import { SubstraitParser } from "./substrait-parser";
 import { buildGraph, clearGraph, drawGraph } from "./substrait-d3";
 
@@ -48,6 +49,7 @@ function plot(plan, status_func) {
   }
 }
 
+<<<<<<< HEAD
 async function getPlan(id) {
   try {
     const hex = /^[0-9a-fA-F]+$/;
@@ -66,3 +68,17 @@ async function getPlan(id) {
 }
 
 export { readFile, readText, validate, plot, clearGraph, getPlan };
+=======
+async function generateToken(user_id) {
+  const payload = {
+    user_id: user_id,
+  };
+  const secret = new TextEncoder().encode("key");
+  const token = await new jose.SignJWT(payload)
+    .setProtectedHeader({ alg: "HS256" })
+    .sign(secret);
+  return token;
+}
+
+export { readFile, readText, validate, plot, clearGraph, generateToken };
+>>>>>>> 436f9b4 (feat: add JWT, Custom TTLCache and table manipulation for custom schema)

@@ -112,9 +112,19 @@ import SubstraitGraph from "@/components/SubstraitGraph.vue";
 </style>
 
 <script>
+import { v4 as uuidv4 } from "uuid";
+
 import { clearGraph } from "./assets/js/substrait-d3.js";
+import { store } from "./components/store";
+import { generateToken } from "./assets/js/shared";
 
 export default {
+  async mounted() {
+    const sessionToken = uuidv4();
+    store.set_user(sessionToken.replace(/-/g, "_"));
+    const token = await generateToken(store.user_id);
+    store.set_token(token);
+  },
   methods: {
     isCodeView() {
       return this.$route.path === "/" || this.$route.path.startsWith("/plan/")

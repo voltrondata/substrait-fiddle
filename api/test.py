@@ -58,8 +58,8 @@ def test_duckdb_execute():
         res = client.post(
             "/execute/duckdb/",
             json={
-                "query": '''CREATE TABLE IF NOT EXISTS 
-                            weather(city VARCHAR, temp_lo INTEGER);''',
+                "query": """CREATE TABLE IF NOT EXISTS 
+                            weather(city VARCHAR, temp_lo INTEGER);""",
             },
         )
         print(res.json())
@@ -99,8 +99,8 @@ def test_save_plan_roundtrip():
         client.post(
             "/execute/duckdb/",
             json={
-                "query": '''CREATE TABLE IF NOT EXISTS test_fiddle(
-                            id INTEGER NOT NULL, key INTEGER NOT NULL);''',
+                "query": """CREATE TABLE IF NOT EXISTS test_fiddle(
+                            id INTEGER NOT NULL, key INTEGER NOT NULL);""",
             },
         )
         response = client.post(

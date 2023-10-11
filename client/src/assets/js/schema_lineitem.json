@@ -1,0 +1,118 @@
+{
+    "table": "lineitem",
+    "fields": [
+      {
+        "name": "l_orderkey",
+        "type": "INTEGER",
+        "properties": [
+          "NOT NULL"
+        ]
+      },
+      {
+        "name": "l_partkey",
+        "type": "INTEGER",
+        "properties": [
+          "NOT NULL"
+        ]
+      },
+      {
+        "name": "l_suppkey",
+        "type": "INTEGER",
+        "properties": [
+          "NOT NULL"
+        ]
+      },
+      {
+        "name": "l_linenumber",
+        "type": "INTEGER",
+        "properties": [
+          "NOT NULL"
+        ]
+      },
+      {
+        "name": "l_quantity",
+        "type": "INTEGER",
+        "properties": [
+          "NOT NULL"
+        ]
+      },
+      {
+        "name": "l_extendedprice",
+        "type": "DECIMAL(15,2)",
+        "properties": [
+          "NOT NULL"
+        ]
+      },
+      {
+        "name": "l_discount",
+        "type": "DECIMAL(15,2)",
+        "properties": [
+          "NOT NULL"
+        ]
+      },
+      {
+        "name": "l_tax",
+        "type": "DECIMAL(15,2)",
+        "properties": [
+          "NOT NULL"
+        ]
+      },
+      {
+        "name": "l_returnflag",
+        "type": "VARCHAR",
+        "properties": [
+          "NOT NULL"
+        ]
+      },
+      {
+        "name": "l_linestatus",
+        "type": "VARCHAR",
+        "properties": [
+          "NOT NULL"
+        ]
+      },
+      {
+        "name": "l_shipdate",
+        "type": "DATE",
+        "properties": [
+          "NOT NULL"
+        ]
+      },
+      {
+        "name": "l_commitdate",
+        "type": "DATE",
+        "properties": [
+          "NOT NULL"
+        ]
+      },
+      {
+        "name": "l_receiptdate",
+        "type": "DATE",
+        "properties": [
+          "NOT NULL"
+        ]
+      },
+      {
+        "name": "l_shipinstruct",
+        "type": "VARCHAR",
+        "properties": [
+          "NOT NULL"
+        ]
+      },
+      {
+        "name": "l_shipmode",
+        "type": "VARCHAR",
+        "properties": [
+          "NOT NULL"
+        ]
+      },
+      {
+        "name": "l_comment",
+        "type": "VARCHAR",
+        "properties": [
+          "NOT NULL"
+        ]
+      }
+    ]
+  }
+  

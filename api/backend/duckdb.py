@@ -8,7 +8,7 @@ class DuckDBConnection:
     def __init__(self):
         self.conn_pool = []
 
-        query_lineitem = '''CREATE TABLE IF NOT EXISTS lineitem(
+        query_lineitem = """CREATE TABLE IF NOT EXISTS lineitem(
                         l_orderkey INTEGER NOT NULL, 
                         l_partkey INTEGER NOT NULL, 
                         l_suppkey INTEGER NOT NULL, 
@@ -24,22 +24,20 @@ class DuckDBConnection:
                         l_receiptdate DATE NOT NULL, 
                         l_shipinstruct VARCHAR NOT NULL, 
                         l_shipmode VARCHAR NOT NULL, 
-                        l_comment VARCHAR NOT NULL);'''
+                        l_comment VARCHAR NOT NULL);"""
         conn = duckdb.connect("duck.db")
         conn.execute(query=query_lineitem)
-        
+
         for i in range(5):
             conn = duckdb.connect("duck.db")
             conn.install_extension("substrait")
             conn.load_extension("substrait")
             self.conn_pool.append(conn)
 
-
     def check_pool(self):
         if len(self.conn_pool) == 0:
-            print("creating new conn objects")
             for i in range(5):
-                conn = duckdb.connect()
+                conn = duckdb.connect("duck.db")
                 conn.install_extension("substrait")
                 conn.load_extension("substrait")
                 self.conn_pool.append(conn)
@@ -67,7 +65,7 @@ def CheckDuckDBConnection(con):
 
 def ExecuteDuckDb(query, con):
     try:
-        con.execute(query = query)
+        con.execute(query=query)
         return {"message": "DuckDB Operation successful"}
     except Exception as e:
         raise HTTPException(
@@ -77,9 +75,16 @@ def ExecuteDuckDb(query, con):
         )
 
 
-def ParseFromDuckDB(data, con):
+def DeleteTableFromDuckDB(table_name, con):
     try:
-        result = con.get_substrait_json(data["query"]).fetchone()[0]
+        con.execute(query="DROP TABLE " + table_name + ";")
+    except Exception as e:
+        logger.error(e)
+
+
+def ParseFromDuckDB(query, con):
+    try:
+        result = con.get_substrait_json(query).fetchone()[0]
         return result
     except Exception as e:
         raise HTTPException(

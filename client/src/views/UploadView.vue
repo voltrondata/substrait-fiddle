@@ -70,7 +70,7 @@ export default {
       validate(
         this.content,
         this.getValidationOverrideLevel(),
-        this.updateStatus
+        this.updateStatus,
       );
       store.set_plan(jsonFileRes, this.getValidationOverrideLevel());
       this.updateStatus("Generating plot for substrait JSON plan...");

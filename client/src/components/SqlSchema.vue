@@ -127,8 +127,17 @@
 <style>
 .pre {
   white-space: pre-wrap;
-  font-family: Consolas, Menlo, Monaco, Lucida Console, Liberation Mono,
-    DejaVu Sans Mono, Bitstream Vera Sans Mono, Courier New, monospace, serif;
+  font-family:
+    Consolas,
+    Menlo,
+    Monaco,
+    Lucida Console,
+    Liberation Mono,
+    DejaVu Sans Mono,
+    Bitstream Vera Sans Mono,
+    Courier New,
+    monospace,
+    serif;
 }
 
 .modal-content {
@@ -163,6 +172,9 @@ import Ajv from "ajv";
 import axios from "axios";
 import "bootstrap/dist/js/bootstrap.js";
 
+import { store } from "../components/store";
+import schema_lineitem from "../assets/js/schema_lineitem.json";
+
 export default {
   name: "SqlSchema",
   props: {
@@ -184,124 +196,7 @@ export default {
     this.tempSchema = this.defaultSchema;
     this.schemas.push({
       name: "lineitem",
-      schema: `
-          {
-            table: "lineitem",
-            fields: [
-              {
-                name: "l_orderkey",
-                type: "INTEGER",
-                properties: [
-                  "NOT NULL"
-                ]
-              },
-              {
-                name: "l_partkey",
-                type: "INTEGER",
-                properties: [
-                  "NOT NULL"
-                ]
-              },
-              {
-                name: "l_suppkey",
-                type: "INTEGER",
-                properties: [
-                  "NOT NULL"
-                ]
-              },
-              {
-                name: "l_linenumber",
-                type: "INTEGER",
-                properties: [
-                  "NOT NULL"
-                ]
-              },
-              {
-                name: "l_quantity",
-                type: "INTEGER",
-                properties: [
-                  "NOT NULL"
-                ]
-              },
-              {
-                name: "l_extendedprice",
-                type: "DECIMAL(15,2)",
-                properties: [
-                  "NOT NULL"
-                ]
-              },
-              {
-                name: "l_discount",
-                type: "DECIMAL(15,2)",
-                properties: [
-                  "NOT NULL"
-                ]
-              },
-              {
-                name: "l_tax",
-                type: "DECIMAL(15,2)",
-                properties: [
-                  "NOT NULL"
-                ]
-              },
-              {
-                name: "l_returnflag",
-                type: "VARCHAR",
-                properties: [
-                  "NOT NULL"
-                ]
-              },
-              {
-                name: "l_linestatus",
-                type: "VARCHAR",
-                properties: [
-                  "NOT NULL"
-                ]
-              },
-              {
-                name: "l_shipdate",
-                type: "DATE",
-                properties: [
-                  "NOT NULL"
-                ]
-              },
-              {
-                name: "l_commitdate",
-                type: "DATE",
-                properties: [
-                  "NOT NULL"
-                ]
-              },
-              {
-                name: "l_receiptdate",
-                type: "DATE",
-                properties: [
-                  "NOT NULL"
-                ]
-              },
-              {
-                name: "l_shipinstruct",
-                type: "VARCHAR",
-                properties: [
-                  "NOT NULL"
-                ]
-              },
-              {
-                name: "l_shipmode",
-                type: "VARCHAR",
-                properties: [
-                  "NOT NULL"
-                ]
-              },
-              {
-                name: "l_comment",
-                type: "VARCHAR",
-                properties: [
-                  "NOT NULL"
-                ]
-              },
-            ]
-          }`,
+      schema: schema_lineitem,
     });
   },
   methods: {
@@ -340,14 +235,23 @@ export default {
       if (this.schemas.length > 1) {
         for (var i = 1; i < this.schemas.length; ++i) {
           try {
-            await axios.post("/api/add_schema/", {
-              schema: this.schemas[i],
-            });
+            await axios.post(
+              "/api/add_schema/",
+              {
+                schema: this.schemas[i],
+              },
+              {
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${store.sessionToken}`,
+                },
+              },
+            );
+            store.add_schema(JSON.parse(this.schemas[i]["schema"]).table);
           } catch (error) {
-            console.log(error);
             this.$emit(
               "updateSchemaStatus",
-              "Error while executing schema: " + error.response.data["detail"]
+              "Error while executing schema: " + error,
             );
           }
         }
@@ -355,22 +259,24 @@ export default {
     },
     validateSchema(index) {
       const ajv = new Ajv();
+      const allowedPattern = "^[a-zA-Z0-9_ ]+$";
       const format = {
         type: "object",
         properties: {
           table: {
             type: "string",
+            pattern: allowedPattern,
           },
           fields: {
             type: "array",
             items: {
               type: "object",
               properties: {
-                name: { type: "string" },
-                type: { type: "string" },
+                name: { type: "string", pattern: allowedPattern },
+                type: { type: "string", pattern: allowedPattern },
                 properties: {
                   type: "array",
-                  items: { type: "string" },
+                  items: { type: "string", pattern: allowedPattern },
                 },
               },
               required: ["name", "type", "properties"],
@@ -390,8 +296,8 @@ export default {
         } else if (ajv.validate(format, jsonData)) {
           alert("Schema validated!");
           const schemaToSave = this.schemas[index];
+          schemaToSave.name = jsonData.table;
           schemaToSave.schema = this.tempSchemaText;
-          console.log(jsonData["table"]);
           schemaToSave.validated = true;
         } else {
           const errors = ajv.errorsText(validate.errors, { separator: "\n" });

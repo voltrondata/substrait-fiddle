@@ -166,7 +166,7 @@ class SubstraitParser {
       return this.structFieldHelper(
         field.child,
         `${nextName}.`,
-        currentField.children[fieldNum]
+        currentField.children[fieldNum],
       );
     }
     return currentField.children[fieldNum];
@@ -262,7 +262,7 @@ class SubstraitParser {
     let args = [];
     if (func.arguments && func.arguments.length > 0) {
       args = func.arguments.map((arg) =>
-        this.functionArgumentToStr(arg, schema)
+        this.functionArgumentToStr(arg, schema),
       );
     }
     return args.join(",");
@@ -398,7 +398,7 @@ class SubstraitParser {
       inputs,
       props,
       schema,
-      project.common?.emit
+      project.common?.emit,
     );
   }
 
@@ -538,7 +538,7 @@ class SubstraitParser {
       [input],
       props,
       schema,
-      fetch.common.emit
+      fetch.common.emit,
     );
   }
 
@@ -619,7 +619,7 @@ class SubstraitParser {
     agg.measures.forEach((measure, idx) => {
       const aggregate = this.aggregateFunctionToField(
         measure.measure,
-        input.schema
+        input.schema,
       );
       fields.push(aggregate);
       const innerProps = [
@@ -645,7 +645,7 @@ class SubstraitParser {
       [input],
       props,
       schema,
-      agg.common.emit
+      agg.common.emit,
     );
   }
 
@@ -669,7 +669,7 @@ class SubstraitParser {
       [input],
       props,
       schema,
-      filt.common.emit
+      filt.common.emit,
     );
   }
 
@@ -683,7 +683,7 @@ class SubstraitParser {
     const right = this.relToNode(join.right);
     const props = [];
     const schema = this.makeSchemaField(
-      left.schema.children.concat(right.schema.children)
+      left.schema.children.concat(right.schema.children),
     );
     let joinType = "unspecified";
     if (join.type) {
@@ -699,7 +699,7 @@ class SubstraitParser {
       [left, right],
       props,
       schema,
-      join.common.emit
+      join.common.emit,
     );
   }
 
@@ -755,7 +755,7 @@ class SubstraitParser {
         nodes.push(this.rootRelToNode(relation.root));
       } else {
         throw new Error(
-          `Unrecognized plan relation ${JSON.stringify(relation)}`
+          `Unrecognized plan relation ${JSON.stringify(relation)}`,
         );
       }
     }
