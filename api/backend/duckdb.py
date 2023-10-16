@@ -41,7 +41,7 @@ class DuckDBConnection:
                 conn.load_extension("substrait")
                 self.conn_pool.append(conn)
 
-    def initialize(self):
+    def get_connection(self):
         self.check_pool()
         con = self.conn_pool.pop(0)
         return con

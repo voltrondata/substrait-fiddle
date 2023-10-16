@@ -33,7 +33,7 @@ async def get_mongo_conn():
 
 
 async def get_duck_conn():
-    conn = app.state.duck_pool.initialize()
+    conn = app.state.duck_pool.get_connection()
     try:
         yield conn
     finally:
@@ -68,7 +68,7 @@ async def initialize():
     )
 
 
-@router.get("/health/duckcb/")
+@app.get("/health/duckdb/")
 def check_backend_conn(conn):
     check_duckdb_connection(conn)
     app.state.mongo_pool.check()
