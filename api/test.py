@@ -1,5 +1,5 @@
-from fastapi.testclient import TestClient
 from io import BytesIO
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 import json
@@ -8,7 +8,12 @@ import pytest
 >>>>>>> 1d03b3c (feat: duckdb to use connection pool)
 =======
 >>>>>>> 3490705 (feat: schema to use a JSON format and query should be generated in backend)
+=======
+
+>>>>>>> 417b154 (feat: sort imports using isort)
 import requests
+from fastapi.testclient import TestClient
+
 from app import app
 
 client = TestClient(app)
