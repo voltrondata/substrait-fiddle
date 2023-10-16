@@ -44,7 +44,10 @@ def test_validate_json():
 
 def test_validate_binary():
     with TestClient(app) as client:
-        url = "https://github.com/westonpace/substrait-viewer/blob/main/demo/q1.bin"
+        url = (
+            "https://github.com/westonpace/"
+            "substrait-viewer/blob/main/demo/q1.bin"
+        )
         response = requests.get(url)
         file_content = response.content
 
@@ -63,7 +66,7 @@ def test_duckdb_execute():
         res = client.post(
             "/execute/duckdb/",
             json={
-                "query": """CREATE TABLE IF NOT EXISTS 
+                "query": """CREATE TABLE IF NOT EXISTS
                             weather(city VARCHAR, temp_lo INTEGER);""",
             },
         )

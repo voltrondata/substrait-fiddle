@@ -3,7 +3,8 @@ import json
 import jwt
 import substrait_validator as sv
 from duckdb import DuckDBPyConnection
-from fastapi import Depends, FastAPI, File, Form, HTTPException, UploadFile, status
+from fastapi import (Depends, FastAPI, File, Form, HTTPException, UploadFile,
+                     status)
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from fastapi.openapi.utils import get_openapi
 from fastapi.routing import APIRouter
@@ -18,15 +19,9 @@ from duckdb import DuckDBPyConnection
 
 import substrait_validator as sv
 
-from backend.duckdb import (
-    DuckDBConnection,
-    CheckDuckDBConnection,
-    ExecuteDuckDb,
-    ParseFromDuckDB,
-    DeleteTableFromDuckDB,
-)
-
-from shareable import MongoDBConnection, PlanData
+from backend.duckdb import (DuckDBConnection, check_duckdb_connection,
+                            delete_table_from_duckDB, execute_duckdb,
+                            parse_from_duckDB)
 from backend.ttl_cache import TTL_Cache
 
 from loguru import logger
@@ -60,26 +55,30 @@ def verify_token(token: str = Depends(oauth2_scheme)):
         )
 
 
+
 @router.on_event("startup")
-async def Initialize():
+async def initialize():
     app.state.mongo_pool = MongoDBConnection()
     app.state.duck_pool = DuckDBConnection()
     app.state.schema_cache = TTL_Cache(
         maxsize=100,
         ttl=3600,
-        on_expire=lambda key, _: DeleteTableFromDuckDB(key, get_duck_conn()),
+        on_expire=lambda key, _: delete_table_from_duckDB(
+            key, get_duck_conn()),
     )
 
 
-def CheckBackendConn(conn):
-    CheckDuckDBConnection(conn)
+@router.get("/health/duckcb/")
+def check_backend_conn(conn):
+    check_duckdb_connection(conn)
     app.state.mongo_pool.check()
 
-router.add_api_route("/health", health([CheckBackendConn]))
+
+router.add_api_route("/health", health([check_backend_conn]))
 
 
-@router.post("/validate/")
-async def Validate(plan: dict, override_levels: list[int]):
+@router.post("/validate/", status_code=status.HTTP_200_OK)
+async def validate(plan: dict, override_levels: list[int]):
     try:
         logger.info("Validating plan using substrait-validator!")
         config = sv.Config()
@@ -89,12 +88,14 @@ async def Validate(plan: dict, override_levels: list[int]):
         logger.info("Plan validated successfully!")
     except Exception as e:
         raise HTTPException(
-            status_code=500, detail="Substrait Validator Internal Error: " + str(e)
+            status_code=500, detail="Substrait Validator Internal Error: "
+            + str(e)
         )
 
 
-@router.post("/validate/file/")
-async def ValidateFile(file: UploadFile = File(), override_levels: list[int] = Form()):
+@app.post("/validate/file/", status_code=status.HTTP_200_OK)
+async def validate_file(file: UploadFile = File(),
+                        override_levels: list[int] = Form()):
     try:
         logger.info("Validating file using substrait-validator!")
         config = sv.Config()
@@ -105,7 +106,8 @@ async def ValidateFile(file: UploadFile = File(), override_levels: list[int] = F
         logger.info("File validated successfully!")
     except Exception as e:
         raise HTTPException(
-            status_code=500, detail="Substrait Validator Internal Error: " + str(e)
+            status_code=500, detail="Substrait Validator Internal Error: "
+            + str(e)
         )
 
 @router.post("/save/")
@@ -153,23 +155,23 @@ def AddSchema(
     query = query[:-2]
     query += ");"
 
-    response = ExecuteDuckDb(query, db_conn)
+    response = execute_duckdb(query, db_conn)
     app.state.schema_cache[table_name] = None
     return response
 
 
 @app.post("/parse/", status_code=status.HTTP_200_OK)
-def ParseToSubstrait(
+def parse_to_substrait(
     data: dict,
     headers: dict = Depends(verify_token),
     db_conn: DuckDBPyConnection = Depends(get_duck_conn),
 ):
-    response = ParseFromDuckDB(data.get("query"), db_conn)
+    response = parse_from_duckDB(data.get("query"), db_conn)
     return response
 
 
 # For defining custom documentation for the server
-def SubstraitFiddleOpenAPI():
+def substrait_fiddle_openapi():
     if app.openapi_schema:
         return app.openapi_schema
     openapi_schema = get_openapi(
