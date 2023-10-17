@@ -755,7 +755,7 @@ class SubstraitParser {
         nodes.push(this.rootRelToNode(relation.root));
       } else {
         throw new Error(
-          `Unrecognized plan relation ${JSON.stringify(relation)}`,
+          `Unrecognized plan relation ${JSON.stringify(relation)}`
         );
       }
     }
