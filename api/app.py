@@ -63,8 +63,8 @@ async def initialize():
     app.state.schema_cache = TTL_Cache(
         maxsize=100,
         ttl=3600,
-        on_expire=lambda key, _: delete_table_from_duckDB(
-            key, get_duck_conn()),
+        on_expire=lambda key, _: delete_table_from_duckDB(key,
+                                                          get_duck_conn()),
     )
 
 

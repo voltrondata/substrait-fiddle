@@ -2,6 +2,8 @@ import duckdb
 from fastapi import HTTPException
 from loguru import logger
 
+POOL_SIZE = 5
+
 
 class DuckDBConnection:
     def __init__(self):
@@ -27,7 +29,7 @@ class DuckDBConnection:
         conn = duckdb.connect("duck.db")
         conn.execute(query=query_lineitem)
 
-        for i in range(5):
+        for i in range(POOL_SIZE):
             conn = duckdb.connect("duck.db")
             conn.install_extension("substrait")
             conn.load_extension("substrait")
@@ -35,7 +37,7 @@ class DuckDBConnection:
 
     def check_pool(self):
         if len(self.conn_pool) == 0:
-            for i in range(5):
+            for i in range(POOL_SIZE):
                 conn = duckdb.connect("duck.db")
                 conn.install_extension("substrait")
                 conn.load_extension("substrait")
