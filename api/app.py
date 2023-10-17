@@ -2,6 +2,10 @@ import json
 
 import jwt
 import substrait_validator as sv
+from backend.duckdb import (DuckDBConnection, check_duckdb_connection,
+                            delete_table_from_duckDB, execute_duckdb,
+                            parse_from_duckDB)
+from backend.ttl_cache import TTL_Cache
 from duckdb import DuckDBPyConnection
 from fastapi import (Depends, FastAPI, File, Form, HTTPException, UploadFile,
                      status)

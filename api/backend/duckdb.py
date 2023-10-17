@@ -28,7 +28,9 @@ class DuckDBConnection:
                         l_comment VARCHAR NOT NULL);"""
         conn = duckdb.connect("duck.db")
         conn.execute(query=query_lineitem)
+        self.append_pool()
 
+    def append_pool(self):
         for i in range(POOL_SIZE):
             conn = duckdb.connect("duck.db")
             conn.install_extension("substrait")
@@ -37,11 +39,7 @@ class DuckDBConnection:
 
     def check_pool(self):
         if len(self.conn_pool) == 0:
-            for i in range(POOL_SIZE):
-                conn = duckdb.connect("duck.db")
-                conn.install_extension("substrait")
-                conn.load_extension("substrait")
-                self.conn_pool.append(conn)
+            self.append_pool()
 
     def get_connection(self):
         self.check_pool()
