@@ -1,4 +1,7 @@
+import { v4 as uuidv4 } from "uuid";
 import { reactive } from "vue";
+
+import { generateToken } from "../assets/js/shared";
 
 export const store = reactive({
   plan: "",
@@ -24,7 +27,9 @@ export const store = reactive({
   add_schema(schema_name) {
     this.schemas.push(schema_name);
   },
-  set_token(token) {
-    this.sessionToken = token;
+  async set_token() {
+    const sessionToken = uuidv4();
+    this.user = sessionToken.replace(/-/g, "_");
+    this.token = await generateToken(store.user_id);
   },
 });
