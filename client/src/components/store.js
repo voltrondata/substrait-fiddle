@@ -25,8 +25,8 @@ export const store = reactive({
     this.schemas.push(schema_name);
   },
   async set_token() {
-    const sessionToken = uuidv4();
-    this.user = sessionToken.replace(/-/g, "_");
-    this.token = await generateToken(store.user_id);
+    const user_id = uuidv4();
+    this.set_user(user_id.replace(/-/g, "_"));
+    this.sessionToken = await generateToken(store.user_id);
   },
 });

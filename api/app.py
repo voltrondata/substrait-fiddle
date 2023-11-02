@@ -214,7 +214,7 @@ def add_schema(
     json_data = json.loads(schema["schema"])
     table_name = json_data["table"] + "_" + user_id
 
-    query = "CREATE TABLE IF NOT EXISTS "
+    query = "CREATE TABLE  "
     query += table_name + "("
     for field in json_data["fields"]:
         query += field["name"] + " "
@@ -224,7 +224,6 @@ def add_schema(
         query += ", "
     query = query[:-2]
     query += ");"
-
     response = execute_duckdb(query, db_conn)
     app.state.schema_cache[table_name] = None
     return response
@@ -237,6 +236,7 @@ def add_schema(
 @router.post("/parse/", status_code=status.HTTP_200_OK)
 def parse_to_substrait(
     data: dict,
+    headers: dict = Depends(verify_token),
     db_conn: DuckDBPyConnection = Depends(get_duck_conn),
 ):
     '''
@@ -252,7 +252,6 @@ def parse_to_substrait(
             response (dict): Response JSON for translated
                              Substrait plan
     '''
-    logger.info(data)
     response = parse_from_duckDB(data.get("query"), db_conn)
     return response
 

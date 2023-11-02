@@ -152,10 +152,18 @@ export default {
           (match) => match + "_" + store.user_id,
         );
       }
-      const duckDbRsp = await axios.post("/api/route/parse/", {
-        query: this.code,
-      });
-
+      const duckDbRsp = await axios.post(
+        "/api/route/parse/",
+        {
+          query: this.code,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${store.sessionToken}`,
+          },
+        },
+      );
       if (store.schemas.length) {
         const pattern = new RegExp("_" + store.user_id, "g");
         duckDbRsp.data = duckDbRsp.data.replace(pattern, "");

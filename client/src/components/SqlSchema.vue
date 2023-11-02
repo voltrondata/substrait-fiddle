@@ -64,6 +64,7 @@
                       class="form-control"
                       rows="4"
                       placeholder="Enter new schema"
+                      id="schemaTextArea"
                     ></textarea>
                     <div class="d-flex justify-content-end">
                       <button
@@ -106,7 +107,12 @@
             >
               Close
             </button>
-            <button type="button" class="btn btn-success" @click="addNewSchema">
+            <button
+              type="button"
+              class="btn btn-success"
+              @click="addNewSchema"
+              id="addSchema"
+            >
               Add Schema
             </button>
             <button
