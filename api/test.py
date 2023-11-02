@@ -61,7 +61,6 @@ def test_duckdb_execute():
                             weather(city VARCHAR, temp_lo INTEGER);""",
             },
         )
-        print(res.json())
         assert res.status_code == 200
         assert res.json() == {"message": "DuckDB Operation successful"}
 
@@ -81,7 +80,6 @@ def test_parse_to_substrait():
                 "query": "SELECT * FROM test_fiddle;",
             },
         )
-        print(response.json())
         assert response.status_code == 200
         assert response.json() is not None
 

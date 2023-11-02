@@ -102,7 +102,7 @@ async def validate(plan: dict, override_levels: list[int]):
 ############################################################
 @router.post("/validate/file/", status_code=status.HTTP_200_OK)
 async def validate_file(file: UploadFile = File(),
-                        override_levels: list[int] = Form()):
+                        override_levels: list = Form()):
     '''
         Validates a file using the substrait-validator 
         with overriding rules as specified and returns 
@@ -119,6 +119,7 @@ async def validate_file(file: UploadFile = File(),
     '''
     try:
         logger.info("Validating file using substrait-validator!")
+        override_levels = [int(level) for level in override_levels[0].split(',')]
         config = sv.Config()
         for level in override_levels:
             config.override_diagnostic_level(level, "warning", "info")
@@ -251,6 +252,7 @@ def parse_to_substrait(
             response (dict): Response JSON for translated
                              Substrait plan
     '''
+    logger.info(data)
     response = parse_from_duckDB(data.get("query"), db_conn)
     return response
 
@@ -273,7 +275,7 @@ def substrait_fiddle_openapi():
 
 
 app = FastAPI()
-app.include_router(router, prefix="/api")
+app.include_router(router, prefix="/route")
 app.openapi = substrait_fiddle_openapi
 app.add_middleware(
     TrustedHostMiddleware,

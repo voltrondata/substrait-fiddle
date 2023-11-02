@@ -29,5 +29,4 @@ export const store = reactive({
     this.user = sessionToken.replace(/-/g, "_");
     this.token = await generateToken(store.user_id);
   },
-  
 });

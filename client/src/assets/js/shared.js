@@ -27,7 +27,7 @@ function readFile(file) {
 
 async function validate(plan, override_levels, status_func) {
   try {
-    await axios.post("/api/validate/", {
+    await axios.post("/api/route/validate/", {
       plan: plan,
       override_levels: override_levels,
     });
@@ -56,7 +56,7 @@ async function getPlan(id) {
       alert("Invalid ID: ID contains non-hexadecimal elements");
       throw console.error("Invalid ID passed");
     }
-    const response = await axios.post("/api/fetch/?id=" + id);
+    const response = await axios.post("/api/route/fetch/?id=" + id);
     return response;
   } catch (error) {
     console.error(error);
@@ -77,4 +77,12 @@ async function generateToken(user_id) {
   return token;
 }
 
-export { readFile, readText, validate, plot, clearGraph, getPlan, generateToken };
+export {
+  readFile,
+  readText,
+  validate,
+  plot,
+  clearGraph,
+  getPlan,
+  generateToken,
+};

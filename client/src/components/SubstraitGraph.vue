@@ -81,6 +81,9 @@ export default {
     this.observer.disconnect();
   },
   methods: {
+    updateStatus(str) {
+      this.$refs.status.updateStatus(str);
+    },
     generateSVG() {
       const svg = document.querySelector("svg");
       const svgData = new XMLSerializer().serializeToString(svg);
@@ -134,7 +137,7 @@ export default {
     async generateLink() {
       try {
         if (store.plan != this.plan) {
-          const resp = await axios.post("/api/save/", {
+          const resp = await axios.post("/api/route/save/", {
             json_string: store.plan,
             validator_overrides: store.validation_override_levels,
           });
@@ -144,7 +147,7 @@ export default {
         this.clipboard.onClick({ currentTarget: this.$refs.copyButton });
         alert("Link copied to clipboard!");
       } catch (error) {
-        console.log(error.response.data["detail"]);
+        this.updateStatus(error.response.data["detail"]);
       }
     },
   },

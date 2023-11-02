@@ -51,7 +51,7 @@ export default {
       return this.options.filter(
         (option) =>
           option.level.toString().startsWith(searchLevelLower) ||
-          option.desc.toLowerCase().includes(searchLevelLower)
+          option.desc.toLowerCase().includes(searchLevelLower),
       );
     },
     showNoOptions() {

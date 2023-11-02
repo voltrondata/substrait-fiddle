@@ -236,7 +236,7 @@ export default {
         for (var i = 1; i < this.schemas.length; ++i) {
           try {
             await axios.post(
-              "/api/add_schema/",
+              "/api/route/add_schema/",
               {
                 schema: this.schemas[i],
               },

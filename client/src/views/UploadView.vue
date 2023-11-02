@@ -85,7 +85,7 @@ export default {
         var formData = new FormData();
         formData.append("file", this.file);
         formData.append("override_levels", this.getValidationOverrideLevel());
-        await axios.post("/api/validate/file/", formData, {
+        await axios.post("/api/route/validate/file/", formData, {
           headers: {
             "Content-Type": "multipart/form-data",
           },
