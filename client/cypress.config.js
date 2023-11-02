@@ -3,7 +3,7 @@ const fs = require("fs");
 
 module.exports = defineConfig({
   e2e: {
-    baseUrl: "http://localhost:4173",
+    baseUrl: "http://localhost:5173",
     supportFile: false,
     setupNodeEvents(on) {
       on("task", {

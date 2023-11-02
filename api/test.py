@@ -33,7 +33,7 @@ def test_validate_json():
 
 def test_validate_binary():
     with TestClient(app) as client:
-        with open("assets/q1.bin", 'rb') as file_stream:
+        with open("../resources/plan.bin", 'rb') as file_stream:
             file = file_stream.read()
 
         response = client.post(
