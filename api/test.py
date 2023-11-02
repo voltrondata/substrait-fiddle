@@ -6,15 +6,14 @@ from fastapi.testclient import TestClient
 
 from app import app
 
-client = TestClient(app)
-
 
 def test_ping():
-    res = client.get("/")
-    assert res.status_code == 200
-    assert res.json() == {
-        "api_service": "up and running",
-    }
+    with TestClient(app) as client:
+        res = client.get("/", headers={"Host": "127.0.0.1"})
+        assert res.status_code == 200
+        assert res.json() == {
+            "api_service": "up and running",
+        }
 
 
 def test_validate_json():
@@ -28,7 +27,8 @@ def test_validate_json():
             "plan": plan,
             "override_levels": [2001, 1],
         }
-        response = client.post("/validate/", json=data)
+        response = client.post("/route/validate/", json=data, 
+                               headers={"Host": "127.0.0.1"})
         assert response.status_code == 200
 
 
@@ -39,46 +39,29 @@ def test_validate_binary():
             "substrait-viewer/blob/main/demo/q1.bin"
         )
         response = requests.get(url)
+
         file_content = response.content
 
         file = BytesIO(file_content)
 
         response = client.post(
-            "/validate/file/",
+            "/route/validate/file/",
             data={"override_levels": [1002, 1001]},
             files={"file": ("q1.bin", file, "application/octet-stream")},
+            headers={"Host": "127.0.0.1"}
         )
         assert response.status_code == 200
 
 
 
-def test_duckdb_execute():
-    with TestClient(app) as client:
-        res = client.post(
-            "/execute/duckdb/",
-            json={
-                "query": """CREATE TABLE IF NOT EXISTS
-                            weather(city VARCHAR, temp_lo INTEGER);""",
-            },
-        )
-        assert res.status_code == 200
-        assert res.json() == {"message": "DuckDB Operation successful"}
-
-
 def test_parse_to_substrait():
     with TestClient(app) as client:
-        client.post(
-            "/execute/duckdb/",
-            json={
-                "query": """CREATE TABLE IF NOT EXISTS test_fiddle(
-                            id INTEGER NOT NULL, key INTEGER NOT NULL);""",
-            },
-        )
         response = client.post(
-            "/parse/",
+            "/route/parse/",
             json={
-                "query": "SELECT * FROM test_fiddle;",
+                "query": "SELECT * FROM lineitem;",
             },
+            headers={"Host": "127.0.0.1"}
         )
         assert response.status_code == 200
         assert response.json() is not None
@@ -96,10 +79,11 @@ def test_save_plan_roundtrip():
             "json_string": json_string,
             "validator_overrides": [2001, 1],
         }
-        response = client.post("/save/", json=data)
+        response = client.post("/route/save/", json=data, headers={"Host": "127.0.0.1"})
         assert response.status_code == 200
 
-        response = client.post("/fetch/?id=" + response.json())
+        response = client.post("/route/fetch/?id=" + response.json(), 
+                               headers={"Host": "127.0.0.1"})
         assert response.status_code == 200
         assert response.json()["json_string"] == json_string
         assert response.json()["validator_overrides"] == [2001, 1]
