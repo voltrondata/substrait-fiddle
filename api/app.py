@@ -69,18 +69,18 @@ router.add_api_route("/health", health([check_backend_conn]))
 @router.post("/validate/", status_code=status.HTTP_200_OK)
 async def validate(plan: dict, override_levels: list[int]):
     '''
-        Validates a plan using the substrait-validator 
-        with overriding rules as specified and returns 
-        errors accordingly.
+    Validates a plan using the substrait-validator 
+    with overriding rules as specified and returns 
+    errors accordingly.
 
-        Parameters:
-            plan (dict): Substrait JSON plan
-            override_levels (list[int]): List of validation
-                                         override levels
-        
-        Returns:
-            Success message upon validation otherwise Exception
-            with failure message.
+    Parameters:
+        plan (dict): Substrait JSON plan
+        override_levels (list[int]): List of validation
+                                        override levels
+    
+    Returns:
+        Success message upon validation otherwise Exception
+        with failure message.
     '''
     try:
         logger.info("Validating plan using substrait-validator!")
@@ -104,18 +104,18 @@ async def validate(plan: dict, override_levels: list[int]):
 async def validate_file(file: UploadFile = File(),
                         override_levels: list = Form()):
     '''
-        Validates a file using the substrait-validator 
-        with overriding rules as specified and returns 
-        errors accordingly.
+    Validates a file using the substrait-validator 
+    with overriding rules as specified and returns 
+    errors accordingly.
 
-        Parameters:
-            file (File): File object to read and validate
-            override_levels (list[int]): List of validation
-                                         override levels
-        
-        Returns:
-            Success message upon validation otherwise Exception
-            with failure message.
+    Parameters:
+        file (File): File object to read and validate
+        override_levels (list[int]): List of validation
+                                        override levels
+    
+    Returns:
+        Success message upon validation otherwise Exception
+        with failure message.
     '''
     try:
         logger.info("Validating file using substrait-validator!")
@@ -142,15 +142,15 @@ async def save_plan(
     data: PlanData, db_conn: AsyncIOMotorCollection = Depends(get_mongo_conn)
 ):
     '''
-        Saves a Substrait plan to MongoDB and returns a unique ID 
-        that can be used to fetch it later.
+    Saves a Substrait plan to MongoDB and returns a unique ID 
+    that can be used to fetch it later.
 
-        Parameters:
-            data (PlanData): Substrait Plan
-            db_conn: MongoDB connection object
+    Parameters:
+        data (PlanData): Substrait Plan
+        db_conn: MongoDB connection object
 
-        Returns:
-            Unique ID of the inserted plan
+    Returns:
+        Unique ID of the inserted plan
     '''
     response = await app.state.mongo_pool.add_record(db_conn, data)
     return response
@@ -164,15 +164,15 @@ async def save_plan(
 async def fetch_plan(id: str, 
                      db_conn: AsyncIOMotorCollection = Depends(get_mongo_conn)):
     '''
-        Fetches a saved Substrait plan from MongoDB
+    Fetches a saved Substrait plan from MongoDB
 
-        Parameters:
-            id (str): Plan ID 
-            db_conn: MongoDB connection object
-        
-        Returns:
-            Substrait JSON plans if present otherwise
-            HTTPException is raised
+    Parameters:
+        id (str): Plan ID 
+        db_conn: MongoDB connection object
+    
+    Returns:
+        Substrait JSON plans if present otherwise
+        HTTPException is raised
     '''
     response = await app.state.mongo_pool.get_record(db_conn, id)
     if response is None:
@@ -194,20 +194,20 @@ def add_schema(
     db_conn: DuckDBPyConnection = Depends(get_duck_conn),
 ):
     '''
-        Creates a table in DuckDB to allow SQL queries
-        on them for further parsing. API requires 
-        authentication to internally store tables
-        with specified user_id. API accepts the schema
-        in a format specified in the front-end and 
-        builds the SQL CREATE statement before executing it.
+    Creates a table in DuckDB to allow SQL queries
+    on them for further parsing. API requires 
+    authentication to internally store tables
+    with specified user_id. API accepts the schema
+    in a format specified in the front-end and 
+    builds the SQL CREATE statement before executing it.
 
-        Parameters:
-            data (dict): API request containing the schema
-            headers (dict): API headers for authentication
-            db_conn: DuckDB connection object
-        
-        Returns:
-            Success/Error response
+    Parameters:
+        data (dict): API request containing the schema
+        headers (dict): API headers for authentication
+        db_conn: DuckDB connection object
+    
+    Returns:
+        Success/Error response
     '''
     user_id = headers["user_id"]
     schema = data["schema"]
@@ -240,17 +240,17 @@ def parse_to_substrait(
     db_conn: DuckDBPyConnection = Depends(get_duck_conn),
 ):
     '''
-        Parses a SQL query to Substrait JSON plans via 
-        DuckDB. 
+    Parses a SQL query to Substrait JSON plans via 
+    DuckDB. 
 
-        Parameters:
-            data (dict): API request containing the
-                         SQL query
-            db_conn: DuckDB connection object 
-        
-        Returns:
-            response (dict): Response JSON for translated
-                             Substrait plan
+    Parameters:
+        data (dict): API request containing the
+                        SQL query
+        db_conn: DuckDB connection object 
+    
+    Returns:
+        response (dict): Response JSON for translated
+                            Substrait plan
     '''
     response = parse_from_duckDB(data.get("query"), db_conn)
     return response

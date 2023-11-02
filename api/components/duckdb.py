@@ -70,9 +70,9 @@ class DuckDBConnection:
 
 def check_duckdb_connection(con):
     '''
-        Function checks if the database
-        connection is healthy by executing 
-        a query on the default table.
+    Function checks if the database
+    connection is healthy by executing 
+    a query on the default table.
     '''
     status = {"db_health": "unavailable"}
     try:
@@ -90,8 +90,8 @@ def check_duckdb_connection(con):
 
 def execute_duckdb(query, con):
     '''
-        Function executes a query on the DuckDB 
-        instance.
+    Function executes a query on the DuckDB 
+    instance.
     '''
     try:
         con.execute(query=query)
@@ -106,7 +106,7 @@ def execute_duckdb(query, con):
 
 def delete_table_from_duckDB(table_name, con):
     '''
-        Function drops table from DuckDB
+    Function drops table from DuckDB
     '''
     try:
         con.execute(query="DROP TABLE " + table_name + ";")
@@ -116,8 +116,8 @@ def delete_table_from_duckDB(table_name, con):
 
 def parse_from_duckDB(query, con):
     '''
-        Function translates a SQL query to a
-        Substrait plan
+    Function translates a SQL query to a
+    Substrait plan
     '''
     try:
         result = con.get_substrait_json(query).fetchone()[0]
