@@ -244,7 +244,7 @@ export default {
             await axios.post(
               "/api/route/add_schema/",
               {
-                schema: this.schemas[i],
+                schema: this.schemas[i].schema,
               },
               {
                 headers: {

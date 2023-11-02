@@ -1,5 +1,7 @@
 import json
+from uuid import uuid4
 
+import jwt
 import requests
 from fastapi.testclient import TestClient
 
@@ -45,15 +47,48 @@ def test_validate_binary():
         assert response.status_code == 200
 
 
+def test_add_schema():
+    with TestClient(app) as client:
+        payload = {"user_id": str(uuid4()).replace('-', '_')}
+        token = jwt.encode(payload, "key", algorithm="HS256")
+        schema = '''
+                {
+                "table": "test",
+                "fields": [
+                    {
+                    "name": "field_1",
+                    "type": "INTEGER",
+                    "properties": [
+                        "NOT NULL"
+                    ]
+                    }
+                ]
+                }
+        '''
+        response = client.post(
+            "/route/add_schema/",
+            json={
+                "schema": schema
+            },
+            headers={"Host": "127.0.0.1",
+                     "Authorization": f"Bearer {token}"}
+        )
+        assert response.status_code == 200
+        assert response.json() is not None
+
 
 def test_parse_to_substrait():
     with TestClient(app) as client:
+        payload = {"user_id": str(uuid4())}
+        token = jwt.encode(payload, "key", algorithm="HS256")
+
         response = client.post(
             "/route/parse/",
             json={
                 "query": "SELECT * FROM lineitem;",
             },
-            headers={"Host": "127.0.0.1"}
+            headers={"Host": "127.0.0.1",
+                     "Authorization": f"Bearer {token}"}
         )
         assert response.status_code == 200
         assert response.json() is not None

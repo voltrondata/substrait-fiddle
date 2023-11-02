@@ -210,8 +210,8 @@ def add_schema(
             Success/Error response
     '''
     user_id = headers["user_id"]
-    schema = data.get("schema")
-    json_data = json.loads(schema["schema"])
+    schema = data["schema"]
+    json_data = json.loads(schema)
     table_name = json_data["table"] + "_" + user_id
 
     query = "CREATE TABLE  "
