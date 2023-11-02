@@ -34,19 +34,12 @@ def test_validate_json():
 
 def test_validate_binary():
     with TestClient(app) as client:
-        url = (
-            "https://github.com/westonpace/"
-            "substrait-viewer/blob/main/demo/q1.bin"
-        )
-        response = requests.get(url)
-
-        file_content = response.content
-
-        file = BytesIO(file_content)
+        with open("assets/q1.bin", 'rb') as file_stream:
+            file = file_stream.read()
 
         response = client.post(
             "/route/validate/file/",
-            data={"override_levels": [1002, 1001]},
+            data={"override_levels": [1002, 2001]},
             files={"file": ("q1.bin", file, "application/octet-stream")},
             headers={"Host": "127.0.0.1"}
         )
