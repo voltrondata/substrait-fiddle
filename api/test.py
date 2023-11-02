@@ -1,19 +1,10 @@
-from io import BytesIO
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
 import json
-=======
-import pytest
->>>>>>> 1d03b3c (feat: duckdb to use connection pool)
-=======
->>>>>>> 3490705 (feat: schema to use a JSON format and query should be generated in backend)
-=======
+from io import BytesIO
 
->>>>>>> 417b154 (feat: sort imports using isort)
 import requests
-from app import app
 from fastapi.testclient import TestClient
+
+from app import app
 
 client = TestClient(app)
 
@@ -60,6 +51,7 @@ def test_validate_binary():
         assert response.status_code == 200
 
 
+
 def test_duckdb_execute():
     with TestClient(app) as client:
         res = client.post(
@@ -75,10 +67,23 @@ def test_duckdb_execute():
 
 
 def test_parse_to_substrait():
-<<<<<<< HEAD
-    response = client.post("/parse/", json={"query": "SELECT * FROM lineitem;"})
-    assert response.status_code == 200
-    assert response.json() is not None
+    with TestClient(app) as client:
+        client.post(
+            "/execute/duckdb/",
+            json={
+                "query": """CREATE TABLE IF NOT EXISTS test_fiddle(
+                            id INTEGER NOT NULL, key INTEGER NOT NULL);""",
+            },
+        )
+        response = client.post(
+            "/parse/",
+            json={
+                "query": "SELECT * FROM test_fiddle;",
+            },
+        )
+        print(response.json())
+        assert response.status_code == 200
+        assert response.json() is not None
 
 
 def test_save_plan_roundtrip():
@@ -100,23 +105,3 @@ def test_save_plan_roundtrip():
         assert response.status_code == 200
         assert response.json()["json_string"] == json_string
         assert response.json()["validator_overrides"] == [2001, 1]
-=======
-
-    with TestClient(app) as client:
-        client.post(
-            "/execute/duckdb/",
-            json={
-                "query": """CREATE TABLE IF NOT EXISTS test_fiddle(
-                            id INTEGER NOT NULL, key INTEGER NOT NULL);""",
-            },
-        )
-        response = client.post(
-            "/parse/",
-            json={
-                "query": "SELECT * FROM test_fiddle;",
-            },
-        )
-        print(response.json())
-        assert response.status_code == 200
-        assert response.json() is not None
->>>>>>> 1d03b3c (feat: duckdb to use connection pool)

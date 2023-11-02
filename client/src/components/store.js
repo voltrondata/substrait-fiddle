@@ -5,14 +5,11 @@ import { generateToken } from "../assets/js/shared";
 
 export const store = reactive({
   plan: "",
-<<<<<<< HEAD
   validation_override_levels: [],
-
-=======
   user_id: "",
   schemas: [],
   sessionToken: "",
->>>>>>> 436f9b4 (feat: add JWT, Custom TTLCache and table manipulation for custom schema)
+
   reset_plan() {
     this.plan = "";
     this.validation_override_levels.length = 0;
@@ -32,4 +29,5 @@ export const store = reactive({
     this.user = sessionToken.replace(/-/g, "_");
     this.token = await generateToken(store.user_id);
   },
+  
 });

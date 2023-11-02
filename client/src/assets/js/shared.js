@@ -49,7 +49,6 @@ function plot(plan, status_func) {
   }
 }
 
-<<<<<<< HEAD
 async function getPlan(id) {
   try {
     const hex = /^[0-9a-fA-F]+$/;
@@ -67,8 +66,6 @@ async function getPlan(id) {
   }
 }
 
-export { readFile, readText, validate, plot, clearGraph, getPlan };
-=======
 async function generateToken(user_id) {
   const payload = {
     user_id: user_id,
@@ -80,5 +77,4 @@ async function generateToken(user_id) {
   return token;
 }
 
-export { readFile, readText, validate, plot, clearGraph, generateToken };
->>>>>>> 436f9b4 (feat: add JWT, Custom TTLCache and table manipulation for custom schema)
+export { readFile, readText, validate, plot, clearGraph, getPlan, generateToken };
