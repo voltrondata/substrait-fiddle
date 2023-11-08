@@ -8,6 +8,10 @@ on:
     paths:
       - 'api/**'
 
+env:
+  VITE_SESSION_SECRET: ${{ secrets.VITE_SESSION_SECRET }}
+  DUCKDB_POOL_SIZE: 5
+
 jobs:
   deploy:
     runs-on: ubuntu-latest

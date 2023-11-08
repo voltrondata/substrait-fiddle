@@ -1,16 +1,24 @@
 import os
+
 from bson.objectid import ObjectId
-from pydantic import BaseModel
 from motor.motor_asyncio import AsyncIOMotorClient
+from pydantic import BaseModel
 
 DEFAULT_MONGO_URL = "mongodb://localhost:27017"
 
-
+############################################################
+# Class representing model for substrait plan and override 
+# levels to be used for Save/Fetch plans.
+############################################################
 class PlanData(BaseModel):
     json_string: str
     validator_overrides: list[int]
 
 
+
+############################################################
+# Class to manage MongoDB connections 
+############################################################
 class MongoDBConnection:
     def __init__(self):
         url = os.environ.get("PROD_MONGO_URL", DEFAULT_MONGO_URL)

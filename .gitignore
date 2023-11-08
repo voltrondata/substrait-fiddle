@@ -135,3 +135,7 @@ dist-ssr
 # substrait-js
 substrait-js
 *~
+
+# databases
+*.db
+*.wal

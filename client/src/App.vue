@@ -113,8 +113,12 @@ import SubstraitGraph from "@/components/SubstraitGraph.vue";
 
 <script>
 import { clearGraph } from "./assets/js/substrait-d3.js";
+import { store } from "./components/store";
 
 export default {
+  async mounted() {
+    store.set_token();
+  },
   methods: {
     isCodeView() {
       return this.$route.path === "/" || this.$route.path.startsWith("/plan/")

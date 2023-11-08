@@ -8,17 +8,17 @@ test("validate", async () => {
   ).json();
   const expectedErrorStatus = new Error("Internal Server Error");
   const expectedErrorMessage = new Error(
-    "configured recursion limit for URI resolution has been reached"
+    "configured recursion limit for URI resolution has been reached",
   );
   return axios
-    .post(BASE_URL + "/validate/", {
+    .post(BASE_URL + "/route/validate/", {
       plan: plan,
       override_levels: [2001, 1],
     })
     .catch((error) => {
       expect(error.response.statusText).toContain(expectedErrorStatus.message);
       expect(error.response.data["detail"]).toContain(
-        expectedErrorMessage.message
+        expectedErrorMessage.message,
       );
     });
 });
