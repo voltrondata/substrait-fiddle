@@ -1,4 +1,5 @@
 import axios from "axios";
+import 'dotenv/config';
 import * as jose from "jose";
 import { SubstraitParser } from "./substrait-parser";
 import { buildGraph, clearGraph, drawGraph } from "./substrait-d3";
