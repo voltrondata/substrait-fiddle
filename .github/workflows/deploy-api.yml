@@ -10,7 +10,7 @@ on:
 
 env:
   SESSION_SECRET: ${{ secrets.SESSION_SECRET }}
-  DUCKDB_POOL_SIZE: ${{ variables.DUCKDB_POOL_SIZE }}
+  DUCKDB_POOL_SIZE: 5
 
 jobs:
   deploy:
