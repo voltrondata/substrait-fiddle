@@ -3,7 +3,7 @@ name: Test
 on: [push]
 
 env:
-  SESSION_SECRET: ${{ secrets.SESSION_SECRET }}
+  VITE_SESSION_SECRET: ${{ secrets.VITE_SESSION_SECRET }}
   DUCKDB_POOL_SIZE: 5
 
 jobs:

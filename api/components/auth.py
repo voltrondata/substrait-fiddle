@@ -11,7 +11,7 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl='token')
 ############################################################
 def verify_token(token: str = Depends(oauth2_scheme)):
     try:
-        payload = jwt.decode(token, os.environ.get("SESSION_SECRET"),
+        payload = jwt.decode(token, os.environ.get("VITE_SESSION_SECRET"),
                              algorithms=["HS256"])
         return payload
     except jwt.exceptions.DecodeError:
