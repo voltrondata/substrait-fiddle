@@ -1,4 +1,5 @@
 import json
+import os
 from uuid import uuid4
 
 import jwt
@@ -50,7 +51,7 @@ def test_validate_binary():
 def test_add_schema():
     with TestClient(app) as client:
         payload = {"user_id": str(uuid4()).replace('-', '_')}
-        token = jwt.encode(payload, "key", algorithm="HS256")
+        token = jwt.encode(payload,os.environ.get("SESSION_SECRET"), algorithm="HS256")
         schema = '''
                 {
                 "table": "test",
@@ -80,7 +81,7 @@ def test_add_schema():
 def test_parse_to_substrait():
     with TestClient(app) as client:
         payload = {"user_id": str(uuid4())}
-        token = jwt.encode(payload, "key", algorithm="HS256")
+        token = jwt.encode(payload, os.environ.get("SESSION_SECRET"), algorithm="HS256")
 
         response = client.post(
             "/route/parse/",

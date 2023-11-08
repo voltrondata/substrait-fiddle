@@ -70,7 +70,7 @@ async function generateToken(user_id) {
   const payload = {
     user_id: user_id,
   };
-  const secret = new TextEncoder().encode("key");
+  const secret = new TextEncoder().encode(process.env.SESSION_SECRET);
   const token = await new jose.SignJWT(payload)
     .setProtectedHeader({ alg: "HS256" })
     .sign(secret);

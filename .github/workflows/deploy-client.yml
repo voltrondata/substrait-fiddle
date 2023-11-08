@@ -8,6 +8,10 @@ on:
     paths:
       - 'client/**'
 
+env:
+  SESSION_SECRET: ${{ secrets.SESSION_SECRET }}
+  DUCKDB_POOL_SIZE: ${{ variables.DUCKDB_POOL_SIZE }}
+
 jobs:
   build:
     runs-on: ubuntu-latest

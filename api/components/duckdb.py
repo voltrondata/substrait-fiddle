@@ -1,10 +1,12 @@
+import os
+
 import duckdb
 from fastapi import HTTPException
 from loguru import logger
 
 # Pool size is default at 5 for maintaining 
 # 5 concurrent DuckDB connection objects
-POOL_SIZE = 5
+POOL_SIZE = os.environ.get("DUCKDB_POOL_SIZE")
 
 
 
