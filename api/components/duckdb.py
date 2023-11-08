@@ -6,7 +6,7 @@ from loguru import logger
 
 # Pool size is default at 5 for maintaining 
 # 5 concurrent DuckDB connection objects
-POOL_SIZE = os.environ.get("DUCKDB_POOL_SIZE")
+POOL_SIZE = int(os.environ.get("DUCKDB_POOL_SIZE"))
 
 
 
