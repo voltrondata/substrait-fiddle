@@ -4,11 +4,11 @@ on:
   push: 
     paths:
       - 'api/**'
-      - '.github/workflows'
+      - '.github/workflows/**'
   pull_request:
     paths:
       - 'api/**'
-      - '.github/workflows'
+      - '.github/workflows/**'
   workflow_dispatch:
 
 env:
