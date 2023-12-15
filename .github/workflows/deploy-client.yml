@@ -33,18 +33,14 @@ jobs:
 
   deploy:
     runs-on: ubuntu-latest
-    if: >
-      github.ref == 'refs/heads/main' &&
-      secrets.DEPLOY_SSH_KEY &&
-      secrets.DEPLOY_HOST_DNS &&
-      secrets.DEPLOY_USERNAME &&
-      secrets.DEPLOY_TARGET_DIR
+    if: github.ref == 'refs/heads/main' &&
     needs: [build]
     steps:
       - uses: actions/download-artifact@v3
         with:
           name: built-site
       - uses: easingthemes/ssh-deploy@main
+        if: ${{ env.SSH_PRIVATE_KEY && env.REMOTE_USER && env.REMOTE_HOST && env.TARGET }}
         env:
           ARGS: -rlgoDzvc -i --delete
           SSH_PRIVATE_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
