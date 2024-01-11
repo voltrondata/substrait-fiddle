@@ -1,0 +1,28 @@
+name: Deploy api + docker
+
+on: 
+  push: 
+    branches: [ DVO-4886-gha-secret-issues ]
+  workflow_dispatch:
+
+env:
+  VITE_SESSION_SECRET: ${{ secrets.VITE_SESSION_SECRET }}
+  DUCKDB_POOL_SIZE: 5
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - run: rm -rf .git
+    # - name: Install dependencies
+    #   run: make install-dep
+    - name: Build Docker image
+      run: docker-compose up
+      env:
+        ARGS: -rlgoDzvc -i --delete
+        SSH_PRIVATE_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+        REMOTE_HOST: ${{ secrets.DEPLOY_HOST_DNS }}
+        REMOTE_USER: ${{ secrets.DEPLOY_USERNAME }}
+        SCRIPT_AFTER: sudo chown -R www-data:www-data ${{ secrets.DEPLOY_TARGET_DIR }} && sudo supervisorctl start substrait-fiddle:*
+        TARGET: ${{ secrets.DEPLOY_TARGET_DIR }}
