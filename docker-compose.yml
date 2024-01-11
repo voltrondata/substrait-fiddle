@@ -1,0 +1,12 @@
+version: '3.8'
+services:
+  api:
+    build: ./api
+    ports:
+      - "9090:9090"
+    environment:
+      - NODE_ENV=development
+  client:
+    build: ./client
+    ports:
+      - "80:8080"

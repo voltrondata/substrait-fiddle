@@ -6,6 +6,7 @@ RUN apt-get update && apt-get install -y cmake
 RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
 ENV PATH="/root/.cargo/bin:${PATH}"
 
+ENV DUCKDB_POOL_SIZE="10"
 WORKDIR /code
 
 COPY ./requirements.txt /code/requirements.txt
@@ -14,4 +15,4 @@ RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
 
 COPY ./ /code/
 
-CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "9090"]
+CMD ["uvicorn", "app:app", "--reload", "--port", "9090"]
