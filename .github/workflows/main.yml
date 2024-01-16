@@ -45,7 +45,7 @@ jobs:
           sudo apt install docker -y
           sudo apt install docker.io -y
           sudo apt install docker-compose -y
-    
+
     - name: Install npm
       uses: appleboy/ssh-action@master
       with:
