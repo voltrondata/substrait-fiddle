@@ -2,7 +2,13 @@ name: Deploy api + docker
 
 on: 
   push: 
-    branches: [ DVO-4886-gha-secret-issues ]
+    paths:
+      - 'client/**'
+      - '.github/workflows/**'
+  pull_request:
+    paths:
+      - 'client/**'
+      - '.github/workflows/**'
   workflow_dispatch:
 
 env:
