@@ -2,7 +2,7 @@ name: Deploy api + docker
 
 on: 
   push: 
-    branches: [ main ]
+    branches: [ DVO-4886-gha-secret-issues ]
   workflow_dispatch:
 
 env:
