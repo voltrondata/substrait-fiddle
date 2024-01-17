@@ -1,6 +1,6 @@
 name: Deploy api and client
 
-on: 
+on:
   push: 
     paths:
       - 'client/**'
