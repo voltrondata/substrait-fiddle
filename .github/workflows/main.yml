@@ -6,11 +6,13 @@ on:
       - 'client/**'
       - 'api/**'
       - '.github/workflows/main.yml'
+      - 'docker-compose.yaml'
   pull_request:
     paths:
       - 'client/**'
       - 'api/**'
       - '.github/workflows/main.yml'
+      - 'docker-compose.yaml'
   workflow_dispatch:
 
 env:
