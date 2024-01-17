@@ -1,14 +1,16 @@
-name: Deploy api + docker
+name: Deploy api and client
 
 on: 
   push: 
     paths:
       - 'client/**'
-      - '.github/workflows/**'
+      - 'api/**'
+      - '.github/workflows/main.yml'
   pull_request:
     paths:
       - 'client/**'
-      - '.github/workflows/**'
+      - 'api/**'
+      - '.github/workflows/main.yml'
   workflow_dispatch:
 
 env:
@@ -33,7 +35,7 @@ jobs:
         script: |
           sudo apt update
           sudo apt upgrade -y
-  
+
     - name: Install Docker and Docker-compose
       uses: appleboy/ssh-action@master
       with:

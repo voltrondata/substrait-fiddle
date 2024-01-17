@@ -6,7 +6,6 @@ RUN apt-get update && apt-get install -y cmake
 RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
 ENV PATH="/root/.cargo/bin:${PATH}"
 
-ENV DUCKDB_POOL_SIZE="10"
 WORKDIR /code
 
 COPY ./requirements.txt /code/requirements.txt
