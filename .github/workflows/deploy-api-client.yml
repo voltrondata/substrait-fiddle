@@ -1,0 +1,36 @@
+name: Deploy api and client
+
+on: 
+  push: 
+    paths:
+      - 'client/**'
+      - 'api/**'
+      - '.github/workflows/deploy-api-client.yml'
+      - 'docker-compose.yaml'
+  pull_request:
+    paths:
+      - 'client/**'
+      - 'api/**'
+      - '.github/workflows/deploy-api-client.yml'
+      - 'docker-compose.yaml'
+  workflow_dispatch:
+
+env:
+  VITE_SESSION_SECRET: ${{ secrets.VITE_SESSION_SECRET }}
+  DUCKDB_POOL_SIZE: 5
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v2
+
+    - uses: alex-ac/github-action-ssh-docker-compose@master
+      name: Docker-Compose Remote Deployment
+      with:
+        ssh_host: ${{ secrets.DEPLOY_HOST_DNS }}
+        ssh_private_key: ${{ secrets.DEPLOY_SSH_KEY }}
+        ssh_user: ${{ secrets.DEPLOY_USERNAME }}
+        docker_compose_prefix: deploy
