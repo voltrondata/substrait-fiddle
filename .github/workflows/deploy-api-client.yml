@@ -1,13 +1,9 @@
 name: Deploy api and client
 
 on:
-  push: 
-    paths:
-      - 'client/**'
-      - 'api/**'
-      - '.github/workflows/deploy-api-client.yml'
-      - 'docker-compose.yaml'
-  pull_request:
+  push:
+    branches:
+      - main
     paths:
       - 'client/**'
       - 'api/**'
