@@ -11,9 +11,11 @@ on:
       - 'docker-compose.yaml'
   workflow_dispatch:
 
-env:
-  VITE_SESSION_SECRET: ${{ secrets.VITE_SESSION_SECRET }}
-  DUCKDB_POOL_SIZE: 5
+permissions:
+  actions: write
+  checks: read
+  deployments: write
+  pull-requests: write
 
 jobs:
   deploy:
@@ -30,3 +32,6 @@ jobs:
         ssh_private_key: ${{ secrets.DEPLOY_SSH_KEY }}
         ssh_user: ${{ secrets.DEPLOY_USERNAME }}
         docker_compose_prefix: deploy
+      env:
+        VITE_SESSION_SECRET: ${{ secrets.VITE_SESSION_SECRET }}
+        DUCKDB_POOL_SIZE: 5
