@@ -42,14 +42,14 @@ class DuckDBConnection:
                         l_shipinstruct VARCHAR NOT NULL,
                         l_shipmode VARCHAR NOT NULL,
                         l_comment VARCHAR NOT NULL);"""
-        conn = duckdb.connect("../resources/duck.db")
+        conn = duckdb.connect("./duck.db")
         conn.execute(query = create_lineitem_statement)
         self.append_pool()
 
 
     def append_pool(self):
         for i in range(POOL_SIZE):
-            conn = duckdb.connect("../resources/duck.db")
+            conn = duckdb.connect("./duck.db")
             conn.install_extension("substrait")
             conn.load_extension("substrait")
             self.conn_pool.append(conn)

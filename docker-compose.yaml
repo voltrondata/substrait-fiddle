@@ -5,7 +5,6 @@ services:
     ports:
       - "9090:9090"
     environment:
-      - NODE_ENV=development
       - DUCKDB_POOL_SIZE=5
   client:
     build: ./client
