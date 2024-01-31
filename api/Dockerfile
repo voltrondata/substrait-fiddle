@@ -6,12 +6,12 @@ RUN apt-get update && apt-get install -y cmake
 RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
 ENV PATH="/root/.cargo/bin:${PATH}"
 
-WORKDIR /code
+WORKDIR /api
 
-COPY ./requirements.txt /code/requirements.txt
+COPY ./requirements.txt /api/requirements.txt
 
-RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
+RUN pip install --no-cache-dir --upgrade -r /api/requirements.txt
 
-COPY ./ /code/
+COPY ./ /api/
 
 CMD ["uvicorn", "app:app", "--reload", "--port", "9090"]
