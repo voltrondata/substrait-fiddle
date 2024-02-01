@@ -1,12 +1,31 @@
 version: '3.8'
+
 services:
   api:
     build: ./api
     ports:
       - "9090:9090"
     environment:
-      - DUCKDB_POOL_SIZE=5
+     - DUCKDB_POOL_SIZE=5
+    networks:
+      - fiddle-network
+    secrets:
+       - vite_sess_secrt
+
   client:
     build: ./client
     ports:
-      - "80:8080"
+      - "8080:8080"
+    networks:
+      - fiddle-network
+    secrets:
+       - vite_sess_secrt
+
+networks:
+  fiddle-network:
+    driver: bridge
+
+secrets:
+  vite_sess_secrt:
+    external: true
+    name: "${secrets.VITE_SESSION_SECRET}"
