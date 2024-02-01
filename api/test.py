@@ -29,7 +29,7 @@ def test_validate_json():
             "plan": plan,
             "override_levels": [2001, 1],
         }
-        response = client.post("/route/validate/", json=data, 
+        response = client.post("/api/route/validate/", json=data,
                                headers={"Host": "127.0.0.1"})
         assert response.status_code == 200
 
@@ -40,7 +40,7 @@ def test_validate_binary():
             file = file_stream.read()
 
         response = client.post(
-            "/route/validate/file/",
+            "/api/route/validate/file/",
             data={"override_levels": [1002, 2001]},
             files={"file": ("q1.bin", file, "application/octet-stream")},
             headers={"Host": "127.0.0.1"}
@@ -68,7 +68,7 @@ def test_add_schema():
                 }
         '''
         response = client.post(
-            "/route/add_schema/",
+            "/api/route/add_schema/",
             json={
                 "schema": schema
             },
@@ -86,7 +86,7 @@ def test_parse_to_substrait():
                            algorithm="HS256")
 
         response = client.post(
-            "/route/parse/",
+            "/api/route/parse/",
             json={
                 "query": "SELECT * FROM lineitem;",
             },
@@ -109,10 +109,10 @@ def test_save_plan_roundtrip():
             "json_string": json_string,
             "validator_overrides": [2001, 1],
         }
-        response = client.post("/route/save/", json=data, headers={"Host": "127.0.0.1"})
+        response = client.post("/api/route/save/", json=data, headers={"Host": "127.0.0.1"})
         assert response.status_code == 200
 
-        response = client.post("/route/fetch/?id=" + response.json(), 
+        response = client.post("/api/route/fetch/?id=" + response.json(),
                                headers={"Host": "127.0.0.1"})
         assert response.status_code == 200
         assert response.json()["json_string"] == json_string
