@@ -25,6 +25,9 @@ jobs:
     - name: Checkout Repository
       uses: actions/checkout@v4
 
+    - name: Set Environment Variable
+      run: ssh -i ${{ secrets.DEPLOY_SSH_KEY }} ${{ secrets.DEPLOY_USERNAME }}@${{ secrets.DEPLOY_HOST_DNS }} "echo 'export VITE_SESSION_SECRET=${{ secrets.VITE_SESSION_SECRET }}' >> ~/.bashrc"
+
     - uses: matiasnu/github-action-ssh-docker-compose@7fb3aa789f898b63c3722e6beb2dafa1a70f0e22 # v2.0.3
       name: Docker-Compose Remote Deployment
       with:

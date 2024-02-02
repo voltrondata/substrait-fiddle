@@ -10,7 +10,7 @@ services:
     networks:
       - fiddle-network
     secrets:
-       - vite_sess_secrt
+       - VITE_SESSION_SECRET
 
   client:
     build: ./client
@@ -19,13 +19,13 @@ services:
     networks:
       - fiddle-network
     secrets:
-       - vite_sess_secrt
+       - VITE_SESSION_SECRET
 
 networks:
   fiddle-network:
     driver: bridge
 
 secrets:
-  vite_sess_secrt:
+  VITE_SESSION_SECRET:
     external: true
-    name: "${{ secrets.VITE_SESSION_SECRET }}"
+    name: ${{ secrets.VITE_SESSION_SECRET }}
