@@ -11,7 +11,7 @@ test("validate", async () => {
     "configured recursion limit for URI resolution has been reached",
   );
   return axios
-    .post(BASE_URL + "/route/validate/", {
+    .post(BASE_URL + "/api/route/validate/", {
       plan: plan,
       override_levels: [2001, 1],
     })
