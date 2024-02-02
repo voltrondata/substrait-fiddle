@@ -109,7 +109,9 @@ def test_save_plan_roundtrip():
             "json_string": json_string,
             "validator_overrides": [2001, 1],
         }
-        response = client.post("/api/route/save/", json=data, headers={"Host": "127.0.0.1"})
+        response = client.post("/api/route/save/",
+                               json=data,
+                               headers={"Host": "127.0.0.1"})
         assert response.status_code == 200
 
         response = client.post("/api/route/fetch/?id=" + response.json(),

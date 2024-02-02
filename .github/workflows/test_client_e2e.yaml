@@ -2,13 +2,13 @@ name: Cypress Test
 
 on: [push]
 
+env:
+  VITE_SESSION_SECRET: ${{ secrets.VITE_SESSION_SECRET }}
+  NODE_ENV: dev
+
 jobs:
   electron-run:
     runs-on: ubuntu-latest
-
-    env:
-      VITE_SESSION_SECRET: ${{ secrets.VITE_SESSION_SECRET }}
-      NODE_ENV: dev
 
     steps:
     - name: Checkout backend
@@ -52,10 +52,6 @@ jobs:
   chrome-run:
     runs-on: ubuntu-latest
 
-    env:
-      VITE_SESSION_SECRET: ${{ secrets.VITE_SESSION_SECRET }}
-      NODE_ENV: dev
-
     steps:
     - name: Checkout backend
       uses: actions/checkout@v3
@@ -91,10 +87,6 @@ jobs:
 
   edge-run:
     runs-on: ubuntu-latest
-
-    env:
-      VITE_SESSION_SECRET: ${{ secrets.VITE_SESSION_SECRET }}
-      NODE_ENV: dev
 
     steps:
     - name: Checkout backend
