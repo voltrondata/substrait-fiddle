@@ -28,4 +28,4 @@ networks:
 secrets:
   vite_sess_secrt:
     external: true
-    name: "${secrets.VITE_SESSION_SECRET}"
+    name: "${{ secrets.VITE_SESSION_SECRET }}"
