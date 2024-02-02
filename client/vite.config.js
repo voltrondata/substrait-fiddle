@@ -1,5 +1,4 @@
 import { fileURLToPath, URL } from "node:url";
-
 import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
 import inject from "@rollup/plugin-inject";
@@ -7,6 +6,7 @@ import inject from "@rollup/plugin-inject";
 const path = require("path");
 
 export default defineConfig({
+  base: '/',
   plugins: [
     vue(),
     inject({
@@ -29,10 +29,9 @@ export default defineConfig({
   server: {
     proxy: {
       "/api": {
-        target: "http://127.0.0.1:9090",
+        target: process.env.NODE_ENV === 'dev' ? "http://127.0.0.1:9090" : "http://api:9090",
         changeOrigin: true,
         secure: false,
-        rewrite: (path) => path.replace("/api", ""),
       },
     },
   },

@@ -14,4 +14,7 @@ RUN pip install --no-cache-dir --upgrade -r /api/requirements.txt
 
 COPY ./ /api/
 
-CMD ["uvicorn", "app:app", "--reload", "--port", "9090"]
+RUN --mount=type=secret,id=VITE_SESSION_SECRET \
+  cat /run/secrets/VITE_SESSION_SECRET
+
+CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--reload", "--port", "9090"]

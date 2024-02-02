@@ -4,7 +4,7 @@ on: [push]
 
 env:
   VITE_SESSION_SECRET: ${{ secrets.VITE_SESSION_SECRET }}
-  DUCKDB_POOL_SIZE: 5
+  NODE_ENV: dev
 
 jobs:
   electron-run:

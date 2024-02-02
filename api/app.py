@@ -274,7 +274,7 @@ def substrait_fiddle_openapi():
 
 
 app = FastAPI()
-app.include_router(router, prefix="/route")
+app.include_router(router, prefix="/api/route")
 app.openapi = substrait_fiddle_openapi
 app.add_middleware(
     TrustedHostMiddleware,

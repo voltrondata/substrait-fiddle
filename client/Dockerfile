@@ -1,6 +1,8 @@
 FROM node:18-alpine as builder
 WORKDIR /app
 COPY . .
+RUN --mount=type=secret,id=VITE_SESSION_SECRET \
+  cat /run/secrets/VITE_SESSION_SECRET
 RUN npm ci
 RUN npm run build
 
