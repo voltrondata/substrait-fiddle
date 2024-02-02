@@ -29,7 +29,7 @@ export default defineConfig({
   server: {
     proxy: {
       "/api": {
-        target: "http://api:9090",
+        target: process.env.NODE_ENV === 'dev' ? "http://127.0.0.1:9090" : "http://api:9090",
         changeOrigin: true,
         secure: false,
       },
