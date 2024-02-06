@@ -9,8 +9,6 @@ services:
      - DUCKDB_POOL_SIZE=5
     networks:
       - fiddle-network
-    secrets:
-       - VITE_SESSION_SECRET
 
   client:
     build: ./client
@@ -18,14 +16,7 @@ services:
       - "8080:8080"
     networks:
       - fiddle-network
-    secrets:
-       - VITE_SESSION_SECRET
 
 networks:
   fiddle-network:
     driver: bridge
-
-secrets:
-  VITE_SESSION_SECRET:
-    external: true
-    name: ${{ secrets.VITE_SESSION_SECRET }}
