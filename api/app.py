@@ -278,7 +278,7 @@ app.include_router(router, prefix="/api/route")
 app.openapi = substrait_fiddle_openapi
 app.add_middleware(
     TrustedHostMiddleware,
-    allowed_hosts=["substrait-fiddle.com", "*.substrait-fiddle.com", "127.0.0.1"],
+    allowed_hosts=["*"],
 )
 
 @app.get("/")
