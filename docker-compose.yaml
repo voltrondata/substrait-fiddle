@@ -7,15 +7,18 @@ services:
       - "9090:9090"
     environment:
      - DUCKDB_POOL_SIZE=5
+     - VITE_SESSION_SECRET=$VITE_SESSION_SECRET
     networks:
       - fiddle-network
 
   client:
     build: ./client
     ports:
-      - "8080:8080"
+      - "80:8080"
     networks:
       - fiddle-network
+    environment:
+     - VITE_SESSION_SECRET=$VITE_SESSION_SECRET
 
 networks:
   fiddle-network:
