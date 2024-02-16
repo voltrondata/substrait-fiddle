@@ -12,13 +12,16 @@ services:
       - fiddle-network
 
   client:
-    build: ./client
+    build:
+      context: ./client
+      args:
+      - VITE_SESSION_SECRET=$VITE_SESSION_SECRET
     ports:
       - "80:8080"
     networks:
       - fiddle-network
     environment:
-     - VITE_SESSION_SECRET=$VITE_SESSION_SECRET
+     - NODE_ENV=production
 
 networks:
   fiddle-network:
