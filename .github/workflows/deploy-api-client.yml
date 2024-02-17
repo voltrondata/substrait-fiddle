@@ -34,7 +34,7 @@ jobs:
         username: ${{ secrets.DEPLOY_USERNAME }}
         key: ${{ secrets.DEPLOY_SSH_KEY }}
         envs: VITE_SESSION_SECRET
-        script: echo 'export VITE_SESSION_SECRET=$VITE_SESSION_SECRET' >> ~/.bashrc
+        script: export VITE_SESSION_SECRET=$VITE_SESSION_SECRET
 
     - name: Docker-Compose Remote Deployment
       uses: matiasnu/github-action-ssh-docker-compose@7fb3aa789f898b63c3722e6beb2dafa1a70f0e22 # v2.0.3
