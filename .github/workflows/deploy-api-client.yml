@@ -25,11 +25,21 @@ jobs:
     - name: Checkout Repository
       uses: actions/checkout@v4
 
+    - name: Adding env variables
+      uses: ./
+      env:
+        VITE_SESSION_SECRET: ${{ secrets.VITE_SESSION_SECRET }}
+      with:
+        host: ${{ secrets.DEPLOY_HOST_DNS }}
+        username: ${{ secrets.DEPLOY_USERNAME }}
+        key: ${{ secrets.DEPLOY_SSH_KEY }}
+        envs: VITE_SESSION_SECRET
+        script: echo 'export VITE_SESSION_SECRET=$VITE_SESSION_SECRET' >> ~/.bashrc
+
     - uses: matiasnu/github-action-ssh-docker-compose@7fb3aa789f898b63c3722e6beb2dafa1a70f0e22 # v2.0.3
       name: Docker-Compose Remote Deployment
       with:
         ssh_host: ${{ secrets.DEPLOY_HOST_DNS }}
         ssh_private_key: ${{ secrets.DEPLOY_SSH_KEY }}
         ssh_user: ${{ secrets.DEPLOY_USERNAME }}
-        VITE_SESSION_SECRET: ${{ secrets.VITE_SESSION_SECRET }}
         docker_compose_prefix: deploy
