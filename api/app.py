@@ -1,5 +1,7 @@
 import json
 
+from fastapi import Request
+
 import substrait_validator as sv
 from duckdb import DuckDBPyConnection
 from fastapi import (Depends, FastAPI, File, Form, HTTPException, UploadFile,
@@ -235,6 +237,7 @@ def add_schema(
 ############################################################
 @router.post("/parse/", status_code=status.HTTP_200_OK)
 def parse_to_substrait(
+    request: Request,
     data: dict,
     headers: dict = Depends(verify_token),
     db_conn: DuckDBPyConnection = Depends(get_duck_conn),
@@ -252,7 +255,17 @@ def parse_to_substrait(
         response (dict): Response JSON for translated
                             Substrait plan
     '''
+    content_type = request.headers.get("Content-Type")
+    authorization = request.headers.get("Authorization")
+    url = request.url
+
+    logger.info("content type: " + str(content_type))
+    logger.info("authorization: " + str(authorization))
+    logger.info("url: " + str(url))
+    logger.info("headers: " + str(headers))
+    logger.info("input data: " + str(data))
     response = parse_from_duckDB(data.get("query"), db_conn)
+    logger.info("Response: " + str(response))
     return response
 
 
@@ -273,7 +286,7 @@ def substrait_fiddle_openapi():
     return app.openapi_schema
 
 
-app = FastAPI()
+app = FastAPI(debug=True)
 app.include_router(router, prefix="/api/route")
 app.openapi = substrait_fiddle_openapi
 
