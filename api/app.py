@@ -4,7 +4,7 @@ import substrait_validator as sv
 from duckdb import DuckDBPyConnection
 from fastapi import (Depends, FastAPI, File, Form, HTTPException, UploadFile,
                      status)
-from fastapi.middleware.trustedhost import TrustedHostMiddleware
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.utils import get_openapi
 from fastapi.routing import APIRouter
 from fastapi_health import health
@@ -276,9 +276,19 @@ def substrait_fiddle_openapi():
 app = FastAPI()
 app.include_router(router, prefix="/api/route")
 app.openapi = substrait_fiddle_openapi
+
+origins = [
+    "http://localhost",
+    "http://localhost:80",
+    "http://substrait-fiddle.com",
+]
+
 app.add_middleware(
-    TrustedHostMiddleware,
-    allowed_hosts=["*"],
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 @app.get("/")
