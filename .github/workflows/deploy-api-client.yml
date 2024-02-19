@@ -24,8 +24,20 @@ jobs:
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v4
+      with:
+        path: substrait-fiddle
 
-    - name: Add env variables
+    - name: Copy files to remote repository
+      uses: appleboy/scp-action@v0.1.7
+      with:
+        host: ${{ secrets.DEPLOY_HOST_DNS }}
+        username: ${{ secrets.DEPLOY_USERNAME }}
+        key: ${{ secrets.DEPLOY_SSH_KEY }}
+        rm: true
+        source: "substrait-fiddle/*"
+        target: ~/deployment
+
+    - name: Deploy the docker-compose
       uses: appleboy/ssh-action@v1.0.3
       env:
         VITE_SESSION_SECRET: ${{ secrets.VITE_SESSION_SECRET }}
@@ -34,12 +46,10 @@ jobs:
         username: ${{ secrets.DEPLOY_USERNAME }}
         key: ${{ secrets.DEPLOY_SSH_KEY }}
         envs: VITE_SESSION_SECRET
-        script: export VITE_SESSION_SECRET=$VITE_SESSION_SECRET
-
-    - name: Docker-Compose Remote Deployment
-      uses: matiasnu/github-action-ssh-docker-compose@7fb3aa789f898b63c3722e6beb2dafa1a70f0e22 # v2.0.3
-      with:
-        ssh_host: ${{ secrets.DEPLOY_HOST_DNS }}
-        ssh_private_key: ${{ secrets.DEPLOY_SSH_KEY }}
-        ssh_user: ${{ secrets.DEPLOY_USERNAME }}
-        docker_compose_prefix: deploy
+        script: |
+          export VITE_SESSION_SECRET=$VITE_SESSION_SECRET
+          cd ~/deployment
+          docker-compose stop
+          docker-compose rm -f
+          docker-compose build --no-cache
+          docker-compose up -d
