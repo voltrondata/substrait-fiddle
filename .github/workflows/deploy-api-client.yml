@@ -48,7 +48,7 @@ jobs:
         envs: VITE_SESSION_SECRET
         script: |
           export VITE_SESSION_SECRET=$VITE_SESSION_SECRET
-          cd ~/deployment
+          cd ~/deployment/substrait-fiddle
           docker-compose stop
           docker-compose rm -f
           docker-compose build --no-cache
