@@ -8,9 +8,9 @@ services:
     environment:
      - DUCKDB_POOL_SIZE=5
      - VITE_SESSION_SECRET=$VITE_SESSION_SECRET
+     - PROD_MONGO_URL=mongodb://mongo:27017/
     networks:
       - fiddle-network
-
   client:
     build:
       context: ./client
@@ -24,18 +24,13 @@ services:
     environment:
      - NODE_ENV=production
     volumes:
-      - ./nginx/certbot/conf:/etc/letsencrypt
-      - ./nginx/certbot/www:/var/www/certbot
-    depends_on:
-      - certbot
-  certbot:
-    image: certbot/certbot
-    volumes:
-      - ./nginx/certbot/conf:/etc/letsencrypt
-      - ./nginx/certbot/www:/var/www/certbot
-    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
-    command: certonly --webroot --webroot-path=/var/www/certbot --email eng-oss-ops@voltrondata.com --agree-tos --no-eff-email --staging -d substrait-fiddle.com -d www.substrait-fiddle.com
-
+      - /etc/letsencrypt:/etc/letsencrypt
+  mongo:
+    image: mongo
+    ports:
+      - "27017:27017"
+    networks:
+      - fiddle-network
 networks:
   fiddle-network:
     driver: bridge
