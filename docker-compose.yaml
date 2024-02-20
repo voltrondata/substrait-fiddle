@@ -8,6 +8,7 @@ services:
     environment:
      - DUCKDB_POOL_SIZE=5
      - VITE_SESSION_SECRET=$VITE_SESSION_SECRET
+     - PROD_MONGO_URL=mongodb://mongo:27017/
     networks:
       - fiddle-network
 
@@ -22,6 +23,13 @@ services:
       - fiddle-network
     environment:
      - NODE_ENV=production
+
+  mongo:
+    image: mongo
+    ports:
+      - "27017:27017"
+    networks:
+      - fiddle-network
 
 networks:
   fiddle-network:
