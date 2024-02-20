@@ -18,10 +18,23 @@ services:
       - VITE_SESSION_SECRET=$VITE_SESSION_SECRET
     ports:
       - "80:8080"
+      - "443:443"
     networks:
       - fiddle-network
     environment:
      - NODE_ENV=production
+    volumes:
+      - ./nginx/certbot/conf:/etc/letsencrypt
+      - ./nginx/certbot/www:/var/www/certbot
+    depends_on:
+      - certbot
+  certbot:
+    image: certbot/certbot
+    volumes:
+      - ./nginx/certbot/conf:/etc/letsencrypt
+      - ./nginx/certbot/www:/var/www/certbot
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+    command: certonly --webroot --webroot-path=/var/www/certbot --email eng-oss-ops@voltrondata.com --agree-tos --no-eff-email --staging -d substrait-fiddle.com -d www.substrait-fiddle.com
 
 networks:
   fiddle-network:
