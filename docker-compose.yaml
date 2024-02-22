@@ -31,6 +31,8 @@ services:
       - "27017:27017"
     networks:
       - fiddle-network
+    volumes:
+      - ~/mongo/data:/data/db
 networks:
   fiddle-network:
     driver: bridge
