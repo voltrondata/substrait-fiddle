@@ -1,8 +1,10 @@
+from datetime import datetime
 import os
 
 from bson.objectid import ObjectId
 from motor.motor_asyncio import AsyncIOMotorClient
 from pydantic import BaseModel
+from pymongo import ASCENDING
 
 DEFAULT_MONGO_URL = "mongodb://localhost:27017"
 
@@ -27,6 +29,10 @@ class MongoDBConnection:
     def initialize(self):
         database = self.client["plans"]
         collection = database["links"]
+
+        # TTL index in the createdAt field to expire record after a week
+        collection.create_index([("createdAt", ASCENDING)], expireAfterSeconds=604800)
+
         return collection
 
     async def get_record(self, collection, id):
@@ -37,6 +43,7 @@ class MongoDBConnection:
         data = {
             "json_string": data.json_string,
             "validator_overrides": data.validator_overrides,
+            "createdAt": datetime.utcnow()
         }
         result = await collection.insert_one(data)
         return str(result.inserted_id)
