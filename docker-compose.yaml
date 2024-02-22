@@ -8,9 +8,9 @@ services:
     environment:
      - DUCKDB_POOL_SIZE=5
      - VITE_SESSION_SECRET=$VITE_SESSION_SECRET
+     - PROD_MONGO_URL=mongodb://mongo:27017/
     networks:
       - fiddle-network
-
   client:
     build:
       context: ./client
@@ -18,11 +18,21 @@ services:
       - VITE_SESSION_SECRET=$VITE_SESSION_SECRET
     ports:
       - "80:8080"
+      - "443:443"
     networks:
       - fiddle-network
     environment:
      - NODE_ENV=production
-
+    volumes:
+      - /etc/letsencrypt:/etc/letsencrypt
+  mongo:
+    image: mongo
+    ports:
+      - "27017:27017"
+    networks:
+      - fiddle-network
+    volumes:
+      - ~/mongo/data:/data/db
 networks:
   fiddle-network:
     driver: bridge
