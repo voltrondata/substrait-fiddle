@@ -10,6 +10,8 @@ on:
       - '.github/workflows/deploy-api-client.yml'
       - 'docker-compose.yaml'
   workflow_dispatch:
+  schedule:
+    - cron: '0 0 15 * *'
 
 permissions:
   actions: write
