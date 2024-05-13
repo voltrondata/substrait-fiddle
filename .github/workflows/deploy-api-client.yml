@@ -10,6 +10,8 @@ on:
       - '.github/workflows/deploy-api-client.yml'
       - 'docker-compose.yaml'
   workflow_dispatch:
+  schedule:
+    - cron: '0 0 15 * *'
 
 permissions:
   actions: write
@@ -53,3 +55,15 @@ jobs:
           docker-compose rm -f
           docker-compose build --no-cache
           docker-compose up -d
+
+    - name: Cleanup unused docker images, volumes and build cache
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ secrets.DEPLOY_HOST_DNS }}
+        username: ${{ secrets.DEPLOY_USERNAME }}
+        key: ${{ secrets.DEPLOY_SSH_KEY }}
+        script: |
+          docker container prune -f
+          docker image prune -f
+          docker volume prune -f
+          docker builder prune -f
