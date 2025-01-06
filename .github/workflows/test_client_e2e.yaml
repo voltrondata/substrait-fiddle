@@ -43,7 +43,7 @@ jobs:
 
     - name: Upload Cypress electron-run video artifact
       if: always()
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: Cypress video
         path: /home/runner/work/substrait-fiddle/substrait-fiddle/client/cypress/videos/shareable.cy.js.mp4
